@@ -1,0 +1,30 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  background-color: #000000;
+  /* overflow: hidden; */
+}
+
+main {
+  margin: auto;
+  padding: 0;
+  aspect-ratio: 9 / 16;
+  max-width: 360px;
+  max-height: 640px;
+  background-color: gray;
+}
+
+@media (width <= 750px) {
+  main {
+    width: 100vw;
+  }
+}
+@media (width > 750px) {
+  main {
+    height: 100vh;
+  }
+}
