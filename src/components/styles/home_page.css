@@ -1,17 +1,11 @@
 .homepage {
   height: 100%;
   width: 100%;
+  background-color: #DDECF7;
   overflow-y: scroll;
   scrollbar-width: none;
 }
 
 .homepage::-webkit-scrollbar {
   display: none;
-}
-
-.homepage .box {
-  width: 80%;
-  height: 1500px;
-  margin: auto;
-  background-image: linear-gradient(blue, red);
 }
