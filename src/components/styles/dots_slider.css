@@ -1,0 +1,20 @@
+.dots_slider {
+  width: 340px;
+  margin: auto;
+  margin-top: 10px;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  gap: 5px;
+}
+.dots_slider div {
+  width: 5px;
+  height: 5px;
+  background-color: rgba(0, 0, 0, 0.1);
+  border-radius: 5px;
+}
+.dots_slider div.chosen {
+  width: 20px;
+  background-color: #00A36C;
+}

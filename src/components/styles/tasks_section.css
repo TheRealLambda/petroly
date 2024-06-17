@@ -1,0 +1,19 @@
+.taskssection {
+  width: 340px;
+  margin: auto;
+  margin-top: 40px;
+}
+
+.taskssection .tasks_list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-left: 10px
+}
+.taskssection .tasks_list .task_item {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  gap: 5px;
+  margin-top: 10px;
+}

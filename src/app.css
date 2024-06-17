@@ -5,6 +5,18 @@
 }
 
 
+.inter-40-regular {
+  font-size: 40px;
+  font-family: "Inter", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 400;
+  font-style: normal;
+  font-variation-settings:
+    "slnt" 0;
+  user-select: none;
+}
+
+
 h1 {
   font-size: 32px;
   font-family: "Inter", sans-serif;
@@ -142,6 +154,9 @@ p.text-10-semibold {
 .bgcolor-accent {
   background-color: #023047;
 }
+.fillcolor-accent {
+  fill: #023047
+}
 .color-white0 {
   color: #ffffff;
 }
@@ -153,6 +168,9 @@ p.text-10-semibold {
 }
 .bgcolor-white {
   background-color: #F0F6FB;
+}
+.fillcolor-white {
+  fill: #F0F6FB
 }
 .color-BG {
   color: #DDECF7;

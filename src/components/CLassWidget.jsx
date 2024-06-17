@@ -3,7 +3,7 @@ import "./styles/class_widget.css"
 const ClassWidget = () => {
 
   return (
-    <div className="classwidget" >
+    <div className="class_widget" >
       <h1 className="time color-white0">8:00 - 8:50</h1>
       <div className="div0">
         <div className="div1">
