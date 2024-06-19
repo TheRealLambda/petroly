@@ -3,6 +3,8 @@ import ClassWidget from "./CLassWidget"
 import ClassTasksWidget from "./ClassTasksWidget"
 import DotsSlider from "./DotsSlider"
 import TasksSection from "./TasksSection"
+import WeekSlider from "./WeekSlider"
+import ScheduleToday from "./ScheduleToday"
 const HomePage = () => {
 
   return (
@@ -11,6 +13,8 @@ const HomePage = () => {
       <ClassTasksWidget />
       <DotsSlider />
       <TasksSection />
+      <WeekSlider />
+      <ScheduleToday />
     </div>
   )
 }

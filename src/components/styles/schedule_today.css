@@ -1,0 +1,39 @@
+.schedule_today {
+  margin-top: 20px;
+  margin-right: 10px;
+  margin-left: 10px;
+}
+.schedule_today h5 {
+  margin-bottom: 20px;
+}
+.schedule_today .classes {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+.schedule_today .classes .container {
+  display: flex;
+  flex-direction: row;
+  gap: 15px;
+  width: 340px;
+  height: 80px;
+  border-radius: 25px;
+  padding: 10px 15px;
+}
+.schedule_today .classes .container .time {
+  opacity: 0.3;
+  align-self: center;
+  width: 97px;
+}
+.schedule_today .classes .container .separator {
+  width: 2px;
+  height: 100%;
+  border-radius: 2px;
+  align-self: center;
+}
+.schedule_today .classes .container .details {
+  margin-top: 5px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
