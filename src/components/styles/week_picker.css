@@ -1,0 +1,36 @@
+.week_picker {
+  margin-top: 20px;
+  margin-left: 60px;
+}
+
+.week_picker .flex_container {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+}
+.week_picker .flex_container .week_day {
+  display: flex;
+  flex-direction: column;
+  align-items: center
+}
+.week_picker .flex_container .week_day div {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 30px;
+  width: 30px;
+}
+.week_picker .flex_container .week_day div.day_name p {
+  opacity: 0.5;
+}
+.week_picker .flex_container .week_day.chosen div.day_number {
+  background-color: #00A36C;
+  border-radius: 20px;
+}
+.week_picker .flex_container .week_day.chosen div.day_number p {
+  color: #F0F6FB;
+}
+.week_picker .icon {
+  margin: auto;
+  height: 28px;
+}

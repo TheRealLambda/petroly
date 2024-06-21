@@ -1,0 +1,33 @@
+.time_table {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  height: 500px;
+  padding-bottom: 70px;
+  border-radius: 20px;
+  overflow-y: scroll;
+  scrollbar-width: none;
+}
+.schedule_page::-webkit-scrollbar {
+  display: none;
+}
+
+.time_table .div1 {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-width: 60px;
+  width: 60px;
+  height: 1800px
+}
+.time_table .div1 p {
+  opacity: 0.5;
+}
+
+.time_table .div2 {
+  width: 100%;
+  height: 1800px;
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  grid-template-rows: repeat(24, 1fr);
+}

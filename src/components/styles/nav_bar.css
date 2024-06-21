@@ -1,0 +1,15 @@
+.nav_bar {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: start;
+  position: absolute;
+  top: calc(640px - 70px);
+  padding: 15px;
+  height: 70px;
+  width: 360px;
+  border-top-left-radius: 20px;
+  border-top-right-radius: 20px;
+  z-index: 100;
+  
+}

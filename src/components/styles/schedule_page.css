@@ -1,0 +1,11 @@
+.schedule_page {
+  height: 100%;
+  width: 100%;
+  background-color: #DDECF7;
+  overflow-y: scroll;
+  scrollbar-width: none;
+}
+
+.schedule_page::-webkit-scrollbar {
+  display: none;
+}
