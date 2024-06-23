@@ -36,34 +36,48 @@
 
 .discover_page .section {
   width: 100%;
-  margin-top: 40px;
-  padding: 0 10px;
+  margin-top: 30px;
 }
 .discover_page .section .title {
   display: flex;
   flex-direction: row;
   justify-content: space-between;
   align-items: end;
+  padding: 0 10px;
+  margin-bottom: 10px;
 }
 .discover_page .section .title div {
   display: flex;
   flex-direction: row;
   align-items: center;
 }
+.discover_page .section .carousal_wrapper {
+  width: 360px;
+  overflow-x: scroll;
+  scrollbar-width: none;
+}
 .discover_page .section .carousal {
   display: flex;
   flex-direction: row;
   gap: 10px;
-  overflow-x: scroll;
-  scrollbar-width: none;
 }
+.discover_page .section .carousal::before {
+  content: "";
+}
+.discover_page .section .carousal::after {
+  content: ".";
+  color: rgba(0, 0, 0, 0)
+}
+
 .discover_page .section .carousal .carousal_item {
   width: 200px;
+  min-width: 200px;
   height: 150px;
   display: flex;
   flex-direction: column;
   justify-content: end;
   align-items: start;
-  gap: 10px;
+  gap: 5px;
   padding: 10px;
+  border-radius: 20px;
 }
