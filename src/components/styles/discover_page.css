@@ -1,0 +1,69 @@
+.discover_page {
+  height: 100%;
+  width: 100%;
+  background-color: #DDECF7;
+  overflow-y: scroll;
+  scrollbar-width: none;
+}
+
+.discover_page::-webkit-scrollbar {
+  display: none;
+}
+
+.discover_page .heading {
+  width: 100%;
+  height: 160px;
+  border-bottom-left-radius: 20px;
+  border-bottom-right-radius: 20px;
+  padding: 20px;
+  display: flex;
+  align-items: end;
+}
+.discover_page .filter {
+  display: flex;
+  flex-direction: row;
+  gap: 5px;
+  margin-top: 20px;
+  margin-left: 10px;
+}
+.discover_page .filter div {
+  height: 40px;
+  padding: 0 12px;
+  border-radius: 20px;
+  display: flex;
+  align-items: center;
+}
+
+.discover_page .section {
+  width: 100%;
+  margin-top: 40px;
+  padding: 0 10px;
+}
+.discover_page .section .title {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: end;
+}
+.discover_page .section .title div {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+.discover_page .section .carousal {
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+  overflow-x: scroll;
+  scrollbar-width: none;
+}
+.discover_page .section .carousal .carousal_item {
+  width: 200px;
+  height: 150px;
+  display: flex;
+  flex-direction: column;
+  justify-content: end;
+  align-items: start;
+  gap: 10px;
+  padding: 10px;
+}

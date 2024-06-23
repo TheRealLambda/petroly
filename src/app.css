@@ -70,7 +70,7 @@ h5 {
 }
 
 
-p.text-14-regular {
+.text-14-regular {
   font-size: 14px;
   font-family: "Inter", sans-serif;
   font-optical-sizing: auto;
@@ -80,7 +80,7 @@ p.text-14-regular {
     "slnt" 0;
   user-select: none;
 }
-p.text-14-medium {
+.text-14-medium {
   font-size: 14px;
   font-family: "Inter", sans-serif;
   font-optical-sizing: auto;
@@ -90,7 +90,7 @@ p.text-14-medium {
     "slnt" 0;
   user-select: none;
 }
-p.text-14-semibold {
+.text-14-semibold {
   font-size: 14px;
   font-family: "Inter", sans-serif;
   font-optical-sizing: auto;
@@ -100,7 +100,17 @@ p.text-14-semibold {
     "slnt" 0;
   user-select: none;
 }
-p.text-12-regular {
+.text-13-semibold {
+  font-size: 13px;
+  font-family: "Inter", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 600;
+  font-style: normal;
+  font-variation-settings:
+    "slnt" 0;
+  user-select: none;
+}
+.text-12-regular {
   font-size: 12px;
   font-family: "Inter", sans-serif;
   font-optical-sizing: auto;
@@ -110,7 +120,7 @@ p.text-12-regular {
     "slnt" 0;
   user-select: none;
 }
-p.text-12-medium {
+.text-12-medium {
   font-size: 12px;
   font-family: "Inter", sans-serif;
   font-optical-sizing: auto;
@@ -120,7 +130,7 @@ p.text-12-medium {
     "slnt" 0;
   user-select: none;
 }
-p.text-12-semibold {
+.text-12-semibold {
   font-size: 12px;
   font-family: "Inter", sans-serif;
   font-optical-sizing: auto;
@@ -130,11 +140,21 @@ p.text-12-semibold {
     "slnt" 0;
   user-select: none;
 }
-p.text-10-semibold {
+.text-10-semibold {
   font-size: 10px;
   font-family: "Inter", sans-serif;
   font-optical-sizing: auto;
   font-weight: 600;
+  font-style: normal;
+  font-variation-settings:
+    "slnt" 0;
+  user-select: none;
+}
+.text-10-regular {
+  font-size: 10px;
+  font-family: "Inter", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 400;
   font-style: normal;
   font-variation-settings:
     "slnt" 0;
