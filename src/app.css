@@ -4,6 +4,9 @@
   box-sizing: border-box;
 }
 
+main {
+  overflow: hidden;
+}
 
 .inter-40-regular {
   font-size: 40px;

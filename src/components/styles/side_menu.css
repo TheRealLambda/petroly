@@ -1,0 +1,6 @@
+.side_menu {
+  position: absolute;
+  z-index: -1;
+  width: 360px;
+  height: 640px;
+}

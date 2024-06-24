@@ -36,7 +36,7 @@
 
 .discover_page .section {
   width: 100%;
-  margin-top: 30px;
+  margin-top: 40px;
 }
 .discover_page .section .title {
   display: flex;
@@ -79,5 +79,26 @@
   align-items: start;
   gap: 5px;
   padding: 10px;
+  border-radius: 20px;
+}
+.discover_page .section .carousal .carousal_item .tags_list {
+  display: flex;
+  flex-direction: row;
+  gap: 5px;
+  flex-wrap: wrap;
+}
+.discover_page .section .grid_wrapper {
+  display: grid;
+  grid-template-columns: 165px 165px;
+  grid-auto-rows: 100px;
+  gap: 10px;
+  margin-right: 10px;
+  margin-left: 10px;
+  margin-bottom: 130px;
+}
+
+.discover_page .section .grid_wrapper .grid_item {
+  width: 100%;
+  height: 100%;
   border-radius: 20px;
 }
