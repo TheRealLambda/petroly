@@ -1,11 +1,25 @@
 .homepage {
-  height: 100%;
-  width: 100%;
+  z-index: 1;
+  position: relative;
+  height: 640px;
+  width: 360px;
   background-color: #DDECF7;
   overflow-y: scroll;
   scrollbar-width: none;
 }
-
+.homepage.side_menu_open {
+  transform: scale(0.85) translateX(270px);
+  border-radius: 20px;
+}
 .homepage::-webkit-scrollbar {
   display: none;
+}
+
+div#menu_cover {
+  position: absolute;
+  width:360px;
+  height: 640px;
+  background-color: red;
+  opacity: 0.3;
+  z-index: 2;
 }

@@ -10,6 +10,7 @@ const HomePage = () => {
 
   return (
     <div className="homepage">
+      {/* <div id="menu_cover"></div> */}
       <NavBar />
       <ClassWidget />
       <ClassTasksWidget />

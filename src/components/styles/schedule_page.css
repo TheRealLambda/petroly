@@ -1,9 +1,16 @@
 .schedule_page {
-  height: 100%;
-  width: 100%;
+  z-index: 1;
+  position: relative;
+  height: 640px;
+  width: 360px;
   background-color: #DDECF7;
   overflow-y: scroll;
   scrollbar-width: none;
+}
+
+.schedule_page.side_menu_open {
+  transform: scale(0.85) translateX(270px);
+  border-radius: 20px;
 }
 
 .schedule_page::-webkit-scrollbar {

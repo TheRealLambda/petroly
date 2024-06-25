@@ -1,6 +1,52 @@
 .side_menu {
   position: absolute;
-  z-index: -1;
+  z-index: 0;
   width: 360px;
   height: 640px;
+}
+.side_menu .flex_container {
+  display: flex;
+  flex-direction: column;
+  width: 230px;
+  margin-top: 70px;
+  margin-left: 30px;
+}
+.side_menu .flex_container .div1 {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 10px;
+}
+.side_menu .flex_container .div1 div {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+.side_menu .flex_container .div1 div .p2 {
+  opacity: 0.8;
+}
+.side_menu .flex_container .separator1 {
+  width: 100%;
+  height: 2px;
+  opacity: 0.5;
+  margin-top: 20px;
+  margin-bottom: 40px;
+}
+.side_menu .flex_container .separator2 {
+  width: 100%;
+  height: 2px;
+  opacity: 0.5;
+  margin-top: 40px;
+  margin-bottom: 40px;
+}
+.side_menu .flex_container .div2 {
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+}
+.side_menu .flex_container .div2 div {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 20px;
 }

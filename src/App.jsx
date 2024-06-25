@@ -5,16 +5,20 @@ import NavBar from "./components/NavBar.jsx"
 import SchedulePage from "./components/SchedulePage.jsx"
 import SideMenu from "./components/SideMenu.jsx"
 import TasksPage from "./components/TasksPage.jsx"
+import { Routes, Route, BrowserRouter as Router } from "react-router-dom"
 function App() {
 
   return (
     <main>
-      {/* <NavBar /> */}
-      {/* <HomePage /> */}
-      {/* <SchedulePage /> */}
-      {/* <DiscoverPage /> */}
       <SideMenu />
-      <TasksPage />
+      <Router>
+        <Routes>
+          <Route path="/home" element={<HomePage/>} />
+          <Route path="/schedule" element={<SchedulePage/>} />
+          <Route path="/discover" element={<DiscoverPage/>} />
+          <Route path="/tasks" element={<TasksPage/>} />
+        </Routes>
+      </Router>
     </main>
   )
 }
