@@ -4,7 +4,8 @@ const NavBar = () => {
 
 const showSideMenu = (event) =>{
   const page = document.getElementsByTagName("main")[0].lastChild
-  console.log(page.classList.toggle("side_menu_open"));
+  page.classList.toggle("side_menu_open")
+  document.getElementById("menu_cover").style.height = "640px"
 }
 
   return (
@@ -21,7 +22,7 @@ const showSideMenu = (event) =>{
      <Link to="/tasks">
        <svg className="fillcolor-white" xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#5f6368"><path d="m424-424-86-86q-11-11-28-11t-28 11q-11 11-11 28t11 28l114 114q12 12 28 12t28-12l226-226q11-11 11-28t-11-28q-11-11-28-11t-28 11L424-424ZM200-120q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h560q33 0 56.5 23.5T840-760v560q0 33-23.5 56.5T760-120H200Z"/></svg>
      </Link>
-     <svg onClick={showSideMenu} className="fillcolor-white" xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#5f6368"><path d="M160-200q-17 0-28.5-11.5T120-240q0-17 11.5-28.5T160-280h640q17 0 28.5 11.5T840-240q0 17-11.5 28.5T800-200H160Zm0-160q-17 0-28.5-11.5T120-400q0-17 11.5-28.5T160-440h640q17 0 28.5 11.5T840-400q0 17-11.5 28.5T800-360H160Zm0-160q-17 0-28.5-11.5T120-560q0-17 11.5-28.5T160-600h640q17 0 28.5 11.5T840-560q0 17-11.5 28.5T800-520H160Zm0-160q-17 0-28.5-11.5T120-720q0-17 11.5-28.5T160-760h640q17 0 28.5 11.5T840-720q0 17-11.5 28.5T800-680H160Z"/></svg>
+     <svg onClick={showSideMenu} className="fillcolor-white menu_svg" xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#5f6368"><path d="M160-200q-17 0-28.5-11.5T120-240q0-17 11.5-28.5T160-280h640q17 0 28.5 11.5T840-240q0 17-11.5 28.5T800-200H160Zm0-160q-17 0-28.5-11.5T120-400q0-17 11.5-28.5T160-440h640q17 0 28.5 11.5T840-400q0 17-11.5 28.5T800-360H160Zm0-160q-17 0-28.5-11.5T120-560q0-17 11.5-28.5T160-600h640q17 0 28.5 11.5T840-560q0 17-11.5 28.5T800-520H160Zm0-160q-17 0-28.5-11.5T120-720q0-17 11.5-28.5T160-760h640q17 0 28.5 11.5T840-720q0 17-11.5 28.5T800-680H160Z"/></svg>
    </div>
   )
 }

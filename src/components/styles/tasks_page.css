@@ -10,7 +10,9 @@
 }
 
 .tasks_page.side_menu_open {
-  transform: scale(0.85) translateX(270px);
+  zoom: 0.85;
+  margin-left: 305px;
+  margin-top: 50px;
   border-radius: 20px;
 }
 
@@ -19,7 +21,7 @@
 }
 
 .tasks_page .top_nav {
-  margin-top: 20px;
+  margin-top: -51px;
   margin-right: 10px;
   margin-left: 10px;
   display: flex;

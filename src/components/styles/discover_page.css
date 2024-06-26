@@ -9,7 +9,9 @@
 }
 
 .discover_page.side_menu_open {
-  transform: scale(0.85) translateX(270px);
+  zoom: 0.85;
+  margin-left: 305px;
+  margin-top: 50px;
   border-radius: 20px;
 }
 .discover_page::-webkit-scrollbar {
@@ -24,6 +26,7 @@
   padding: 20px;
   display: flex;
   align-items: end;
+  margin-top: -71px;
 }
 .discover_page .filter {
   display: flex;

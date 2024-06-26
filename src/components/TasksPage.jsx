@@ -2,8 +2,15 @@ import NavBar from "./NavBar"
 import "./styles/tasks_page.css"
 const TasksPage = () => {
 
+  const hideSideMenu = (event) =>{
+    const page = document.getElementsByClassName("tasks_page")[0]
+    page.classList.remove("side_menu_open")
+    document.getElementById("menu_cover").style.height = "0px"
+  }
+
   return (
     <div className="tasks_page">
+      <div onClick={hideSideMenu} id="menu_cover"></div>
       <NavBar />
       <div className="top_nav">
         <div className="div1">

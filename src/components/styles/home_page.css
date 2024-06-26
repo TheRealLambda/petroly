@@ -8,7 +8,9 @@
   scrollbar-width: none;
 }
 .homepage.side_menu_open {
-  transform: scale(0.85) translateX(270px);
+  zoom: 0.85;
+  margin-left: 305px;
+  margin-top: 50px;
   border-radius: 20px;
 }
 .homepage::-webkit-scrollbar {
@@ -16,10 +18,11 @@
 }
 
 div#menu_cover {
-  position: absolute;
+  position: fixed;
   width:360px;
-  height: 640px;
-  background-color: red;
-  opacity: 0.3;
+  height: 0px;
+  /* background-color: red;
+  opacity: 0.3; */
+  border-radius: 20px;
   z-index: 2;
 }
