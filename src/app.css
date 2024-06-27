@@ -71,7 +71,16 @@ h5 {
     "slnt" 0;
   user-select: none;
 }
-
+h6 {
+  font-size: 10px;
+  font-family: "Inter", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 700;
+  font-style: normal;
+  font-variation-settings:
+    "slnt" 0;
+  user-select: none;
+}
 
 .text-14-regular {
   font-size: 14px;
