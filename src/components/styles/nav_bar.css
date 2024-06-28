@@ -8,6 +8,7 @@
   padding: 15px;
   height: 71px;
   width: 360px;
+  border-top: 2px solid #DDECF7;
   border-top-left-radius: 20px;
   border-top-right-radius: 20px;
   z-index: 1;

@@ -1,23 +1,28 @@
 .class_tasks_widget {
   display: flex;
   width: 340px;
-  min-height: 90px;
-  max-height: 90px;
+  height: 90px;
   margin: auto;
   margin-top: 5px;
   border-radius: 20px;
   transition: height 0.3s ease-in-out;
+  overflow: hidden;
 }
+/* .class_tasks_widget.expanded {
+  max-height: 1000px;
+} */
 .class_tasks_widget .collapsed_div {
   display: flex;
   flex-direction: row;
   justify-content: space-between;
   align-items: center;
-  height: 48px;
+  height: 90px;
   width: 100%;
   padding-right: 10px;
   padding-left: 20px;
-  margin: auto 0;
+  /* margin: auto 0; */
+  opacity: 1;
+  transition: opacity 0.3s ease-in-out;
 }
 
 .class_tasks_widget .collapsed_div .div1 {
@@ -50,6 +55,8 @@
   flex-direction: column;
   width: 100%;
   padding: 20px;
+  opacity: 0;
+  transition: opacity 0.3s ease-in-out;
 }
 .class_tasks_widget .expanded_div .div1 {
   display: flex;
@@ -80,6 +87,7 @@
   width: 340px;
   transform: translateX(-20px);
   background-color: #DDECF7;
+  opacity: 0.6;
 }
 .class_tasks_widget .expanded_div .div3 {
   margin-top: 20px;

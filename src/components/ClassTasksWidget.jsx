@@ -5,17 +5,31 @@ const ClassTasksWidget = () => {
   const expandClassTasksWidget = () => {
     const collapsedDiv = document.querySelector(".class_tasks_widget .collapsed_div")
     const expandedDiv = document.querySelector(".class_tasks_widget .expanded_div")
+    const parent = document.querySelector(".class_tasks_widget")
     console.log("DIV 1:", collapsedDiv, "DIV 2:", expandedDiv);
     collapsedDiv.style.display = "none"
-    expandedDiv.style.display = "flex"
+    expandedDiv.style.display = "block"
+    const height = expandedDiv.scrollHeight
+    console.log(height+"px");
+    parent.style.height = (height+14)+"px"
+    collapsedDiv.style.opacity = "0"
+    expandedDiv.style.opacity = "1"
+    // parent.classList.add("expanded")
   }
 
   const collapseClassTasskWidget = () => {
     const collapsedDiv = document.querySelector(".class_tasks_widget .collapsed_div")
     const expandedDiv = document.querySelector(".class_tasks_widget .expanded_div")
+    const parent = document.querySelector(".class_tasks_widget")
     console.log("DIV 1:", collapsedDiv, "DIV 2:", expandedDiv);
-    collapsedDiv.style.display = "flex"
-    expandedDiv.style.display = "none"
+    parent.style.height = "90px"
+    expandedDiv.style.opacity = "0"
+    setTimeout(()=> {
+      collapsedDiv.style.display = "flex"
+      collapsedDiv.style.opacity = "1"
+      expandedDiv.style.display = "none"
+    }, 300)
+    // parent.classList.remove("expanded")
   }
 
   return (
