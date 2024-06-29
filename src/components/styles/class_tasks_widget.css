@@ -74,12 +74,9 @@
 .class_tasks_widget .expanded_div .div2 .attachments {
   display: flex;
   flex-direction: row;
+  overflow-x: scroll;
+  scrollbar-width: none;
   gap: 10px;
-}
-.class_tasks_widget .expanded_div .div2 .attachments div {
-  width: 50px;
-  height: 50px;
-  background-color: rgb(55, 98, 76);
 }
 .class_tasks_widget .expanded_div .section_separator {
   margin-top: 20px;
@@ -94,10 +91,4 @@
   display: flex;
   flex-direction: column;
   gap: 10px;
-}
-.class_tasks_widget .expanded_div .div3 .task {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  gap: 5px;
 }
