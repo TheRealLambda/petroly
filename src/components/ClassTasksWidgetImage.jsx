@@ -5,7 +5,7 @@ const ClassTasksWidgetImage = ({url}) => {
   const openImage = (event) => {
     event.stopPropagation()
     event.target.parentNode.classList.add("opened")
-    // console.log(event.target.parentNode);
+    console.log("event.target.parentNode");
   }
   const closeImage = (event) => {
     console.log("IMAGE CLOSED");

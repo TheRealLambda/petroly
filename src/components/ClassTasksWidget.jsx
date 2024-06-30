@@ -71,8 +71,8 @@ const ClassTasksWidget = () => {
         <div className="section_separator"></div>
         <div className="div3">
           <TaskItem text="study quiz material" circle white/>
-          {/* <TaskItem text="revision before class" circle white/>
-          <TaskItem text="bring student id" circle white/> */}
+          <TaskItem text="revision before class" circle white/>
+          <TaskItem text="bring student id" circle white/>
         </div>
       </div>
     </div>

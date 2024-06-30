@@ -3,15 +3,23 @@
   flex-direction: row;
   align-items: center;
   gap: 5px;
-  transition: background-color 0.1s ease-in-out;
+  transition: background-color 0.1s ease-in-out, transform 0.3s ease-in;
+  transition-delay: 0.0s, 0.6s;
 }
+.task_item.completed {
+  transform: translateX(340px);
+  opacity: 0.8;
+  text-decoration: line-through;
+}
+
+
 .task_item:active {
   background-color: rgb(255, 255, 255, 0.15)
 }
 
 .task_item .task_modal {
   z-index: 100;
-  display: flex;
+  display: none;
   align-items: end;
   position: fixed;
   top: 0;
@@ -23,6 +31,9 @@
   background-color: rgba(0, 0, 0, 0.8);
   border-radius: 0;
 }
+.task_item .task_modal.open {
+  display: flex;
+}
 .task_item .task_modal .task_modal_content {
   display: flex;
   flex-direction: column;
@@ -32,4 +43,16 @@
   padding: 20px;
   border-top-left-radius: 30px;
   border-top-right-radius: 30px;
+}
+.task_item .task_modal .task_modal_content .top_nav{
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+.task_item .task_modal .task_modal_content .title{
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 10px;
 }
