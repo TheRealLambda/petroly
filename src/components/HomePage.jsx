@@ -23,7 +23,7 @@ const HomePage = () => {
       <DotsSlider />
       <TasksSection />
       <WeekSlider />
-      <ScheduleToday />
+      {/* <ScheduleToday /> */}
     </div>
   )
 }

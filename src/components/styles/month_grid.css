@@ -1,0 +1,40 @@
+.month_grid {
+  padding: 0 10px;
+  margin-bottom: 10px;
+  margin-top: 40px;
+}
+.month_grid .month_days {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  grid-template-rows: repeat(5, 30px);
+  gap: 10px;
+}
+.month_grid.hidden {
+  display: none;
+}
+.month_grid .month_days div {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 30px;
+  height: 30px;
+  margin: 0 auto;
+}
+.month_grid .month_days div.uf {
+  opacity: 0.3;
+}
+.month_grid .month_days div.chosen {
+  color: #F0F6FB;
+  background-color: #00A36C;
+  border-radius: 10px;
+}
+.month_grid .week_day_names {
+  display: flex;
+  gap: 10px;
+  opacity: 0.5;
+  margin-bottom: 10px;
+}
+.month_grid .week_day_names p {
+  flex-basis: 100%;
+  text-align: center;
+}
