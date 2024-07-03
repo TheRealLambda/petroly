@@ -1,3 +1,15 @@
+.class_widget_flex_wrapper {
+  display: flex;
+  overflow-x: scroll;
+  gap: 10px;
+  scrollbar-width: none;
+  scroll-snap-type: x mandatory;
+  padding-top: 10px;
+  margin: 0 10px;
+}
+.class_widget_container {
+  scroll-snap-align: start;
+}
 .class_widget {
   width: 340px;
   height: 200px;

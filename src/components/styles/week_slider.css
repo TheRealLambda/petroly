@@ -1,18 +1,24 @@
 .week_slider_container {
   display: flex;
-  flex-basis: 0;
+  overflow-x: scroll;
+  gap: 10px;
+  scrollbar-width: none;
+  scroll-snap-type: x mandatory;
+  margin: 0 10px;
 }
-
+.week_slider_container.hidden {
+  display: none;
+}
 .week_slider {
   display: flex;
   flex-direction: column;
   justify-content: center;
+  flex-shrink: 0;
   margin-top: 40px;
   width: 340px;
+  scroll-snap-align: start;
 }
-.week_slider.hidden {
-  display: none;
-}
+
 
 .week_slider .flex_container {
   display: flex;

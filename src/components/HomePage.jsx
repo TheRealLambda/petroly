@@ -19,8 +19,8 @@ const HomePage = () => {
       <div onClick={hideSideMenu} id="menu_cover"></div>
       <NavBar />
       <ClassWidget />
-      <ClassTasksWidget />
-      <DotsSlider />
+      {/* <ClassTasksWidget /> */}
+      {/* <DotsSlider /> */}
       <TasksSection />
       <WeekSlider />
       {/* <ScheduleToday /> */}

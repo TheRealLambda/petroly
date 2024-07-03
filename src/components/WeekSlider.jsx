@@ -8,11 +8,13 @@ const WeekSlider = () => {
   const [date, setDate] = useState(3)
 
   const chooseDay = (event) => {
-    event.currentTarget.classList.add("chosen")
-    Array.from(event.currentTarget.parentNode.children).forEach((child)=>{
-      if(child == event.currentTarget) {
+    console.log(document.querySelectorAll(".week_slider_container .week_slider .week_day"));
+    Array.from(document.querySelectorAll(".week_day")).forEach((child)=>{
+      if(child.getAttribute("data-date") == event.currentTarget.getAttribute("data-date")) {
         child.classList.add("chosen")
-        setDate(child.getAttribute("data-date")[0])
+        if(date !== child.getAttribute("data-date")) {
+          setDate(child.getAttribute("data-date").split("/")[0])
+        }
       } else {
         child.classList.remove("chosen")
       }
@@ -27,8 +29,8 @@ const WeekSlider = () => {
 
   return (
     <>
-      <div className="week_slider_container">
-        <div id="week_slider_flex_container" className="week_slider">
+      <div id="week_slider_flex_container" className="week_slider_container">
+        <div className="week_slider">
           <div className="flex_container">
             <div onClick={chooseDay} className="week_day" data-date="2/6">
               <div className="day_name">  
@@ -91,121 +93,120 @@ const WeekSlider = () => {
         </div>
         <div id="week_slider_flex_container" className="week_slider">
           <div className="flex_container">
-            <div onClick={chooseDay} className="week_day" data-date="2/6">
+            <div onClick={chooseDay} className="week_day" data-date="9/6">
               <div className="day_name">  
                 <p className="text-14-semibold color-accent">Sun</p>
               </div>
               <div className="day_number">
-                <p className="text-14-medium color-accent">2</p>
+                <p className="text-14-medium color-accent">9</p>
               </div>
             </div>
-            <div onClick={chooseDay} className="week_day chosen" data-date="3/6">
+            <div onClick={chooseDay} className="week_day" data-date="10/6">
               <div className="day_name">  
                 <p className="text-14-semibold color-accent">Mon</p>
               </div>
               <div className="day_number">
-                <p className="text-14-medium color-accent">3</p>
+                <p className="text-14-medium color-accent">10</p>
               </div>
             </div>
-            <div onClick={chooseDay} className="week_day" data-date="4/6">
+            <div onClick={chooseDay} className="week_day" data-date="11/6">
               <div className="day_name">  
                 <p className="text-14-semibold color-accent">Tue</p>
               </div>
               <div className="day_number">
-                <p className="text-14-medium color-accent">4</p>
+                <p className="text-14-medium color-accent">11</p>
               </div>
             </div>
-            <div onClick={chooseDay} className="week_day" data-date="5/6">
+            <div onClick={chooseDay} className="week_day" data-date="12/6">
               <div className="day_name">  
                 <p className="text-14-semibold color-accent">Wed</p>
               </div>
               <div className="day_number">
-                <p className="text-14-medium color-accent">5</p>
+                <p className="text-14-medium color-accent">12</p>
               </div>
             </div>
-            <div onClick={chooseDay} className="week_day" data-date="6/6">
+            <div onClick={chooseDay} className="week_day" data-date="13/6">
               <div className="day_name">  
                 <p className="text-14-semibold color-accent">Thu</p>
               </div>
               <div className="day_number">
-                <p className="text-14-medium color-accent">6</p>
+                <p className="text-14-medium color-accent">13</p>
               </div>
             </div>
-            <div onClick={chooseDay} className="week_day" data-date="7/6">
+            <div onClick={chooseDay} className="week_day" data-date="14/6">
               <div className="day_name">  
                 <p className="text-14-semibold color-accent">Fri</p>
               </div>
               <div className="day_number">
-                <p className="text-14-medium color-accent">7</p>
+                <p className="text-14-medium color-accent">14</p>
               </div>
             </div>
-            <div onClick={chooseDay} className="week_day" data-date="8/6">
+            <div onClick={chooseDay} className="week_day" data-date="15/6">
               <div className="day_name">  
                 <p className="text-14-semibold color-accent">Sat</p>
               </div>
               <div className="day_number">
-                <p className="text-14-medium color-accent">8</p>
+                <p className="text-14-medium color-accent">15</p>
               </div>
             </div>
-    
           </div>
         </div>
         <div id="week_slider_flex_container" className="week_slider">
           <div className="flex_container">
-            <div onClick={chooseDay} className="week_day" data-date="2/6">
+            <div onClick={chooseDay} className="week_day" data-date="16/6">
               <div className="day_name">  
                 <p className="text-14-semibold color-accent">Sun</p>
               </div>
               <div className="day_number">
-                <p className="text-14-medium color-accent">2</p>
+                <p className="text-14-medium color-accent">16</p>
               </div>
             </div>
-            <div onClick={chooseDay} className="week_day chosen" data-date="3/6">
+            <div onClick={chooseDay} className="week_day" data-date="17/6">
               <div className="day_name">  
                 <p className="text-14-semibold color-accent">Mon</p>
               </div>
               <div className="day_number">
-                <p className="text-14-medium color-accent">3</p>
+                <p className="text-14-medium color-accent">17</p>
               </div>
             </div>
-            <div onClick={chooseDay} className="week_day" data-date="4/6">
+            <div onClick={chooseDay} className="week_day" data-date="17/6">
               <div className="day_name">  
                 <p className="text-14-semibold color-accent">Tue</p>
               </div>
               <div className="day_number">
-                <p className="text-14-medium color-accent">4</p>
+                <p className="text-14-medium color-accent">17</p>
               </div>
             </div>
-            <div onClick={chooseDay} className="week_day" data-date="5/6">
+            <div onClick={chooseDay} className="week_day" data-date="18/6">
               <div className="day_name">  
                 <p className="text-14-semibold color-accent">Wed</p>
               </div>
               <div className="day_number">
-                <p className="text-14-medium color-accent">5</p>
+                <p className="text-14-medium color-accent">18</p>
               </div>
             </div>
-            <div onClick={chooseDay} className="week_day" data-date="6/6">
+            <div onClick={chooseDay} className="week_day" data-date="19/6">
               <div className="day_name">  
                 <p className="text-14-semibold color-accent">Thu</p>
               </div>
               <div className="day_number">
-                <p className="text-14-medium color-accent">6</p>
+                <p className="text-14-medium color-accent">19</p>
               </div>
             </div>
-            <div onClick={chooseDay} className="week_day" data-date="7/6">
+            <div onClick={chooseDay} className="week_day" data-date="20/6">
               <div className="day_name">  
                 <p className="text-14-semibold color-accent">Fri</p>
               </div>
               <div className="day_number">
-                <p className="text-14-medium color-accent">7</p>
+                <p className="text-14-medium color-accent">20</p>
               </div>
             </div>
-            <div onClick={chooseDay} className="week_day" data-date="8/6">
+            <div onClick={chooseDay} className="week_day" data-date="21/6">
               <div className="day_name">  
                 <p className="text-14-semibold color-accent">Sat</p>
               </div>
               <div className="day_number">
-                <p className="text-14-medium color-accent">8</p>
+                <p className="text-14-medium color-accent">21</p>
               </div>
             </div>
     
@@ -222,42 +223,42 @@ const WeekSlider = () => {
           <p className="text-14-semibold color-accent">Fri</p>
           <p className="text-14-semibold color-accent">Sat</p>
         </div>
-          <div className="month_days">
-            <div onClick={chooseDay} className="text-14-medium color-accent uf" data-date="26/5">26</div>
-            <div onClick={chooseDay} className="text-14-medium color-accent uf" data-date="27/5">27</div>
-            <div onClick={chooseDay} className="text-14-medium color-accent uf" data-date="28/5">28</div>
-            <div onClick={chooseDay} className="text-14-medium color-accent uf" data-date="29/5">29</div>
-            <div onClick={chooseDay} className="text-14-medium color-accent uf" data-date="30/5">30</div>
-            <div onClick={chooseDay} className="text-14-medium color-accent uf" data-date="31/5">31</div>
-            <div onClick={chooseDay} className="text-14-medium color-accent" data-date="1/6">1</div>
-            <div onClick={chooseDay} className="text-14-medium color-accent" data-date="2/6">2</div>
-            <div onClick={chooseDay} className="text-14-medium color-accent chosen" data-date="3/6">3</div>
-            <div onClick={chooseDay} className="text-14-medium color-accent" data-date="4/6">4</div>
-            <div onClick={chooseDay} className="text-14-medium color-accent" data-date="5/6">5</div>
-            <div onClick={chooseDay} className="text-14-medium color-accent" data-date="6/6">6</div>
-            <div onClick={chooseDay} className="text-14-medium color-accent" data-date="7/6">7</div>
-            <div onClick={chooseDay} className="text-14-medium color-accent" data-date="8/6">8</div>
-            <div onClick={chooseDay} className="text-14-medium color-accent" data-date="9/6">9</div>
-            <div onClick={chooseDay} className="text-14-medium color-accent" data-date="10/6">10</div>
-            <div onClick={chooseDay} className="text-14-medium color-accent" data-date="11/6">11</div>
-            <div onClick={chooseDay} className="text-14-medium color-accent" data-date="12/6">12</div>
-            <div onClick={chooseDay} className="text-14-medium color-accent" data-date="13/6">13</div>
-            <div onClick={chooseDay} className="text-14-medium color-accent" data-date="14/6">14</div>
-            <div onClick={chooseDay} className="text-14-medium color-accent" data-date="15/6">15</div>
-            <div onClick={chooseDay} className="text-14-medium color-accent" data-date="16/6">16</div>
-            <div onClick={chooseDay} className="text-14-medium color-accent" data-date="17/6">17</div>
-            <div onClick={chooseDay} className="text-14-medium color-accent" data-date="18/6">18</div>
-            <div onClick={chooseDay} className="text-14-medium color-accent" data-date="19/6">19</div>
-            <div onClick={chooseDay} className="text-14-medium color-accent" data-date="20/6">20</div>
-            <div onClick={chooseDay} className="text-14-medium color-accent" data-date="21/6">21</div>
-            <div onClick={chooseDay} className="text-14-medium color-accent" data-date="22/6">22</div>
-            <div onClick={chooseDay} className="text-14-medium color-accent" data-date="23/6">23</div>
-            <div onClick={chooseDay} className="text-14-medium color-accent" data-date="24/6">24</div>
-            <div onClick={chooseDay} className="text-14-medium color-accent" data-date="25/6">25</div>
-            <div onClick={chooseDay} className="text-14-medium color-accent" data-date="26/6">26</div>
-            <div onClick={chooseDay} className="text-14-medium color-accent" data-date="27/6">27</div>
-            <div onClick={chooseDay} className="text-14-medium color-accent" data-date="28/6">28</div>
-            <div onClick={chooseDay} className="text-14-medium color-accent" data-date="29/6">29</div>
+          <div className="month_days" data-month="6">
+            <div onClick={chooseDay} className="week_day text-14-medium color-accent uf" data-date="26/5">26</div>
+            <div onClick={chooseDay} className="week_day text-14-medium color-accent uf" data-date="27/5">27</div>
+            <div onClick={chooseDay} className="week_day text-14-medium color-accent uf" data-date="28/5">28</div>
+            <div onClick={chooseDay} className="week_day text-14-medium color-accent uf" data-date="29/5">29</div>
+            <div onClick={chooseDay} className="week_day text-14-medium color-accent uf" data-date="30/5">30</div>
+            <div onClick={chooseDay} className="week_day text-14-medium color-accent uf" data-date="31/5">31</div>
+            <div onClick={chooseDay} className="week_day text-14-medium color-accent" data-date="1/6">1</div>
+            <div onClick={chooseDay} className="week_day text-14-medium color-accent" data-date="2/6">2</div>
+            <div onClick={chooseDay} className="week_day text-14-medium color-accent chosen" data-date="3/6">3</div>
+            <div onClick={chooseDay} className="week_day text-14-medium color-accent" data-date="4/6">4</div>
+            <div onClick={chooseDay} className="week_day text-14-medium color-accent" data-date="5/6">5</div>
+            <div onClick={chooseDay} className="week_day text-14-medium color-accent" data-date="6/6">6</div>
+            <div onClick={chooseDay} className="week_day text-14-medium color-accent" data-date="7/6">7</div>
+            <div onClick={chooseDay} className="week_day text-14-medium color-accent" data-date="8/6">8</div>
+            <div onClick={chooseDay} className="week_day text-14-medium color-accent" data-date="9/6">9</div>
+            <div onClick={chooseDay} className="week_day text-14-medium color-accent" data-date="10/6">10</div>
+            <div onClick={chooseDay} className="week_day text-14-medium color-accent" data-date="11/6">11</div>
+            <div onClick={chooseDay} className="week_day text-14-medium color-accent" data-date="12/6">12</div>
+            <div onClick={chooseDay} className="week_day text-14-medium color-accent" data-date="13/6">13</div>
+            <div onClick={chooseDay} className="week_day text-14-medium color-accent" data-date="14/6">14</div>
+            <div onClick={chooseDay} className="week_day text-14-medium color-accent" data-date="15/6">15</div>
+            <div onClick={chooseDay} className="week_day text-14-medium color-accent" data-date="16/6">16</div>
+            <div onClick={chooseDay} className="week_day text-14-medium color-accent" data-date="17/6">17</div>
+            <div onClick={chooseDay} className="week_day text-14-medium color-accent" data-date="18/6">18</div>
+            <div onClick={chooseDay} className="week_day text-14-medium color-accent" data-date="19/6">19</div>
+            <div onClick={chooseDay} className="week_day text-14-medium color-accent" data-date="20/6">20</div>
+            <div onClick={chooseDay} className="week_day text-14-medium color-accent" data-date="21/6">21</div>
+            <div onClick={chooseDay} className="week_day text-14-medium color-accent" data-date="22/6">22</div>
+            <div onClick={chooseDay} className="week_day text-14-medium color-accent" data-date="23/6">23</div>
+            <div onClick={chooseDay} className="week_day text-14-medium color-accent" data-date="24/6">24</div>
+            <div onClick={chooseDay} className="week_day text-14-medium color-accent" data-date="25/6">25</div>
+            <div onClick={chooseDay} className="week_day text-14-medium color-accent" data-date="26/6">26</div>
+            <div onClick={chooseDay} className="week_day text-14-medium color-accent" data-date="27/6">27</div>
+            <div onClick={chooseDay} className="week_day text-14-medium color-accent" data-date="28/6">28</div>
+            <div onClick={chooseDay} className="week_day text-14-medium color-accent" data-date="29/6">29</div>
           </div>
         </div>
       <div onClick={expandDatePicker} className="date_picker_icon">
