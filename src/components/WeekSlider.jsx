@@ -2,6 +2,7 @@ import "./styles/week_slider.css"
 import "./styles/schedule_today.css"
 import "./styles/month_grid.css"
 import { useState } from "react"
+import { Link } from "react-router-dom"
 
 const WeekSlider = () => {
 
@@ -267,16 +268,18 @@ const WeekSlider = () => {
       <div className="schedule_today">
         <h5 className="color-accent">Monday, {date} June</h5>
         <div className="classes">
-          <div className="container bgcolor-white">
-            <div className="time">
-              <p className="text-14-semibold color-accent">08:00 - 08:50</p>
+          <Link style={{textDecoration: "none"}} to="/class">
+            <div className="container bgcolor-white">
+              <div className="time">
+                <p className="text-14-semibold color-accent">08:00 - 08:50</p>
+              </div>
+              <div className="separator bgcolor-whiteaccent"></div>
+              <div className="details">
+                <p className="text-14-semibold color-accent">PHYS 101</p>
+                <p className="text-12-medium color-accent">Khalil B. Harrabi</p>
+              </div>
             </div>
-            <div className="separator bgcolor-whiteaccent"></div>
-            <div className="details">
-              <p className="text-14-semibold color-accent">PHYS 101</p>
-              <p className="text-12-medium color-accent">Khalil B. Harrabi</p>
-            </div>
-          </div>
+          </Link>
           <div className="container bgcolor-white">
             <div className="time">
               <p className="text-14-semibold color-accent">09:00 - 09:50</p>

@@ -1,0 +1,9 @@
+.class_page {
+  z-index: 1;
+  position: relative;
+  height: 640px;
+  width: 360px;
+  background-color: #DDECF7;
+  overflow-y: scroll;
+  scrollbar-width: none;
+}

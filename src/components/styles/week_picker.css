@@ -1,4 +1,15 @@
+.week_picker_wrapper {
+  display: flex;
+  overflow-x: scroll;
+  /* gap: 10px; */
+  scrollbar-width: none;
+  scroll-snap-type: x mandatory;
+}
+
 .week_picker {
+  scroll-snap-align: end;
+  flex-shrink: 0;
+  width: 300px;
   margin-top: 20px;
   margin-left: 60px;
 }

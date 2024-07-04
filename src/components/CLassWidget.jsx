@@ -42,11 +42,23 @@ const ClassWidget = () => {
   useEffect(()=>{
     document.getElementsByClassName("class_widget_flex_wrapper")[0].addEventListener("scroll", (event)=> {
       if(started) {
-        console.log("SCROLLING");
         Array.from(document.getElementsByClassName("collapseClassTasksWidget")).forEach(element => console.log(collapseClassTasksWidget({currentTarget: element})))
         started = false
       }
-    })
+      Array.from(event.target.children).forEach((child, i) => {
+        const left = child.getBoundingClientRect().left
+        if(left > 0 && left < 20) {
+          Array.from(document.getElementById("dotsSlider").children).forEach((dot, j) => {
+            if(i === j) {
+              dot.classList.add("chosen")
+            } else {
+              dot.classList.remove("chosen")
+            }
+          })
+        }
+      })
+      // console.log("SCROLLING");
+    }) 
   }, [])
 
   return (
@@ -277,7 +289,7 @@ const ClassWidget = () => {
           </div>
         </div>
       </div>
-      <div className="dots_slider">
+      <div id="dotsSlider" className="dots_slider">
         <div className="chosen"></div>
         <div></div>
         <div></div>

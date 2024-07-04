@@ -13,6 +13,7 @@
   height: 5px;
   background-color: rgba(0, 0, 0, 0.1);
   border-radius: 5px;
+  transition: all 0.2s ease-out;
 }
 .dots_slider div.chosen {
   width: 20px;

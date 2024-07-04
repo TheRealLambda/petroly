@@ -1,4 +1,5 @@
 import "./app.css"
+import ClassPage from "./components/ClassPage.jsx"
 import DiscoverPage from "./components/DiscoverPage.jsx"
 import HomePage from "./components/HomePage.jsx"
 import NavBar from "./components/NavBar.jsx"
@@ -17,6 +18,7 @@ function App() {
           <Route path="/schedule" element={<SchedulePage/>} />
           <Route path="/discover" element={<DiscoverPage/>} />
           <Route path="/tasks" element={<TasksPage/>} />
+          <Route path="/class" element={<ClassPage/>} />
         </Routes>
       </Router>
     </main>
