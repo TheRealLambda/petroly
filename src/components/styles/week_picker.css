@@ -41,6 +41,18 @@
 .week_picker .flex_container .week_day.chosen div.day_number p {
   color: #F0F6FB;
 }
+.week_picker .flex_container .week_day.today {
+  position: relative;
+}
+.week_picker .flex_container .week_day.today::after {
+  position: absolute;
+  bottom: 0px;
+  content: "";
+  width: 10px;
+  height: 3px;
+  background-color: #00A36C;
+  border-radius: 3px;
+}
 .week_picker .icon {
   margin: auto;
   height: 28px;

@@ -1,6 +1,49 @@
+import { useEffect } from "react"
 import "./styles/time_table.css"
 
 const TimeTable = () => {
+
+  useEffect(() => {
+    document.getElementById("div2_wrapper").addEventListener("click", (event) => {
+      const div = event.target
+      const grid = div.parentNode
+      const index = Array.from(grid.children).indexOf(div) + 1
+      const row = Math.floor(index / 7)
+      const column = index % 7 === 0 ? 6 : (index%7)-1
+      const topHalf = (event.clientY - div.getBoundingClientRect().top) < div.clientHeight/2
+      let gridIndex;
+      Array.from(grid.parentNode.children).forEach((child, i) => {
+        if(child == grid) {
+          gridIndex = i
+        }
+      })
+      let startDate;
+      Array.from(document.getElementById("week_picker_wrapper").children).forEach((child, i) => {
+        if(i === gridIndex) {
+          Array.from(child.firstChild.children).forEach((childd, j) => {
+            if(j === column) {
+              startDate = childd.getAttribute("data-date")
+            }
+          })
+        }
+      })
+      const startYear = Number(startDate.split("-")[0])
+      const startMonth = Number(startDate.split("-")[1])
+      const startDay = Number(startDate.split("-")[2])
+      const startHour = row
+      const startMinute = topHalf ? 0 : 30;
+      console.log(new Date(startYear, startMonth, startDay, startHour, startMinute));
+    
+      const newDiv = document.createElement("div")
+      newDiv.style.position = "absolute"
+      newDiv.style.top = (div.offsetTop + (topHalf?0:37))+"px"
+      newDiv.style.left = div.offsetLeft+"px"
+      newDiv.style.width = "42px"
+      newDiv.style.height = "75px"
+      newDiv.style.border = "2px solid red"
+      grid.appendChild(newDiv)
+    })
+  }, [])
 
   return (
     <div className="time_table bgcolor-white">
