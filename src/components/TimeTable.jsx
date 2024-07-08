@@ -57,47 +57,90 @@ const TimeTable = () => {
       if(event.target.classList.length === 0) {
         const [tempEvent, topSlider, bottomSlider] = createEventDiv(event.target, event.target.parentNode)
         const grid = event.target.parentNode
-        tempEvent.addEventListener("click", (e) => {
-          // e.stopPropagation()
-        })
 
         const slideUp = (e) => {
-          const mouseY = e.clientY-e.currentTarget.offsetTop
-          const hour = Math.floor(mouseY/1800*24*10)/10
+          const mouseY = e.clientY-e.currentTarget.getBoundingClientRect().top
+          const mappedMouseY = Math.floor(Math.round(mouseY/12.5)*12.5)
+          const hour = mappedMouseY*24/1800
+          console.log((hour*60)%60);
           const prevHeight = tempEvent.offsetHeight
           const tempEventY = tempEvent.offsetTop
-          tempEvent.style.top = mouseY+"px"
-          if(prevHeight < 35) {
-            tempEvent.style.height = "35px"
+          tempEvent.style.top = mappedMouseY+"px"
+          // console.log("prevHeight=", prevHeight, "tempEventY=", tempEventY, "hour=", hour, `\nRESULT: ${prevHeight+(tempEventY-hour)}     ${prevHeight}+(${tempEventY}-${hour})`, );
+          if(prevHeight < 25) {
+            tempEvent.style.height = "25px"
           } else {
-            tempEvent.style.height = prevHeight+(tempEventY-mouseY)+"px"
+            tempEvent.style.height = prevHeight+(tempEventY-mappedMouseY)+"px"
           }
         }
         const slideDown = (e) => {
-          const mouseY = e.clientY-e.currentTarget.offsetTop
-          const hour = Math.floor(mouseY/1800*24*10)/10
+          const mouseY = e.clientY-e.currentTarget.getBoundingClientRect().top
+          const mappedMouseY = Math.floor(Math.round(mouseY/12.5)*12.5)
+          const hour = mappedMouseY*24/1800
+          console.log((hour*60)%60);
           const prevHeight = tempEvent.offsetHeight
           const tempEventY = tempEvent.offsetTop
-          if(prevHeight < 35) {
-            tempEvent.style.height = "35px"
+          if(prevHeight < 25) {
+            tempEvent.style.height = "25px"
           } else {
-            tempEvent.style.height = mouseY-tempEventY+"px"
+            tempEvent.style.height = mappedMouseY-tempEventY+"px"
           }
         }
         let initTopOffset;
         const moveTempEvent = (e) => {
-          const mouseY = e.clientY-e.currentTarget.offsetTop
-          const hour = Math.floor(mouseY/1800*24*10)/10
+          const mouseY = e.clientY-e.currentTarget.getBoundingClientRect().top
+          const mappedMouseY = Math.floor(Math.round(mouseY/12.5)*12.5)
+          const hour = mappedMouseY*24/1800
+          // console.log((hour*60)%60);
+          console.log(mappedMouseY-initTopOffset);
           const prevHeight = tempEvent.offsetHeight
           const tempEventY = tempEvent.offsetTop
           if(tempEvent.offsetTop < 0) {
             tempEvent.style.top = "0px"
           } else {
-            tempEvent.style.top = (mouseY-initTopOffset)+"px"
+            tempEvent.style.top = (mappedMouseY-initTopOffset)+"px"
           }
         }
+
+
+        let timeout = null
+        const test = (e) => {
+          const modal = document.getElementById("eventCreateModel")
+          if(timeout !== null) {
+            clearTimeout(timeout)
+          }
+          timeout = setTimeout(()=>{
+            console.log("SCROLLING");
+            modal.removeEventListener("scroll", test)
+            if(modal.firstElementChild.getBoundingClientRect().top > 300 && modal.firstElementChild.getBoundingClientRect().top < 600) {  
+              modal.scrollTo({top: 100, behavior: "smooth"})
+            } else if (modal.firstElementChild.getBoundingClientRect().top < 400) {
+              modal.scrollTo({top: 640, behavior: "smooth"})
+            } else if (modal.firstElementChild.getBoundingClientRect().top > 600) {
+              console.log("REMOVE MODAL");
+              modal.scrollTo({top: 0, behavior: "instant"})
+            }
+            modal.addEventListener("scroll", test)
+          }, 100)
+        }
+        const tempEventClickFunc = (e) => {
+                // e.currentTarget.style.backgroundColor = "red"
+                const modal = document.getElementById("eventCreateModel")
+                modal.style.display = "block"
+                modal.scrollTo({top: 100, behavior: "smooth"})
+                
+                modal.removeEventListener("Scroll", test)
+                modal.addEventListener("scroll", test)
+      
+        }
+        tempEvent.removeEventListener("click", tempEventClickFunc)
+        tempEvent.addEventListener("click", tempEventClickFunc)
+        
         tempEvent.addEventListener("mousedown", (e)=> {
-          initTopOffset = e.clientY - grid.offsetTop - tempEvent.offsetTop
+          const temp = (e.clientY - grid.getBoundingClientRect().top) - tempEvent.offsetTop
+          initTopOffset = Math.floor(Math.round(temp/12.5)*12.5)
+          // console.log("OFFSET:", initTopOffset);
+          console.log("e.clientY=", e.clientY - (grid.getBoundingClientRect().top), "\ntempEvent.offsetTop=", tempEvent.offsetTop);
           grid.addEventListener("mousemove", moveTempEvent)
         })
         topSlider.addEventListener("mousedown", (e)=> {
@@ -119,6 +162,7 @@ const TimeTable = () => {
 
   return (
     <div className="time_table bgcolor-white">
+      
       <div className="div1">
         <p className="text-12-semibold color-accent">00:00</p>
         <p className="text-12-semibold color-accent">01:00</p>

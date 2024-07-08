@@ -45,6 +45,11 @@ const SchedulePage = () => {
   return (
     <div className="schedule_page">
       <div onClick={hideSideMenu} id="menu_cover"></div>
+      <div id="eventCreateModel" className="event_create_model">
+        <div className="content">
+          <div className="scroll"></div>
+        </div>
+      </div>
       <NavBar />
       <MenuBar />
       <WeekPicker />

@@ -108,3 +108,27 @@
 .time_table .event_create .bottom_slider::before {
   display: none;
 }
+.schedule_page .event_create_model {
+  z-index: 2;
+  pointer-events: none;
+  display: none;
+  position: absolute;
+  overflow-y: scroll;
+  scrollbar-width: none;
+  width: 360px;
+  height: 640px;
+}
+.schedule_page .event_create_model .content {
+  pointer-events: all;
+  margin-top: auto;
+  position: absolute;
+  background-color: #DDECF7;
+  border-top-left-radius: 20px;
+  border-top-right-radius: 20px;
+  width: 100%;
+  height: 100%;
+  margin-top: 640px;
+}
+.time_table .event_create_model .content .scroll {
+
+}
