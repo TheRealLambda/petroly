@@ -1,10 +1,53 @@
 import { useEffect } from "react"
 import "./styles/time_table.css"
+import axios from "axios"
+const TimeTable = ({ page, setPage }) => {
 
-const TimeTable = () => {
+  const resetSchedule = async () => {
+    const events = await axios.get("http://localhost:3001/api/events")
+    console.log("events=", events);
+    Array.from(document.getElementById("week_picker_wrapper").children).forEach((child, i) => {
+      Array.from(child.firstElementChild.children).forEach((day, j) => {
+        events.data.forEach(event => {
+          const eventDate = new Date(event.start_time)
+          const endDate = new Date(event.end_time)
+          const temp = new Date(event.start_time)
+          temp.setHours(0, 0, 0, 0)
+          event
+          // console.log("eventDate=", eventDate);
+          const dayDateAttrib = day.getAttribute("data-date").split("-")
+          // console.log("dayDateAttrib=", dayDateAttrib);
+          const dayDate = new Date(Number(dayDateAttrib[0]), Number(dayDateAttrib[1]), Number(dayDateAttrib[2]))
+          // console.log("dayDate=", dayDate);
+          if(temp.getTime() === dayDate.getTime()) {
+            Array.from(document.querySelectorAll("#div2_wrapper .div2")).forEach((div, k) => {
+              if(k === i) {
+                const newDiv = document.createElement("div")
+                newDiv.classList.add("event_create")
+                newDiv.style.top = (eventDate.getHours()+eventDate.getMinutes()/60)*75+"px"
+                console.log("top=", (eventDate.getHours()+eventDate.getMinutes()/60)*75);
+                
+                newDiv.style.left = div.children[j].offsetLeft+"px"
+                console.log("left=", day.offsetLeft);
+
+                const height = (endDate.getHours()+endDate.getMinutes()/60)*75 - (eventDate.getHours()+eventDate.getMinutes()/60)*75
+                newDiv.style.height = height+"px"
+                newDiv.style.display = "block"
+                div.appendChild(newDiv)
+                console.log("i=", i);
+                console.log("j=", j);
+                console.log("k=", k);
+              }
+            })
+          }
+        })
+      })
+    })
+  }
 
   useEffect(() => {
 
+    resetSchedule()
     const createEventDiv = (div, grid) => {
       const index = Array.from(grid.children).indexOf(div) + 1
       const row = Math.floor(index / 7)
@@ -26,19 +69,25 @@ const TimeTable = () => {
           })
         }
       })
+      const newDiv = document.getElementById("eventCreate")
+
       const startYear = Number(startDate.split("-")[0])
       const startMonth = Number(startDate.split("-")[1])
       const startDay = Number(startDate.split("-")[2])
       const startHour = row
       const startMinute = topHalf ? 0 : 30;
       const startDateee = new Date(startYear, startMonth, startDay, startHour, startMinute)
-      // console.log(startDateee);
+      const temp1 = new Date(newDiv.getAttribute("data-end"))
+      const temp2 = new Date(newDiv.getAttribute("data-start"))
+      const diff = temp1 - temp2 === 0 ? 3600000 : temp1 - temp2
+      const endDateee = new Date(startDateee.getTime() + diff) 
+      // console.log(endDateee);
     
-      const newDiv = document.getElementById("eventCreate")
       newDiv.classList.add("event_create")
       newDiv.style.top = (div.offsetTop + (topHalf?0:37))+"px"
       newDiv.style.left = div.offsetLeft+"px"
       newDiv.setAttribute("data-start", startDateee)
+      newDiv.setAttribute("data-end",endDateee)
       const topSlider = newDiv.firstElementChild
       topSlider.classList.add("top_slider")
       
@@ -58,11 +107,26 @@ const TimeTable = () => {
         const [tempEvent, topSlider, bottomSlider] = createEventDiv(event.target, event.target.parentNode)
         const grid = event.target.parentNode
 
+        document.querySelector("#eventCreateModel button").addEventListener("click", (e) => {
+          const object = {
+            start_time: tempEvent.getAttribute("data-start"),
+            end_time: tempEvent.getAttribute("data-end"),
+            title: "test",
+            desc: "description for testing"
+          }
+          axios.post("http://localhost:3001/api/events", object)
+          resetSchedule()
+        })
+
         const slideUp = (e) => {
           const mouseY = e.clientY-e.currentTarget.getBoundingClientRect().top
           const mappedMouseY = Math.floor(Math.round(mouseY/12.5)*12.5)
-          const hour = mappedMouseY*24/1800
-          console.log((hour*60)%60);
+          const hour = Math.floor(mappedMouseY*24/1800)
+          const minute = Math.round(((mappedMouseY*24/1800)*60)%60)
+          const newDate = new Date(tempEvent.getAttribute("data-start"))
+          newDate.setHours(hour, minute)
+          tempEvent.setAttribute("data-start", newDate)
+          console.log(minute);
           const prevHeight = tempEvent.offsetHeight
           const tempEventY = tempEvent.offsetTop
           tempEvent.style.top = mappedMouseY+"px"
@@ -76,8 +140,14 @@ const TimeTable = () => {
         const slideDown = (e) => {
           const mouseY = e.clientY-e.currentTarget.getBoundingClientRect().top
           const mappedMouseY = Math.floor(Math.round(mouseY/12.5)*12.5)
-          const hour = mappedMouseY*24/1800
-          console.log((hour*60)%60);
+          const hour = Math.floor(mappedMouseY*24/1800)
+          const minute = Math.round(((mappedMouseY*24/1800)*60)%60)
+          const newDate = new Date(tempEvent.getAttribute("data-end"))
+          newDate.setHours(hour, minute)
+          if(newDate.getTime() >= new Date(tempEvent.getAttribute("data-start")).getTime()+20*60*1000) {
+            tempEvent.setAttribute("data-end", newDate)
+            console.log(newDate);
+          }
           const prevHeight = tempEvent.offsetHeight
           const tempEventY = tempEvent.offsetTop
           if(prevHeight < 25) {

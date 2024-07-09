@@ -5,6 +5,10 @@
   scrollbar-width: none;
   scroll-snap-type: x mandatory;
 }
+.week_picker_wrapper.lock_scroll {
+  overflow: hidden;
+  scroll-snap-type: none;
+}
 
 .week_picker {
   scroll-snap-align: end;

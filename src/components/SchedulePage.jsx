@@ -3,10 +3,12 @@ import WeekPicker from "./WeekPicker"
 import NavBar from "./NavBar"
 import "./styles/schedule_page.css"
 import TimeTable from "./TimeTable"
-import { useEffect } from "react"
+import { useEffect, useState } from "react"
 
 const SchedulePage = () => {
 
+  const [page, setPage] = useState(10)
+  console.log("[STATE]", page);
   const hideSideMenu = (event) =>{
     const page = document.getElementsByClassName("schedule_page")[0]
     page.classList.remove("side_menu_open")
@@ -17,11 +19,14 @@ const SchedulePage = () => {
     const div1 = document.getElementById("week_picker_wrapper")
     const div2 = document.getElementById("div2_wrapper")
     div2.removeEventListener("scroll", handleScroll2)
-    div2.scrollTo({behavior: "smooth", left: div1.scrollLeft})
+    if(div1.classList.contains("lock_scroll")) {
+      div2.scrollTo({behavior: "instant", left: div1.scrollLeft})
+    } else {
+      div2.scrollTo({behavior: "smooth", left: div1.scrollLeft})
+    }
     window.requestAnimationFrame(() => {
       div2.addEventListener("scroll", handleScroll2)
     })
-    console.log("div1");
   }
   const handleScroll2 = () => {
     const div1 = document.getElementById("week_picker_wrapper")
@@ -31,7 +36,7 @@ const SchedulePage = () => {
     window.requestAnimationFrame(() => {
       div1.addEventListener("scroll", handleScroll1)
     })
-    console.log("div2");
+    // console.log("div2");
   }
 
   useEffect(() => {
@@ -39,7 +44,10 @@ const SchedulePage = () => {
     const div1 = document.getElementById("week_picker_wrapper")
     const div2 = document.getElementById("div2_wrapper")
     div1.addEventListener("scroll", handleScroll1)
-    div2.addEventListener("scroll", handleScroll2)
+    // div2.addEventListener("scroll", handleScroll2)
+
+
+    
   }, [])
 
   return (
@@ -47,13 +55,15 @@ const SchedulePage = () => {
       <div onClick={hideSideMenu} id="menu_cover"></div>
       <div id="eventCreateModel" className="event_create_model">
         <div className="content">
-          <div className="scroll"></div>
+          <div className="scroll">
+            <button>Create</button>
+          </div>
         </div>
       </div>
       <NavBar />
       <MenuBar />
-      <WeekPicker />
-      <TimeTable />
+      <WeekPicker page={page} setPage={setPage} />
+      <TimeTable page={page} setPage={setPage} />
     </div>
   )
 }
