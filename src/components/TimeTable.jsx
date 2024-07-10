@@ -6,48 +6,42 @@ const TimeTable = ({ page, setPage }) => {
   const resetSchedule = async () => {
     const events = await axios.get("http://localhost:3001/api/events")
     console.log("events=", events);
-    Array.from(document.getElementById("week_picker_wrapper").children).forEach((child, i) => {
-      Array.from(child.firstElementChild.children).forEach((day, j) => {
-        events.data.forEach(event => {
-          const eventDate = new Date(event.start_time)
-          const endDate = new Date(event.end_time)
-          const temp = new Date(event.start_time)
-          temp.setHours(0, 0, 0, 0)
-          event
-          // console.log("eventDate=", eventDate);
-          const dayDateAttrib = day.getAttribute("data-date").split("-")
-          // console.log("dayDateAttrib=", dayDateAttrib);
-          const dayDate = new Date(Number(dayDateAttrib[0]), Number(dayDateAttrib[1]), Number(dayDateAttrib[2]))
-          // console.log("dayDate=", dayDate);
-          if(temp.getTime() === dayDate.getTime()) {
-            Array.from(document.querySelectorAll("#div2_wrapper .div2")).forEach((div, k) => {
-              if(k === i) {
-                const newDiv = document.createElement("div")
-                newDiv.classList.add("event_create")
-                newDiv.style.top = (eventDate.getHours()+eventDate.getMinutes()/60)*75+"px"
-                console.log("top=", (eventDate.getHours()+eventDate.getMinutes()/60)*75);
-                
-                newDiv.style.left = div.children[j].offsetLeft+"px"
-                console.log("left=", day.offsetLeft);
+    Array.from(document.getElementById("week_picker_wrapper").children[1].firstElementChild.children).forEach((day, j) => {
+      const dayDateAttrib = day.getAttribute("data-date").split("-")
+      const dayDate = new Date(Number(dayDateAttrib[0]), Number(dayDateAttrib[1]), Number(dayDateAttrib[2]))
+      console.log(dayDate);
+      events.data.forEach(event => {
+        const eventDate = new Date(event.start_time)
+        const endDate = new Date(event.end_time)
+        const temp = new Date(event.start_time)
+        temp.setHours(0, 0, 0, 0)
+        
+        // console.log("eventDate=", eventDate);
+        const dayDateAttrib = day.getAttribute("data-date").split("-")
+        const dayDate = new Date(Number(dayDateAttrib[0]), Number(dayDateAttrib[1]), Number(dayDateAttrib[2]))
+        // console.log("dayDateAttrib=", dayDateAttrib);
+        // console.log("dayDate=", dayDate);
+        if(temp.getTime() === dayDate.getTime()) {
+          const newDiv = document.createElement("div")
+          newDiv.classList.add("event_create")
+          newDiv.style.top = (eventDate.getHours()+eventDate.getMinutes()/60)*75+"px"
+          // console.log("top=", (eventDate.getHours()+eventDate.getMinutes()/60)*75);
+          
+          newDiv.style.left = document.querySelectorAll("#div2_wrapper .div2")[1].offsetLeft+"px"
+          // console.log("left=", day.offsetLeft);
 
-                const height = (endDate.getHours()+endDate.getMinutes()/60)*75 - (eventDate.getHours()+eventDate.getMinutes()/60)*75
-                newDiv.style.height = height+"px"
-                newDiv.style.display = "block"
-                div.appendChild(newDiv)
-                console.log("i=", i);
-                console.log("j=", j);
-                console.log("k=", k);
-              }
-            })
-          }
-        })
+          const height = (endDate.getHours()+endDate.getMinutes()/60)*75 - (eventDate.getHours()+eventDate.getMinutes()/60)*75
+          newDiv.style.height = height+"px"
+          newDiv.style.display = "block"
+          document.querySelectorAll("#div2_wrapper .div2")[1].appendChild(newDiv)
+        }
       })
     })
   }
 
   useEffect(() => {
 
-    resetSchedule()
+    // resetSchedule()
     const createEventDiv = (div, grid) => {
       const index = Array.from(grid.children).indexOf(div) + 1
       const row = Math.floor(index / 7)
@@ -189,6 +183,7 @@ const TimeTable = ({ page, setPage }) => {
             } else if (modal.firstElementChild.getBoundingClientRect().top > 600) {
               console.log("REMOVE MODAL");
               modal.scrollTo({top: 0, behavior: "instant"})
+              tempEvent.style.display = "none"
             }
             modal.addEventListener("scroll", test)
           }, 100)

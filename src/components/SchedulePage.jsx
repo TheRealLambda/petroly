@@ -7,8 +7,8 @@ import { useEffect, useState } from "react"
 
 const SchedulePage = () => {
 
-  const [page, setPage] = useState(10)
-  console.log("[STATE]", page);
+  const [page, setPage] = useState(8)
+  // console.log("[STATE]", page);
   const hideSideMenu = (event) =>{
     const page = document.getElementsByClassName("schedule_page")[0]
     page.classList.remove("side_menu_open")
@@ -40,14 +40,11 @@ const SchedulePage = () => {
   }
 
   useEffect(() => {
-    console.log("ATTACHING SCROLL EVENT");
+    // console.log("ATTACHING SCROLL EVENT");
     const div1 = document.getElementById("week_picker_wrapper")
     const div2 = document.getElementById("div2_wrapper")
     div1.addEventListener("scroll", handleScroll1)
     // div2.addEventListener("scroll", handleScroll2)
-
-
-    
   }, [])
 
   return (
