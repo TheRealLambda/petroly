@@ -3,56 +3,25 @@ import "./styles/time_table.css"
 import axios from "axios"
 const TimeTable = ({ page, setPage }) => {
 
-  const resetSchedule = async () => {
-    const events = await axios.get("http://localhost:3001/api/events")
-    console.log("events=", events);
-    Array.from(document.getElementById("week_picker_wrapper").children[1].firstElementChild.children).forEach((day, j) => {
-      const dayDateAttrib = day.getAttribute("data-date").split("-")
-      const dayDate = new Date(Number(dayDateAttrib[0]), Number(dayDateAttrib[1]), Number(dayDateAttrib[2]))
-      console.log(dayDate);
-      events.data.forEach(event => {
-        const eventDate = new Date(event.start_time)
-        const endDate = new Date(event.end_time)
-        const temp = new Date(event.start_time)
-        temp.setHours(0, 0, 0, 0)
-        
-        // console.log("eventDate=", eventDate);
-        const dayDateAttrib = day.getAttribute("data-date").split("-")
-        const dayDate = new Date(Number(dayDateAttrib[0]), Number(dayDateAttrib[1]), Number(dayDateAttrib[2]))
-        // console.log("dayDateAttrib=", dayDateAttrib);
-        // console.log("dayDate=", dayDate);
-        if(temp.getTime() === dayDate.getTime()) {
-          const newDiv = document.createElement("div")
-          newDiv.classList.add("event_create")
-          newDiv.style.top = (eventDate.getHours()+eventDate.getMinutes()/60)*75+"px"
-          // console.log("top=", (eventDate.getHours()+eventDate.getMinutes()/60)*75);
-          
-          newDiv.style.left = document.querySelectorAll("#div2_wrapper .div2")[1].offsetLeft+"px"
-          // console.log("left=", day.offsetLeft);
-
-          const height = (endDate.getHours()+endDate.getMinutes()/60)*75 - (eventDate.getHours()+eventDate.getMinutes()/60)*75
-          newDiv.style.height = height+"px"
-          newDiv.style.display = "block"
-          document.querySelectorAll("#div2_wrapper .div2")[1].appendChild(newDiv)
-        }
-      })
-    })
-  }
 
   useEffect(() => {
 
     // resetSchedule()
     const createEventDiv = (div, grid) => {
+      // console.log(grid);
+      // console.log(div);
       const index = Array.from(grid.children).indexOf(div) + 1
       const row = Math.floor(index / 7)
       const column = index % 7 === 0 ? 6 : (index%7)-1
       const topHalf = (event.clientY - div.getBoundingClientRect().top) < div.clientHeight/2
       let gridIndex;
-      Array.from(grid.parentNode.children).forEach((child, i) => {
+      Array.from(document.querySelectorAll("#div2_wrapper .div2")).forEach((child, i) => {
+        // console.log(child ,"==", grid, "?", child == grid);
         if(child == grid) {
           gridIndex = i
         }
       })
+      // console.log("gridIndex", gridIndex);
       let startDate;
       Array.from(document.getElementById("week_picker_wrapper").children).forEach((child, i) => {
         if(i === gridIndex) {
@@ -67,15 +36,18 @@ const TimeTable = ({ page, setPage }) => {
 
       const startYear = Number(startDate.split("-")[0])
       const startMonth = Number(startDate.split("-")[1])
-      const startDay = Number(startDate.split("-")[2])
-      const startHour = row
+      const startDay = Number(startDate.split("-")[2]) 
+      
+      const yStart = Math.floor(Math.round((div.offsetTop < 0 ? 0 : div.offsetTop)/12.5)*12.5)
+      const startHour = Math.floor(yStart*24/1800)
+      
       const startMinute = topHalf ? 0 : 30;
       const startDateee = new Date(startYear, startMonth, startDay, startHour, startMinute)
       const temp1 = new Date(newDiv.getAttribute("data-end"))
       const temp2 = new Date(newDiv.getAttribute("data-start"))
       const diff = temp1 - temp2 === 0 ? 3600000 : temp1 - temp2
       const endDateee = new Date(startDateee.getTime() + diff) 
-      // console.log(endDateee);
+      // console.log(index / 7);
     
       newDiv.classList.add("event_create")
       newDiv.style.top = (div.offsetTop + (topHalf?0:37))+"px"
@@ -95,22 +67,17 @@ const TimeTable = ({ page, setPage }) => {
       return [newDiv, topSlider, bottomSlider]
     }
 
-    document.getElementById("div2_wrapper").addEventListener("click", (event) => {
+    const clickFunc = (event) => {
       // console.log(event.target.classList.length);
       if(event.target.classList.length === 0) {
         const [tempEvent, topSlider, bottomSlider] = createEventDiv(event.target, event.target.parentNode)
         const grid = event.target.parentNode
 
-        document.querySelector("#eventCreateModel button").addEventListener("click", (e) => {
-          const object = {
-            start_time: tempEvent.getAttribute("data-start"),
-            end_time: tempEvent.getAttribute("data-end"),
-            title: "test",
-            desc: "description for testing"
-          }
-          axios.post("http://localhost:3001/api/events", object)
-          resetSchedule()
-        })
+
+
+
+        // document.querySelector("#eventCreateModel button").removeEventListener("click", postEvent)
+        // document.querySelector("#eventCreateModel button").addEventListener("click", postEvent)
 
         const slideUp = (e) => {
           const mouseY = e.clientY-e.currentTarget.getBoundingClientRect().top
@@ -120,16 +87,26 @@ const TimeTable = ({ page, setPage }) => {
           const newDate = new Date(tempEvent.getAttribute("data-start"))
           newDate.setHours(hour, minute)
           tempEvent.setAttribute("data-start", newDate)
-          console.log(minute);
+          // console.log(minute);
           const prevHeight = tempEvent.offsetHeight
           const tempEventY = tempEvent.offsetTop
           tempEvent.style.top = mappedMouseY+"px"
+
+          // console.log(hourEnd+":"+minuteEnd);
+          // console.log(hourEnd+":"+minuteEnd);
           // console.log("prevHeight=", prevHeight, "tempEventY=", tempEventY, "hour=", hour, `\nRESULT: ${prevHeight+(tempEventY-hour)}     ${prevHeight}+(${tempEventY}-${hour})`, );
           if(prevHeight < 25) {
             tempEvent.style.height = "25px"
           } else {
             tempEvent.style.height = prevHeight+(tempEventY-mappedMouseY)+"px"
           }
+          const yEnd = Math.floor(Math.round((tempEvent.offsetTop+tempEvent.scrollHeight-1)/12.5)*12.5)
+          const hourEnd = Math.floor(yEnd*24/1800)
+          const minuteEnd = Math.round(((yEnd*24/1800)*60)%60)
+          const newDateEnd = new Date(tempEvent.getAttribute("data-end"))
+          newDateEnd.setHours(hourEnd, minuteEnd)
+          tempEvent.setAttribute("data-end", newDateEnd)
+          // console.log(tempEvent.getAttribute("data-end"));
         }
         const slideDown = (e) => {
           const mouseY = e.clientY-e.currentTarget.getBoundingClientRect().top
@@ -156,7 +133,7 @@ const TimeTable = ({ page, setPage }) => {
           const mappedMouseY = Math.floor(Math.round(mouseY/12.5)*12.5)
           const hour = mappedMouseY*24/1800
           // console.log((hour*60)%60);
-          console.log(mappedMouseY-initTopOffset);
+          // console.log(mappedMouseY-initTopOffset);
           const prevHeight = tempEvent.offsetHeight
           const tempEventY = tempEvent.offsetTop
           if(tempEvent.offsetTop < 0) {
@@ -164,6 +141,23 @@ const TimeTable = ({ page, setPage }) => {
           } else {
             tempEvent.style.top = (mappedMouseY-initTopOffset)+"px"
           }
+          const yStart = Math.floor(Math.round((tempEvent.offsetTop < 0 ? 0 : tempEvent.offsetTop)/12.5)*12.5)
+          const hourStart = Math.floor(yStart*24/1800)
+          const minuteStart = Math.round(((yStart*24/1800)*60)%60)
+          const newDateStart = new Date(tempEvent.getAttribute("data-start"))
+          newDateStart.setHours(hourStart, minuteStart)
+          tempEvent.setAttribute("data-start", newDateStart)
+          // console.log(tempEvent.getAttribute("data-start"));
+          // console.log(tempEvent.offsetTop < 0 ? 0 : tempEvent.offsetTop);
+
+          const yEnd = Math.floor(Math.round(((tempEvent.offsetTop < 0 ? 0 : tempEvent.offsetTop)+tempEvent.scrollHeight-1)/12.5)*12.5)
+          const hourEnd = Math.floor(yEnd*24/1800)
+          const minuteEnd = Math.round(((yEnd*24/1800)*60)%60)
+          const newDateEnd = new Date(tempEvent.getAttribute("data-end"))
+          newDateEnd.setHours(hourEnd, minuteEnd)
+          tempEvent.setAttribute("data-end", newDateEnd)
+          // console.log(tempEvent.getAttribute("data-end"));
+          // console.log(yEnd);
         }
 
 
@@ -201,28 +195,36 @@ const TimeTable = ({ page, setPage }) => {
         tempEvent.removeEventListener("click", tempEventClickFunc)
         tempEvent.addEventListener("click", tempEventClickFunc)
         
-        tempEvent.addEventListener("mousedown", (e)=> {
+        tempEvent.addEventListener("pointerdown", (e)=> {
           const temp = (e.clientY - grid.getBoundingClientRect().top) - tempEvent.offsetTop
           initTopOffset = Math.floor(Math.round(temp/12.5)*12.5)
           // console.log("OFFSET:", initTopOffset);
           console.log("e.clientY=", e.clientY - (grid.getBoundingClientRect().top), "\ntempEvent.offsetTop=", tempEvent.offsetTop);
-          grid.addEventListener("mousemove", moveTempEvent)
+          grid.addEventListener("pointermove", moveTempEvent)
         })
-        topSlider.addEventListener("mousedown", (e)=> {
+        topSlider.addEventListener("pointerdown", (e)=> {
           e.stopPropagation()
-          grid.addEventListener("mousemove", slideUp)
+          grid.addEventListener("pointermove", slideUp)
         })
-        bottomSlider.addEventListener("mousedown", (e)=> {
+        bottomSlider.addEventListener("pointerdown", (e)=> {
           e.stopPropagation()
-          grid.addEventListener("mousemove", slideDown)
+          grid.addEventListener("pointermove", slideDown)
         })
-        document.addEventListener("mouseup", ()=> {
-          grid.removeEventListener("mousemove", moveTempEvent)
-          grid.removeEventListener("mousemove", slideUp)
-          grid.removeEventListener("mousemove", slideDown)
+        document.addEventListener("pointerup", ()=> {
+          grid.removeEventListener("pointermove", moveTempEvent)
+          grid.removeEventListener("pointermove", slideUp)
+          grid.removeEventListener("pointermove", slideDown)
         })
       }
-    })
+    }
+
+    document.getElementById("div2_wrapper").addEventListener("click", clickFunc)
+
+    return () => {
+      if(document.getElementById("div2_wrapper")) {
+        document.getElementById("div2_wrapper").removeEventListener("click", clickFunc)
+      }
+    }
   }, [])
 
   return (
