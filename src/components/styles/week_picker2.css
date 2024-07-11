@@ -1,0 +1,64 @@
+.tasks_page .week_picker_wrapper {
+  display: flex;
+  overflow-x: scroll;
+  /* gap: 10px; */
+  scrollbar-width: none;
+  scroll-snap-type: x mandatory;
+}
+.tasks_page .week_picker_wrapper.lock_scroll {
+  overflow: hidden;
+  scroll-snap-type: none;
+}
+
+.tasks_page .week_picker {
+  scroll-snap-align: end;
+  flex-shrink: 0;
+  width: 360px;
+  padding: 0 10px;
+  margin: 0;
+  margin-top: 20px;
+}
+
+.tasks_page .week_picker .flex_container {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+.tasks_page .week_picker .flex_container .week_day {
+  display: flex;
+  flex-direction: column;
+  align-items: center
+}
+.tasks_page .week_picker .flex_container .week_day div {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 30px;
+  width: 30px;
+}
+.tasks_page .week_picker .flex_container .week_day div.day_name p {
+  opacity: 0.5;
+}
+.tasks_page .week_picker .flex_container .week_day.chosen div.day_number {
+  background-color: #00A36C;
+  border-radius: 20px;
+}
+.tasks_page .week_picker .flex_container .week_day.chosen div.day_number p {
+  color: #F0F6FB;
+}
+.tasks_page .week_picker .flex_container .week_day.today {
+  position: relative;
+}
+.tasks_page .week_picker .flex_container .week_day.today::after {
+  position: absolute;
+  bottom: 0px;
+  content: "";
+  width: 10px;
+  height: 3px;
+  background-color: #00A36C;
+  border-radius: 3px;
+}
+.tasks_page .week_picker .icon {
+  margin: auto;
+  height: 28px;
+}

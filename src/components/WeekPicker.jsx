@@ -9,8 +9,8 @@ const WeekPicker = ({ week, setWeek }) => {
 
     if(!check && offsetLeft > 55 && offsetLeft < 65) {
       check = true
+      document.getElementById("week_picker_wrapper").classList.add("lock_scroll")  
       setTimeout(() =>{
-        document.getElementById("week_picker_wrapper").classList.add("lock_scroll")  
         setWeek(week => week-1)
         setTimeout(() => {
         document.getElementById("week_picker_wrapper").classList.remove("lock_scroll") 
@@ -21,8 +21,8 @@ const WeekPicker = ({ week, setWeek }) => {
     const offsetRight = last.getBoundingClientRect().right-document.getElementsByClassName("schedule_page")[0].getBoundingClientRect().right
     if(!check && offsetRight > -5 && offsetRight < 5) {
       check = true
+      document.getElementById("week_picker_wrapper").classList.add("lock_scroll")  
       setTimeout(() =>{
-        document.getElementById("week_picker_wrapper").classList.add("lock_scroll")  
         setWeek(week => week+1)
         setTimeout(() => {
         document.getElementById("week_picker_wrapper").classList.remove("lock_scroll") 

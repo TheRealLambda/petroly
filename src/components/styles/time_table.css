@@ -66,6 +66,7 @@
 }
 
 .time_table .event_create {
+  touch-action: none;
   user-select: none;
   position: absolute;
   display: none;
