@@ -17,6 +17,8 @@ const TasksPage = () => {
   console.log("week?", Math.floor((((now.getTime() - onejan.getTime()) / 86400000)  + 1) / 7));
   // console.log(onejan.getDay());
 
+  const [date, setDate] = useState(null)
+
   const [week, setWeek] = useState(week1)
 
   const [collections, setCollections] = useState([])
@@ -27,39 +29,51 @@ const TasksPage = () => {
     document.getElementById("menu_cover").style.height = "0px"
   }
 
-  const createTask1 = async (e) => {
-    const result = await axios.post("http://localhost:3001/api/tasks", {title: "WaW!", categoryName: "a"})
-    const newCollections = collections.map(collection => {
-      console.log(collection);
-      if(collection.name === "a") {
-        return result.data
-      } else {
-        return collection
-      }
-    })
-    setCollections(newCollections)
+  const handleTask = async (e) => {
+    e.preventDefault()
+    const form = document.getElementById("taskForm")
+    const title = form.elements["title"].value
+    const categoryId = form.elements["collection"].value
+    // const now = new Date()
+    // const onejan = new Date (now.getFullYear(), 0, 1)
+    // const dayOfWeek = Math.ceil((now.getTime() - onejan.getTime()) / 86400000)
+    // console.log("dayOfWeek?", dayOfWeek % 7);
+    if(document.querySelector(".week_day.chosen_day")) {
+      const date = document.querySelector(".week_day.chosen_day").getAttribute("data-date")
+      const result = await axios.post("http://localhost:3001/api/tasks", {title, categoryId, date})
+      const newCollections = collections.map(collection => {
+        console.log("aiukdsgbfejsbauiakjbfgnsvbdbiakjdbch:", collection)
+        if(collection._id === categoryId) {
+          return result.data
+        } else {
+          return collection
+        }
+      })
+      setCollections(newCollections)
+    } else {
+
+      const result = await axios.post("http://localhost:3001/api/tasks", {title, categoryId})
+      const newCollections = collections.map(collection => {
+        console.log("aiukdsgbfejsbauiakjbfgnsvbdbiakjdbch:", collection)
+        if(collection._id === categoryId) {
+          return result.data
+        } else {
+          return collection
+        }
+      })
+      setCollections(newCollections)
+    }
   }
-  const createTask2 = async (e) => {
-    const result = await axios.post("http://localhost:3001/api/tasks", {title: "WaW!", categoryName: "b"})
-    const newCollections = collections.map(collection => {
-      if(collection.name === "b") {
-        return result.data
-      } else {
-        return collection
-      }
-    })
-    setCollections(newCollections)
-  }
-  const createTask3 = async (e) => {
-    const result = await axios.post("http://localhost:3001/api/tasks", {title: "WaW!", categoryName: "c"})
-    const newCollections = collections.map(collection => {
-      if(collection.name === "c") {
-        return result.data
-      } else {
-        return collection
-      }
-    })
-    setCollections(newCollections)
+
+  const handleCollection = async(e) => {
+    e.preventDefault()
+    const form = document.getElementById("collectionForm")
+    const name = form.elements["name"].value
+    const result = await axios.post("http://localhost:3001/api/categories", {name})
+    const newCollections = await axios.get("http://localhost:3001/api/tasks")
+    setCollections(newCollections.data)
+    
+    console.log(form.elements["name"].value);
   }
 
   const expandCollection = (e) => {
@@ -74,6 +88,47 @@ const TasksPage = () => {
       arrow.setAttribute("transform", "rotate(90)")
       container.classList.add("open")
     }
+  }
+
+  let timeout = null
+  const test = (e) => {
+    const modal = document.getElementById("eventCreateModel")
+    if(timeout !== null) {
+      clearTimeout(timeout)
+    }
+    timeout = setTimeout(()=>{
+      console.log("SCROLLING");
+      modal.removeEventListener("scroll", test)
+      if(modal.firstElementChild.getBoundingClientRect().top > 300 && modal.firstElementChild.getBoundingClientRect().top < 600) {  
+        modal.scrollTo({top: 100, behavior: "smooth"})
+      } else if (modal.firstElementChild.getBoundingClientRect().top < 400) {
+        modal.scrollTo({top: 640, behavior: "smooth"})
+      } else if (modal.firstElementChild.getBoundingClientRect().top > 600) {
+        console.log("REMOVE MODAL");
+        modal.scrollTo({top: 0, behavior: "instant"})
+        modal.style.display = "none"
+      }
+      modal.addEventListener("scroll", test)
+    }, 100)
+  }
+
+  const openTask = () => {
+    console.log("openTask()");
+    const modal = document.getElementById("eventCreateModel")
+    console.log(modal);
+    modal.style.display = "block"
+    modal.scrollTo({top: 100, behavior: "smooth"})
+
+    modal.removeEventListener("Scroll", test)
+    modal.addEventListener("scroll", test)
+  }
+  const closeTask = (e) => {
+    e.stopPropagation()
+    console.log("closeTask()")
+    e.currentTarget.scrollTo({top: 0, behavior: "smooth"})
+    setTimeout(() => {
+      document.getElementById("eventCreateModel").style.display = "none"
+    }, 500)
   }
 
   let check = false
@@ -106,6 +161,19 @@ const TasksPage = () => {
     }
   }
 
+  const selectDay = async(e) => {
+    if(e.currentTarget.classList.contains("chosen_day")) {
+      e.currentTarget.classList.remove("chosen_day")
+      const result = await axios.get("http://localhost:3001/api/tasks")
+      setCollections(result.data)
+    } else {
+      Array.from(e.currentTarget.parentNode.children).forEach(child => {child.classList.remove("chosen_day")})
+      e.currentTarget.classList.add("chosen_day")
+      const result = await axios.get("http://localhost:3001/api/tasks?date="+e.currentTarget.getAttribute("data-date"))
+      setCollections(result.data)
+    }
+  }
+
   useEffect(() => {
     async function fetchData() {
       const result = await axios.get("http://localhost:3001/api/tasks")
@@ -119,6 +187,30 @@ const TasksPage = () => {
   }, [])
 
   useEffect(() => {
+      Array.from(document.getElementsByClassName("top_section")).forEach((e) => {
+        const container = e.parentNode
+        if(container.classList.contains("open")) {
+          container.style.height = container.scrollHeight+"px"
+        }
+      })
+
+  }, [collections])
+
+  useEffect(() => {
+
+    document.getElementById("monthText").innerText = (() => {
+      const now = new Date()
+      const firstDayOfYear = new Date(now.getFullYear(), 0, 1)
+      const day = firstDayOfYear.getDay()
+      const toFirstSundayOfYear = -day
+      const sunday = new Date(now.getFullYear(), 0, 1+toFirstSundayOfYear+(week)*7)
+      const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
+      if(week > 0) { 
+        return months[sunday.getMonth()]
+      } else {
+        return months[sunday.getMonth()].substring(0, 3)+" "+sunday.getFullYear()
+      }
+    })()
     
     document.getElementById("week_picker_wrapper").scrollTo({ behavior: "instant", left: 360})
     document.getElementById("week_picker_wrapper").addEventListener("scroll", handleScroll);
@@ -184,7 +276,7 @@ const TasksPage = () => {
       <div className="top_nav">
         <div className="div1">
           <svg className="fillcolor-accent" xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#5f6368"><path d="M120-240v-80h720v80H120Zm0-200v-80h720v80H120Zm0-200v-80h720v80H120Z"/></svg>
-          <h4 className="color-accent">Today, June</h4>
+          <h4 className="color-accent">Today, <span id="monthText">June</span></h4>
         </div>
         <div className="div2">
           <svg className="fillcolor-accent" xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#5f6368"><path d="M200-280q-33 0-56.5-23.5T120-360v-240q0-33 23.5-56.5T200-680h560q33 0 56.5 23.5T840-600v240q0 33-23.5 56.5T760-280H200Zm0-80h560v-240H200v240Zm-41-400q-17 0-28-11.5T120-800q0-17 11.5-28.5T160-840h641q17 0 28 11.5t11 28.5q0 17-11.5 28.5T800-760H159Zm0 640q-17 0-28-11.5T120-160q0-17 11.5-28.5T160-200h641q17 0 28 11.5t11 28.5q0 17-11.5 28.5T800-120H159Zm41-480v240-240Z"/></svg>
@@ -254,7 +346,7 @@ const TasksPage = () => {
         </div>
         <div id="active" className="week_picker">
           <div className="flex_container">
-            <div className="week_day" data-date={activeWeekDays()[0].getFullYear()+"-"+(activeWeekDays()[0].getMonth())+"-"+activeWeekDays()[0].getDate()}>
+            <div onClick={selectDay} className="week_day" data-date={activeWeekDays()[0].getFullYear()+"-"+(activeWeekDays()[0].getMonth())+"-"+activeWeekDays()[0].getDate()}>
               <div className="day_name">  
                 <p className="text-14-semibold color-accent">S</p>
               </div>
@@ -262,7 +354,7 @@ const TasksPage = () => {
                 <p className="text-14-medium color-accent">{activeWeekDays()[0].getDate()}</p>
               </div>
             </div>
-            <div className="week_day today" data-date={activeWeekDays()[1].getFullYear()+"-"+(activeWeekDays()[1].getMonth())+"-"+activeWeekDays()[1].getDate()}>
+            <div onClick={selectDay} className="week_day today" data-date={activeWeekDays()[1].getFullYear()+"-"+(activeWeekDays()[1].getMonth())+"-"+activeWeekDays()[1].getDate()}>
               <div className="day_name">  
                 <p className="text-14-semibold color-accent">M</p>
               </div>
@@ -270,7 +362,7 @@ const TasksPage = () => {
                 <p className="text-14-medium color-accent">{activeWeekDays()[1].getDate()}</p>
               </div>
             </div>
-            <div className="week_day" data-date={activeWeekDays()[2].getFullYear()+"-"+(activeWeekDays()[2].getMonth())+"-"+activeWeekDays()[2].getDate()}>
+            <div onClick={selectDay} className="week_day" data-date={activeWeekDays()[2].getFullYear()+"-"+(activeWeekDays()[2].getMonth())+"-"+activeWeekDays()[2].getDate()}>
               <div className="day_name">  
                 <p className="text-14-semibold color-accent">T</p>
               </div>
@@ -278,7 +370,7 @@ const TasksPage = () => {
                 <p className="text-14-medium color-accent">{activeWeekDays()[2].getDate()}</p>
               </div>
             </div>
-            <div className="week_day" data-date={activeWeekDays()[3].getFullYear()+"-"+(activeWeekDays()[3].getMonth())+"-"+activeWeekDays()[3].getDate()}>
+            <div onClick={selectDay} className="week_day" data-date={activeWeekDays()[3].getFullYear()+"-"+(activeWeekDays()[3].getMonth())+"-"+activeWeekDays()[3].getDate()}>
               <div className="day_name">  
                 <p className="text-14-semibold color-accent">W</p>
               </div>
@@ -286,7 +378,7 @@ const TasksPage = () => {
                 <p className="text-14-medium color-accent">{activeWeekDays()[3].getDate()}</p>
               </div>
             </div>
-            <div className="week_day" data-date={activeWeekDays()[4].getFullYear()+"-"+(activeWeekDays()[4].getMonth())+"-"+activeWeekDays()[4].getDate()}>
+            <div onClick={selectDay} className="week_day" data-date={activeWeekDays()[4].getFullYear()+"-"+(activeWeekDays()[4].getMonth())+"-"+activeWeekDays()[4].getDate()}>
               <div className="day_name">  
                 <p className="text-14-semibold color-accent">T</p>
               </div>
@@ -294,7 +386,7 @@ const TasksPage = () => {
                 <p className="text-14-medium color-accent">{activeWeekDays()[4].getDate()}</p>
               </div>
             </div>
-            <div className="week_day" data-date={activeWeekDays()[5].getFullYear()+"-"+(activeWeekDays()[5].getMonth())+"-"+activeWeekDays()[5].getDate()}>
+            <div onClick={selectDay} className="week_day" data-date={activeWeekDays()[5].getFullYear()+"-"+(activeWeekDays()[5].getMonth())+"-"+activeWeekDays()[5].getDate()}>
               <div className="day_name">  
                 <p className="text-14-semibold color-accent">F</p>
               </div>
@@ -302,7 +394,7 @@ const TasksPage = () => {
                 <p className="text-14-medium color-accent">{activeWeekDays()[5].getDate()}</p>
               </div>
             </div>
-            <div className="week_day" data-date={activeWeekDays()[6].getFullYear()+"-"+(activeWeekDays()[6].getMonth())+"-"+activeWeekDays()[6].getDate()}>
+            <div onClick={selectDay} className="week_day" data-date={activeWeekDays()[6].getFullYear()+"-"+(activeWeekDays()[6].getMonth())+"-"+activeWeekDays()[6].getDate()}>
               <div className="day_name">  
                 <p className="text-14-semibold color-accent">S</p>
               </div>
@@ -374,7 +466,8 @@ const TasksPage = () => {
         </div>
       </div>
       <div className="main">
-        {collections && collections.map(collection => {
+        {collections && collections.map((collection, i) => {
+          console.log(i, collection);
           return (
           <div key={collection._id} className="container bgcolor-white">
             <div onClick={expandCollection} className="top_section">
@@ -389,7 +482,14 @@ const TasksPage = () => {
             </div>
             {collection.tasks && collection.tasks.map(task => {
               return (
-                <div key={task._id} className="task">
+                <div key={task._id} onClick={openTask} className="task">
+                  <div onClick={closeTask} id="eventCreateModel" className="event_create_model">
+                    <div className="content">
+                      <div className="scroll">
+                        <h3 className="color-accent">{task.title}</h3>
+                      </div>
+                    </div>
+                  </div>
                   <div className="div1">
                     <svg className="fillcolor-accent" xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#5f6368"><path d="M216-144q-29.7 0-50.85-21.5Q144-187 144-216v-528q0-29 21.15-50.5T216-816h528q29.7 0 50.85 21.5Q816-773 816-744v528q0 29-21.15 50.5T744-144H216Zm0-72h528v-528H216v528Zm0 0v-528 528Zm84-72h360.19Q671-288 676-298t-2-19L566-461q-5.25-8-14-8t-14 8l-94 125-58-77q-5.25-8-14-8t-14 8l-71.82 96.03Q279-308 284.25-298q5.25 10 15.75 10Z"/></svg>
                     <p className="text-14-medium color-accent">{task.title} {task._id}</p>
@@ -399,9 +499,32 @@ const TasksPage = () => {
             })}
           </div>)
         })}
-        <button onClick={createTask1}>CREATE</button>
-        <button onClick={createTask2}>CREATE</button>
-        <button onClick={createTask3}>CREATE</button>
+        <form id="taskForm" onSubmit={handleTask}>
+          Create Task
+          title<input name="title"/><br/>
+          {collections.map((collection, i) => {
+            if(i === 0) {
+              return (
+                <div>
+                  <input type="radio" name="collection" value={collection._id} defaultChecked/>
+                  <label>{collection.name}</label>
+                </div>
+              )
+            } else {
+              return (
+                <div>
+                  <input type="radio" name="collection" value={collection._id}/>
+                  <label>{collection.name}</label>
+                </div>
+              )
+            }
+          })}
+          
+        </form>
+        <form id="collectionForm" onSubmit={handleCollection}>
+          Create Collection
+          name<input name="name" />
+        </form>
       </div>
     </div>
   )

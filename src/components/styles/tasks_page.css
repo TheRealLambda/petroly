@@ -148,6 +148,30 @@
   flex-shrink: 0;
   /* tex */
 }
+.tasks_page .event_create_model {
+  z-index: 2;
+  pointer-events: all;
+  display: none;
+  position: fixed;
+  top: 0px;
+  left: 50%;
+  transform: translateX(-50%);
+  overflow-y: scroll;
+  scrollbar-width: none;
+  width: 360px;
+  height: 640px;
+  background-color: rgba(0, 0, 0, 0.3);
+}
+.tasks_page .event_create_model .content {
+  margin-top: auto;
+  position: absolute;
+  background-color: #DDECF7;
+  border-top-left-radius: 20px;
+  border-top-right-radius: 20px;
+  width: 100%;
+  height: 100%;
+  margin-top: 640px;
+}
 .tasks_page .container .task .div1 {
   display: flex;
   justify-content: start;

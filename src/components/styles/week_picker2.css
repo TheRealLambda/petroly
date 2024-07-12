@@ -29,6 +29,14 @@
   flex-direction: column;
   align-items: center
 }
+.tasks_page .week_picker .flex_container .week_day.chosen_day div.day_number{
+  background-color: #00A36C;
+  color: #F0F6FB;
+  border-radius: 30px;
+}
+.tasks_page .week_picker .flex_container .week_day.chosen_day div.day_number p{
+  color: #F0F6FB;
+}
 .tasks_page .week_picker .flex_container .week_day div {
   display: flex;
   justify-content: center;
