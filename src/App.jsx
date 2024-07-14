@@ -1,5 +1,6 @@
 import "./app.css"
 import ClassPage from "./components/ClassPage.jsx"
+import CoursesPage from "./components/CoursesPage.jsx"
 import DiscoverPage from "./components/DiscoverPage.jsx"
 import HomePage from "./components/HomePage.jsx"
 import NavBar from "./components/NavBar.jsx"
@@ -16,6 +17,7 @@ function App() {
         <Routes>
           <Route path="/home" element={<HomePage/>} />
           <Route path="/schedule" element={<SchedulePage/>} />
+          <Route path="/schedule/courses" element={<CoursesPage/>} />
           <Route path="/discover" element={<DiscoverPage/>} />
           <Route path="/tasks" element={<TasksPage/>} />
           <Route path="/class" element={<ClassPage/>} />
