@@ -1,7 +1,16 @@
 import axios from "axios"
 import "./styles/courses_page.css"
+import { useState } from "react"
+import { useEffect } from "react"
 
 const CoursesPage = () => {
+
+  const [terms, setTerms] = useState([])
+  const [courses, setCourses] = useState([])
+
+  useEffect(() => {
+    axios.get("http://localhost:3001/api/terms").then(result => setTerms(result.data))
+  }, [])
 
   const handleForm = (e) => {
     e.preventDefault()
@@ -226,21 +235,75 @@ const CoursesPage = () => {
     const result = await axios.post("http://localhost:3001/api/events/delete", {crn: course[0].crn})
   }
 
+  const handleCourse = async (e) => {
+    e.preventDefault()
+    const form = e.currentTarget
+    const course_term = form.elements["course_term"].value
+    const course_name = form.elements["course_name"].value
+    const course_type = form.elements["course_type"].value
+    const course_crn = form.elements["course_crn"].value
+    const course_instructor = form.elements["course_instructor"].value
+    const course_days = form.elements["course_days"].value
+    const course_time = form.elements["course_time"].value
+    const course_location = form.elements["course_location"].value
+    const course = {
+      course_term, course_name, course_type, course_crn, course_instructor, course_days, course_time, course_location
+    }
+    // const result = await axios.post("http://localhost:3001/api/courses", course)
+    const result = await axios.get("http://localhost:3001/api/courses")
+    console.log(result.data);
+  }
+
+  const handleTerm = async (e) => {
+    // e.preventDefault()
+    console.log("http://localhost:3001/api/courses?term="+e.currentTarget.value);
+    const result = await axios.get("http://localhost:3001/api/courses?term="+e.currentTarget.value)
+    setCourses(result.data)
+  }
+
+  const handleNewForm = async (e) => {
+    e.preventDefault()
+    const form = e.currentTarget
+    const course = form.elements["course"].value
+    console.log(course);
+    const result = await axios.post("http://localhost:3001/api/events/bulk", {course_id: course})
+    console.log(result);
+  }
+
   return (
     <div className="courses_page">
-      <form onSubmit={handleForm} id="courseForm">
-        <input type="radio" name="term" value="232" />232
-        <input type="radio" name="term" value="233" />233
-        <input type="radio" name="term" value="241" defaultChecked/>241
+      <form onSubmit={handleNewForm} id="courseForm">
+        <select name="term" onChange={handleTerm}>
+          {terms && terms.map(term => {
+            return (
+              <option value={term.term_number}>{term.term_number}</option>
+            )
+          })}
+        </select>
         <br/>
         <select name="course">
-          <option value="phys">phys</option>
-          <option value="chem">chem</option>
-          <option value="english">english</option>
-          <option value="math">math</option>
+          {courses && courses.map(course => {
+            return (
+              <option value={course._id}>{course.course_name}</option>
+            )
+          })}
         </select>
-        <button onClick={handleDelete}>DELETE</button>
+        {/* <button onClick={handleDelete}>DELETE</button> */}
         <button type="submit">ADD</button>
+      </form>
+      <br/>
+      <hr/>
+      <br/>
+      <form onSubmit={handleCourse}>
+        course_term<input name="course_term" /><br/>
+        course_name<input name="course_name" /><br/>
+        course_type<input name="course_type" /><br/>
+        course_crn<input name="course_crn" /><br/>
+        course_instructor<input name="course_instructor" /><br/>
+        course_days<input name="course_days" /><br/>
+        course_time<input name="course_time" /><br/>
+        course_location<input name="course_location" /><br/>
+        <button type="submit">CLICK</button>
       </form>
     </div>
   )

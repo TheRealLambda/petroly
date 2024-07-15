@@ -77,6 +77,7 @@ const SchedulePage = () => {
           if(temp.getTime() === dayDate.getTime()) {
             // console.log("DAY FOUND!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
             const newDiv = document.createElement("div")
+            newDiv.innerText = event.title
             newDiv.classList.add("event_create")
             newDiv.classList.add("testingHAHA")
             newDiv.style.top = (eventDate.getHours()+eventDate.getMinutes()/60)*75+"px"
