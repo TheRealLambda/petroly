@@ -5,6 +5,7 @@ import "./styles/schedule_page.css"
 import TimeTable from "./TimeTable"
 import { useEffect, useState } from "react"
 import axios from "axios"
+import CreateEventForm from "./CreateEventForm"
 
 const SchedulePage = () => {
 
@@ -125,9 +126,7 @@ const SchedulePage = () => {
       <div onClick={hideSideMenu} id="menu_cover"></div>
       <div id="eventCreateModel" className="event_create_model">
         <div className="content">
-          <div className="scroll">
-            <button onClick={postEvent}>Create</button>
-          </div>
+          <CreateEventForm />
         </div>
       </div>
       <NavBar />

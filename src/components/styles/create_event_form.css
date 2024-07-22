@@ -1,0 +1,111 @@
+.create_event_form {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.create_event_form .drag_indicator {
+  width: 55px;
+  height: 3px;
+  border-radius: 3px;
+  position: absolute;
+  top: 10px;
+  left: 0;
+  right: 0;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.create_event_form .container {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+}
+.create_event_form .container .left {
+  width: 60px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+}
+.create_event_form .container .middle {
+  width: 220px;
+}
+.create_event_form .container .right {
+  width: 80px;
+  display: flex;
+  justify-content: end;
+}
+.create_event_form .separator {
+  width: 100%;
+  height: 2px;
+  background-color: #02304719
+}
+
+.create_event_form .container .left .close_button {
+  margin-top: 20px;
+
+}
+.create_event_form .container .left .color_picker {
+  margin-top: 23px;
+  width: 16px;
+  height: 16px;
+  background-color: orange;
+  border-radius: 8px;
+}
+.create_event_form .container .middle .title {
+  margin-top: 60px;
+  background-color: rgba(0,0,0,0);
+  outline: none;
+  border: none;
+}
+.create_event_form .container .middle .title::placeholder {
+  color: #023047;
+  opacity: 0.8;
+}
+.create_event_form .container .middle .event_type_container {
+  margin-top: 30px;
+  display: flex;
+  gap: 10px;
+}
+.create_event_form .container .middle .event_type_container .event_type {
+  width: 60px;
+  height: 30px;
+  border-radius: 10px;
+  border: 2px solid #0230474c;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: #023047cc
+}
+.create_event_form .container .middle .event_type_container .event_type.chosen {
+  border: none;
+  background-color: #00a36c4c;
+}
+.create_event_form .container .right .save_button {
+  width: 60px;
+  height: 30px;
+  margin-right: 10px;
+  margin-top: 20px;
+  border-radius: 15px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.create_event_form .container .left .time {
+  opacity: 0.8;
+}
+.create_event_form .container .left .repeat {
+  opacity: 0.8;
+  margin-top: 123px;
+}
+.create_event_form .container .middle .time {
+  opacity: 0.8;
+  margin-top: 3px;
+}
+.create_event_form .container .middle .time_and_repeat {
+  opacity: 0.8;
+  margin-top: 30px;
+}
