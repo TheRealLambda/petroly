@@ -35,7 +35,8 @@
 .create_event_form .container .right {
   width: 80px;
   display: flex;
-  justify-content: end;
+  flex-direction: column;
+  align-items: end;
 }
 .create_event_form .separator {
   width: 100%;
@@ -108,4 +109,38 @@
 .create_event_form .container .middle .time_and_repeat {
   opacity: 0.8;
   margin-top: 30px;
+}
+.create_event_form .container .right .time_number1 {
+  opacity: 0.8;
+  margin-top: 52px;
+  margin-right: 10px;
+}
+.create_event_form .container .right .time_number2 {
+  opacity: 0.8;
+  margin-top: 30px;
+  margin-right: 10px;
+}
+
+.create_event_form .container .left .reminder {
+  opacity: 0.8;
+}
+.create_event_form .container .middle .reminder {
+  opacity: 0.8;
+  margin-top: 3px;
+}
+
+.create_event_form .container .left .description {
+  opacity: 0.8;
+}
+.create_event_form .container .middle .description {
+  opacity: 0.8;
+  margin-top: 3px;
+}
+
+.create_event_form .container .left .attachment {
+  opacity: 0.8;
+}
+.create_event_form .container .middle .attachment {
+  opacity: 0.8;
+  margin-top: 3px;
 }

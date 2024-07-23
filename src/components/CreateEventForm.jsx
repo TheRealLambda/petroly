@@ -33,6 +33,39 @@ const CreateEventForm = () => {
           <p className="time_and_repeat text-16-regular color-accent">Mon, 12 Jul 2024</p>
           <p className="time_and_repeat text-16-regular color-accent">Does not repeat</p>
         </div>
+        <div className="right">
+          <p className="time_number1 text-16-regular color-accent">16:00</p>
+          <p className="time_number2 text-16-regular color-accent">17:00</p>
+        </div>
+      </div>
+      <div className="separator"></div>
+      <div className="container">
+        <div className="left">
+          <svg className="fillcolor-accent reminder" xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#5f6368"><path d="M200-200q-17 0-28.5-11.5T160-240q0-17 11.5-28.5T200-280h40v-280q0-83 50-147.5T420-792v-28q0-25 17.5-42.5T480-880q25 0 42.5 17.5T540-820v28q80 20 130 84.5T720-560v280h40q17 0 28.5 11.5T800-240q0 17-11.5 28.5T760-200H200Zm280-300Zm0 420q-33 0-56.5-23.5T400-160h160q0 33-23.5 56.5T480-80ZM320-280h320v-280q0-66-47-113t-113-47q-66 0-113 47t-47 113v280Z"/></svg>
+        </div>
+        <div className="middle">
+          <p className="reminder text-16-regular color-accent">Add reminder</p>
+        </div>
+        <div className="right"></div>
+      </div>
+      <div className="separator"></div>
+      <div className="container">
+        <div className="left">
+          <svg className="fillcolor-accent description" xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#5f6368"><path d="M160-240q-17 0-28.5-11.5T120-280q0-17 11.5-28.5T160-320h400q17 0 28.5 11.5T600-280q0 17-11.5 28.5T560-240H160Zm0-200q-17 0-28.5-11.5T120-480q0-17 11.5-28.5T160-520h640q17 0 28.5 11.5T840-480q0 17-11.5 28.5T800-440H160Zm0-200q-17 0-28.5-11.5T120-680q0-17 11.5-28.5T160-720h640q17 0 28.5 11.5T840-680q0 17-11.5 28.5T800-640H160Z"/></svg>
+        </div>
+        <div className="middle">
+          <p className="description text-16-regular color-accent">Add description</p>
+        </div>
+        <div className="right"></div>
+      </div>
+      <div className="separator"></div>
+      <div className="container">
+        <div className="left">
+          <svg className="attachment fillcolor-accent" xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#5f6368"><path d="M720-330q0 104-73 177T470-80q-104 0-177-73t-73-177v-370q0-75 52.5-127.5T400-880q75 0 127.5 52.5T580-700v350q0 46-32 78t-78 32q-46 0-78-32t-32-78v-330q0-17 11.5-28.5T400-720q17 0 28.5 11.5T440-680v330q0 13 8.5 21.5T470-320q13 0 21.5-8.5T500-350v-350q-1-42-29.5-71T400-800q-42 0-71 29t-29 71v370q-1 71 49 120.5T470-160q70 0 119-49.5T640-330v-350q0-17 11.5-28.5T680-720q17 0 28.5 11.5T720-680v350Z"/></svg>
+        </div>
+        <div className="middle">
+          <p className="attachment text-16-regular color-accent">Add attachment</p>
+        </div>
         <div className="right"></div>
       </div>
     </div>
