@@ -2,7 +2,7 @@ import { useCallback, useEffect } from "react"
 import "./styles/week_picker.css"
 import axios from "axios"
 
-const WeekPicker = ({ week, setWeek }) => {
+const WeekPicker = ({ week, setWeek, setEventModalId }) => {
   const handleScroll = (event) => {
     const first = document.getElementById("first")
     const offsetLeft = first.getBoundingClientRect().left-document.getElementsByClassName("schedule_page")[0].offsetLeft
@@ -58,6 +58,7 @@ const WeekPicker = ({ week, setWeek }) => {
             // console.log("DAY FOUND!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
             const newDiv = document.createElement("div")
             newDiv.innerText = event.title
+            // newDiv.setAttribute("data-id", event._id)
             newDiv.classList.add("event_create")
             newDiv.classList.add("testingHAHA")
             newDiv.style.top = (eventDate.getHours()+eventDate.getMinutes()/60)*75+"px"
@@ -70,10 +71,51 @@ const WeekPicker = ({ week, setWeek }) => {
             newDiv.style.height = height+"px"
             newDiv.style.display = "block"
             // console.log(document.querySelectorAll("#div2_wrapper .div2")[1]);
+            newDiv.addEventListener("click", (e) => {
+              setEventModalId({id: event._id, edit: false})
+              document.getElementById("eventCreateModel").scrollTo({top: 640, behavior: "smooth"})
+              document.getElementById("eventCreate").style.display = "none"
+            })
             document.querySelectorAll("#div2_wrapper .div2")[i].appendChild(newDiv)
           }
         })
       })
+    })
+    let timeout = null
+    const test = (e) => {
+      const modal = document.getElementById("eventCreateModel")
+      if(timeout !== null) {
+        clearTimeout(timeout)
+      }
+      timeout = setTimeout(()=>{
+        console.log("SCROLLING");
+        modal.removeEventListener("scroll", test)
+        if(modal.firstElementChild.getBoundingClientRect().top > 300 && modal.firstElementChild.getBoundingClientRect().top < 600) {  
+          modal.scrollTo({top: 100, behavior: "smooth"})
+        } else if (modal.firstElementChild.getBoundingClientRect().top < 400) {
+          modal.scrollTo({top: 640, behavior: "smooth"})
+        } else if (modal.firstElementChild.getBoundingClientRect().top > 600) {
+          console.log("REMOVE MODAL");
+          modal.scrollTo({top: 0, behavior: "instant"})
+          // tempEvent.style.display = "none"
+        }
+        modal.addEventListener("scroll", test)
+      }, 100)
+    }
+    const tempEventClickFunc = (e) => {
+            // e.currentTarget.style.backgroundColor = "red"
+            const modal = document.getElementById("eventCreateModel")
+            modal.style.display = "block"
+            modal.scrollTo({top: 640, behavior: "smooth"})
+            
+            modal.removeEventListener("Scroll", test)
+            modal.addEventListener("scroll", test)
+  
+    }
+    Array.from(document.getElementsByClassName("event_create")).forEach(div => {
+      // console.log(div);
+      div.removeEventListener("click", tempEventClickFunc)
+      div.addEventListener("click", tempEventClickFunc)
     })
   }
 
@@ -98,6 +140,8 @@ const WeekPicker = ({ week, setWeek }) => {
     resetSchedule()
     document.getElementById("week_picker_wrapper").addEventListener("scroll", handleScroll);
     
+    
+
     return () => {
       if(document.getElementById("week_picker_wrapper")) {
         document.getElementById("week_picker_wrapper").removeEventListener("scroll", handleScroll)

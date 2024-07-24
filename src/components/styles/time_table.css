@@ -112,7 +112,7 @@
 .schedule_page .event_create_model {
   z-index: 2;
   pointer-events: none;
-  display: none;
+  /* display: none; */
   position: absolute;
   overflow-y: scroll;
   scrollbar-width: none;

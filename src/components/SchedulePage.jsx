@@ -6,6 +6,8 @@ import TimeTable from "./TimeTable"
 import { useEffect, useState } from "react"
 import axios from "axios"
 import CreateEventForm from "./CreateEventForm"
+import ShowEventForm from "./ShowEventForm"
+import EditEventForm from "./EditEventForm"
 
 const SchedulePage = () => {
 
@@ -21,6 +23,8 @@ const SchedulePage = () => {
   // console.log(onejan.getDay());
 
   const [week, setWeek] = useState(week1)
+  const [eventModalId, setEventModalId] = useState({id: "", edit: false})
+
   console.log("[week]", week);
   const hideSideMenu = (event) =>{
     const page = document.getElementsByClassName("schedule_page")[0]
@@ -121,18 +125,21 @@ const SchedulePage = () => {
     // div2.addEventListener("scroll", handleScroll2)
   }, [])
 
+  console.log(eventModalId);
   return (
     <div className="schedule_page">
       <div onClick={hideSideMenu} id="menu_cover"></div>
       <div id="eventCreateModel" className="event_create_model">
         <div className="content">
-          <CreateEventForm />
+          {!eventModalId.id  && <CreateEventForm />}
+          {eventModalId.id && !eventModalId.edit && <ShowEventForm eventModalId={eventModalId} />}
+          {eventModalId.id && eventModalId.edit && <EditEventForm id={eventModalId.id} />}
         </div>
       </div>
       <NavBar />
       <MenuBar />
-      <WeekPicker week={week} setWeek={setWeek} />
-      <TimeTable week={week} setWeek={setWeek} />
+      <WeekPicker week={week} setWeek={setWeek} setEventModalId={setEventModalId}/>
+      <TimeTable week={week} setWeek={setWeek} setEventModalId={setEventModalId} />
     </div>
   )
 }

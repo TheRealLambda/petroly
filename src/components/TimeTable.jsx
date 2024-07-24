@@ -1,7 +1,7 @@
 import { useEffect } from "react"
 import "./styles/time_table.css"
 import axios from "axios"
-const TimeTable = ({ page, setPage }) => {
+const TimeTable = ({ setEventModalId }) => {
 
 
   useEffect(() => {
@@ -68,6 +68,9 @@ const TimeTable = ({ page, setPage }) => {
     }
 
     const clickFunc = (event) => {
+      if(!event.target.classList.contains("testingHAHA")) {
+        setEventModalId({id: "", edit: false})
+      }
       // console.log(event.target.classList.length);
       if(event.target.classList.length === 0) {
         const [tempEvent, topSlider, bottomSlider] = createEventDiv(event.target, event.target.parentNode)
@@ -194,6 +197,11 @@ const TimeTable = ({ page, setPage }) => {
         }
         tempEvent.removeEventListener("click", tempEventClickFunc)
         tempEvent.addEventListener("click", tempEventClickFunc)
+        // Array.from(document.getElementsByClassName("event_create")).forEach(div => {
+        //   console.log("LOOOOOOOOOOOOOOOOOOOOOOOOOOOoo");
+        //   div.removeEventListener("click", tempEventClickFunc)
+        //   div.addEventListener("click", tempEventClickFunc)
+        // })
         
         tempEvent.addEventListener("pointerdown", (e)=> {
           const temp = (e.clientY - grid.getBoundingClientRect().top) - tempEvent.offsetTop
