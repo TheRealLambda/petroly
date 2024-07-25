@@ -132,13 +132,13 @@ const SchedulePage = () => {
       <div id="eventCreateModel" className="event_create_model">
         <div className="content">
           {!eventModalId.id  && <CreateEventForm />}
-          {eventModalId.id && !eventModalId.edit && <ShowEventForm eventModalId={eventModalId} />}
-          {eventModalId.id && eventModalId.edit && <EditEventForm id={eventModalId.id} />}
+          {eventModalId.id && !eventModalId.edit && <ShowEventForm eventModalId={eventModalId} setEventModalId={setEventModalId} />}
+          {eventModalId.id && eventModalId.edit && <EditEventForm id={eventModalId.id} setEventModalId={setEventModalId} />}
         </div>
       </div>
       <NavBar />
       <MenuBar />
-      <WeekPicker week={week} setWeek={setWeek} setEventModalId={setEventModalId}/>
+      <WeekPicker week={week} setWeek={setWeek} setEventModalId={setEventModalId} />
       <TimeTable week={week} setWeek={setWeek} setEventModalId={setEventModalId} />
     </div>
   )

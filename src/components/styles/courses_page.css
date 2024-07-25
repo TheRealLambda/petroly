@@ -9,13 +9,208 @@
 
 }
 
-.courses.side_menu_open {
-  zoom: 0.85;
-  margin-left: 305px;
-  margin-top: 50px;
+.courses_page .search_modal_container {
+  pointer-events: none;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 360px;
+  height: 640px;
+  overflow-y: scroll;
+  scrollbar-width: none;
+  scroll-snap-type: y mandatory;
+  transition: background-color 0.2s ease-out;
+}
+.courses_page .search_modal_container.open {
+  background-color: #0230477f;
+}
+.courses_page .doll_modal {
+  width: 360px;
+  height: 640px;
+  scroll-snap-align: start;
+}
+.courses_page .search_modal {
+  pointer-events: all;
+  scroll-snap-align: start;
+  overflow: auto;
+  width: 360px;
+  height: 640px;
+  border-top-left-radius: 20px;
+  border-top-right-radius: 20px;
+}
+
+.courses_page .search_modal .drag_indicator {
+  position: absolute;
+  width: 55px;
+  height: 3px;
+  margin-top: 10px;
+  border-radius: 2;
+  left: 0;
+  right: 0;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.courses_page .search_modal .search_field {
+  position: relative;
+  width: 340px;
+  height: 40px;
+  margin: 40px 10px;
+  margin-bottom: 0px;
+  border-radius: 20px;
+}
+.courses_page .search_modal .search_field input {
+  border: none;
+  outline: none;
+  color: #023047cc;
+  background-color: rgba(0,0,0,0);
+  width: 100%;
+  height: 100%;
+  /* margin-left: 20px; */
+  padding-left: 20px;
+  padding-right: 44px;
+
+}
+.courses_page .search_modal .search_field input::placeholder {
+  font-size: 14px;
+  color: #0230477f
+}
+.courses_page .search_modal .search_field svg{
+  fill: #0230477f;
+  position: absolute;
+  margin-right: 10px;
+  margin-top: 8px;
+  right: 0px;
+}
+
+.courses_page .search_modal .options {
+  margin: 10px;
+  margin-bottom: 0px;
+  width: 340px;
+  display: flex;
+  gap: 10px;
+}
+.courses_page .search_modal .options .term_option {
+  width: 100px;
+  height: 40px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 10px;
+}
+.courses_page .search_modal .options .department_option {
+  width: 230px;
+  height: 40px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 10px;
+}
+.courses_page .search_modal .options .text {
+  display: flex;
+  align-items: center;
+}
+.courses_page .search_modal .options .text svg {
+  fill: #023047cc;
+}
+.courses_page .search_modal .options .text p {
+  color: #023047cc;
+}
+
+.courses_page .search_modal .separator {
+  width: 100%;
+  height: 2px;
+  opacity: 0.2;
+  margin: 20px 0px;
+}
+
+.courses_page .search_modal .list {
+  margin: 20px 10px;
+  margin-bottom: 0px;
+  width: 340px;
+  height: 468px;
+  overflow-y: scroll;
+  scrollbar-width: none;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+.courses_page .search_modal .list div {
+  flex-shrink: 0;
+  width: 340px;
+  height: 85px;
   border-radius: 20px;
 }
 
-.courses::-webkit-scrollbar {
-  display: none;
+.courses_page .top {
+  display: flex;
+  justify-content: space-between;
+  margin: 20px 10px;
+  margin-bottom: 0px;
+}
+.courses_page .top div {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.courses_page .header {
+  margin-top: 30px;
+  margin-left: 10px;
+}
+
+.courses_page .terms {
+  margin: 30px 10px;
+  margin-bottom: 0px;
+  width: 340px;
+  overflow-x: scroll;
+  scrollbar-width: none;
+  display: flex;
+  gap: 10px;
+}
+.courses_page .terms div {
+  flex-shrink: 0;
+  width: 64px;
+  height: 32px;
+  border-radius: 16px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.courses_page .terms div.chosen {
+  background-color: #00a36c;
+  color: #f0f6fb
+}
+
+.courses_page .courses {
+  margin: 20px 10px;
+  margin-bottom: 0px;
+  width: 340px;
+  height: 355px;
+  overflow-y: scroll;
+  scrollbar-width: none;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+.courses_page .courses div {
+  flex-shrink: 0;
+  width: 340px;
+  height: 85px;
+  border-radius: 20px;
+}
+
+.courses_page .add_button {
+  margin: 10px;
+  margin-bottom: 0px;
+  width: 340px;
+  height: 50px;
+  border-radius: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px; 
 }
