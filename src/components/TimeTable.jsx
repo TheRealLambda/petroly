@@ -1,7 +1,7 @@
 import { useEffect } from "react"
 import "./styles/time_table.css"
 import axios from "axios"
-const TimeTable = ({ setEventModalId }) => {
+const TimeTable = ({ setEventModalId, setStartDate, setEndDate }) => {
 
 
   useEffect(() => {
@@ -64,6 +64,9 @@ const TimeTable = ({ setEventModalId }) => {
       newDiv.style.display = "block"
       grid.appendChild(newDiv)
 
+      setStartDate(startDateee)
+      setEndDate(endDateee)
+
       return [newDiv, topSlider, bottomSlider]
     }
 
@@ -110,6 +113,9 @@ const TimeTable = ({ setEventModalId }) => {
           newDateEnd.setHours(hourEnd, minuteEnd)
           tempEvent.setAttribute("data-end", newDateEnd)
           // console.log(tempEvent.getAttribute("data-end"));
+
+          setStartDate(newDate)
+          setEndDate(newDateEnd)
         }
         const slideDown = (e) => {
           const mouseY = e.clientY-e.currentTarget.getBoundingClientRect().top
@@ -129,6 +135,8 @@ const TimeTable = ({ setEventModalId }) => {
           } else {
             tempEvent.style.height = mappedMouseY-tempEventY+"px"
           }
+
+          setEndDate(newDate)
         }
         let initTopOffset;
         const moveTempEvent = (e) => {
@@ -161,6 +169,9 @@ const TimeTable = ({ setEventModalId }) => {
           tempEvent.setAttribute("data-end", newDateEnd)
           // console.log(tempEvent.getAttribute("data-end"));
           // console.log(yEnd);
+
+          setStartDate(newDateStart)
+          setEndDate(newDateEnd)
         }
 
 

@@ -1,24 +1,44 @@
+import { useState } from "react"
 import "./styles/create_event_form.css"
+import axios from "axios"
 
-const CreateEventForm = () => {
+const CreateEventForm = ({ startDate, setStartDate, endDate, setEndDate}) => {
 
+  const [color, setColor] = useState("#0000000")
+  const [title, setTitle] = useState("")
+  const [repeat, setRepeat] = useState(false)
+  const [reminders, setReminders] = useState([])
+  const [description, setDescription] = useState("")
+  const [attachments, setAttachments] = useState([])
+
+  const postEvent = async (e) => {
+    const body = {
+      title,
+      start_time: startDate,
+      end_time: endDate,
+    }
+    const result = await axios.post("http://localhost:3001/api/events", body)
+    console.log("===============================================\n",result.data);
+  }
+
+  console.log("startDate", startDate, "\nendDate", endDate);
   return (
     <div className="create_event_form">
       <div className="drag_indicator bgcolor-accent"></div>
       <div className="container">
         <div className="left">
           <svg className="fillcolor-accent close_button" xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#5f6368"><path d="M480-424 284-228q-11 11-28 11t-28-11q-11-11-11-28t11-28l196-196-196-196q-11-11-11-28t11-28q11-11 28-11t28 11l196 196 196-196q11-11 28-11t28 11q11 11 11 28t-11 28L536-480l196 196q11 11 11 28t-11 28q-11 11-28 11t-28-11L480-424Z"/></svg>
-          <div className="color_picker"></div>
+          <input onChange={(e)=>setColor(e.target.value)} type="color" className="color_picker"></input>
         </div>
         <div className="middle">
-          <input type="text" className="title text-24-regular color-accent" placeholder="Add title" />
+          <input onChange={(e)=>setTitle(e.target.value)} type="text" className="title text-24-regular color-accent" placeholder="Add title" />
           <div className="event_type_container">
             <div className="text-14-medium event_type chosen">Event</div>
             <div className="text-14-medium event_type">Task</div>
           </div>
         </div>
         <div className="right">
-          <div className="save_button bgcolor-primary color-white text-14-medium">Save</div>
+          <div onClick={postEvent} className="save_button bgcolor-primary color-white text-14-medium">Save</div>
         </div>
       </div>
       <div className="separator"></div>
@@ -29,8 +49,8 @@ const CreateEventForm = () => {
         </div>
         <div className="middle">
           <p className="time text-16-regular color-accent">Time</p>
-          <p className="time_and_repeat text-16-regular color-accent">Mon, 12 Jul 2024</p>
-          <p className="time_and_repeat text-16-regular color-accent">Mon, 12 Jul 2024</p>
+          <p className="time_and_repeat text-16-regular color-accent">{startDate.toString()}</p>
+          <p className="time_and_repeat text-16-regular color-accent">{endDate.toString()}</p>
           <p className="time_and_repeat text-16-regular color-accent">Does not repeat</p>
         </div>
         <div className="right">

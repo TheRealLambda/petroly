@@ -126,20 +126,26 @@ const SchedulePage = () => {
   }, [])
 
   console.log(eventModalId);
+
+
+  const [startDate, setStartDate] = useState(new Date())
+  const [endDate, setEndDate] = useState(new Date())
+
+
   return (
     <div className="schedule_page">
       <div onClick={hideSideMenu} id="menu_cover"></div>
       <div id="eventCreateModel" className="event_create_model">
         <div className="content">
-          {!eventModalId.id  && <CreateEventForm />}
+          {!eventModalId.id  && <CreateEventForm startDate={startDate} setStartDate={setStartDate} endDate={endDate} setEndDate={setEndDate} />}
           {eventModalId.id && !eventModalId.edit && <ShowEventForm eventModalId={eventModalId} setEventModalId={setEventModalId} />}
-          {eventModalId.id && eventModalId.edit && <EditEventForm id={eventModalId.id} setEventModalId={setEventModalId} />}
+          {eventModalId.id && eventModalId.edit && <EditEventForm eventModalId={eventModalId} setEventModalId={setEventModalId} />}
         </div>
       </div>
       <NavBar />
       <MenuBar />
       <WeekPicker week={week} setWeek={setWeek} setEventModalId={setEventModalId} />
-      <TimeTable week={week} setWeek={setWeek} setEventModalId={setEventModalId} />
+      <TimeTable week={week} setWeek={setWeek} setEventModalId={setEventModalId} setStartDate={setStartDate} setEndDate={setEndDate} />
     </div>
   )
 }
