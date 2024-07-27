@@ -5,7 +5,9 @@ import axios from "axios"
 const EditEventForm = ({ eventModalId, setEventModalId }) => {
 
   const [event, setEvent] = useState({title: "Loading"})
-  const [title, setTitle] = useState("")
+  const [showActivityForm, setShowActivityForm] = useState(false)
+  const [activityTitle, setActivityTitle] = useState("")
+  const [activityDescription, setActivityDescription] = useState("")
 
 
   useEffect(() => {
@@ -15,7 +17,19 @@ const EditEventForm = ({ eventModalId, setEventModalId }) => {
     }
     loadEvent()
   }, [eventModalId])
-  console.log(event);
+  console.log("event.course_activities.length:", event.course_activities && event.course_activities.concat({title:"a",description:"b"}).map(a=>console.log("HAHAHAHHAHAHAHAH")));
+
+  const handleActivityForm = async (e) => {
+    const body = {
+      activity: {
+        title: activityTitle,
+        description: activityDescription
+      }
+    }
+    const result = await axios.patch("http://localhost:3001/api/events/"+event._id, body)
+    console.log(result.data);
+    setShowActivityForm(false)
+  }
 
   return (
     <div className="edit_event_form">
@@ -125,17 +139,90 @@ const EditEventForm = ({ eventModalId, setEventModalId }) => {
       </div>
       <div className="separator bgcolor-accent"></div>
       <div className="block">
-        <div className="container">
-          <div className="left">
-            <svg className="fillcolor-accent opaque_1" xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#5f6368"><path d="M200-80q-50 0-85-35t-35-85q0-39 22.5-69.5T160-313v-334q-35-13-57.5-43.5T80-760q0-50 35-85t85-35q39 0 69.5 22.5T313-800h334q12-35 42.5-57.5T760-880q50 0 85 35t35 85q0 40-22.5 70.5T800-647v334q35 13 57.5 43.5T880-200q0 50-35 85t-85 35q-39 0-69.5-22.5T647-160H313q-13 35-43.5 57.5T200-80Zm0-640q17 0 28.5-11.5T240-760q0-17-11.5-28.5T200-800q-17 0-28.5 11.5T160-760q0 17 11.5 28.5T200-720Zm560 0q17 0 28.5-11.5T800-760q0-17-11.5-28.5T760-800q-17 0-28.5 11.5T720-760q0 17 11.5 28.5T760-720ZM313-240h334q9-26 28-45t45-28v-334q-26-9-45-28t-28-45H313q-9 26-28 45t-45 28v334q26 9 45 28t28 45Zm447 80q17 0 28.5-11.5T800-200q0-17-11.5-28.5T760-240q-17 0-28.5 11.5T720-200q0 17 11.5 28.5T760-160Zm-560 0q17 0 28.5-11.5T240-200q0-17-11.5-28.5T200-240q-17 0-28.5 11.5T160-200q0 17 11.5 28.5T200-160Zm0-600Zm560 0Zm0 560Zm-560 0Z"/></svg>
+        {event.course_activities ? (
+          event.course_activities.length < 1 ? (
+            <div className="container">
+              <div className="left">
+                <svg className="fillcolor-accent opaque_1" xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#5f6368"><path d="M200-80q-50 0-85-35t-35-85q0-39 22.5-69.5T160-313v-334q-35-13-57.5-43.5T80-760q0-50 35-85t85-35q39 0 69.5 22.5T313-800h334q12-35 42.5-57.5T760-880q50 0 85 35t35 85q0 40-22.5 70.5T800-647v334q35 13 57.5 43.5T880-200q0 50-35 85t-85 35q-39 0-69.5-22.5T647-160H313q-13 35-43.5 57.5T200-80Zm0-640q17 0 28.5-11.5T240-760q0-17-11.5-28.5T200-800q-17 0-28.5 11.5T160-760q0 17 11.5 28.5T200-720Zm560 0q17 0 28.5-11.5T800-760q0-17-11.5-28.5T760-800q-17 0-28.5 11.5T720-760q0 17 11.5 28.5T760-720ZM313-240h334q9-26 28-45t45-28v-334q-26-9-45-28t-28-45H313q-9 26-28 45t-45 28v334q26 9 45 28t28 45Zm447 80q17 0 28.5-11.5T800-200q0-17-11.5-28.5T760-240q-17 0-28.5 11.5T720-200q0 17 11.5 28.5T760-160Zm-560 0q17 0 28.5-11.5T240-200q0-17-11.5-28.5T200-240q-17 0-28.5 11.5T160-200q0 17 11.5 28.5T200-160Zm0-600Zm560 0Zm0 560Zm-560 0Z"/></svg>
+              </div>
+              {showActivityForm ? (
+                <div className="middle">
+                  <div className="activity_form">
+                    <input onChange={(e)=>setActivityTitle(e.target.value)} type="text" className="title" />
+                    <textarea onChange={(e)=>setActivityDescription(e.target.value)} className="description"></textarea>
+                    <button onClick={handleActivityForm}>Save</button>
+                    <button onClick={()=>setShowActivityForm(false)}>Cancel</button>
+                  </div>
+                </div>
+              ) : (
+                <div onClick={()=>setShowActivityForm(true)} className="middle">
+                  <p className="text-16-regular color-accent opaque_1">Add activity</p>
+                </div>
+              )}
+              <div className="right">
+              </div>
+            </div>
+          ) : (
+            event.course_activities.map((activity, i) => {
+              console.log("looping through course_activities");
+              if(i === 0) {
+                return (
+                  <div className="container">
+                    <div className="left">
+                      <svg className="fillcolor-accent opaque_1" xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#5f6368"><path d="M200-80q-50 0-85-35t-35-85q0-39 22.5-69.5T160-313v-334q-35-13-57.5-43.5T80-760q0-50 35-85t85-35q39 0 69.5 22.5T313-800h334q12-35 42.5-57.5T760-880q50 0 85 35t35 85q0 40-22.5 70.5T800-647v334q35 13 57.5 43.5T880-200q0 50-35 85t-85 35q-39 0-69.5-22.5T647-160H313q-13 35-43.5 57.5T200-80Zm0-640q17 0 28.5-11.5T240-760q0-17-11.5-28.5T200-800q-17 0-28.5 11.5T160-760q0 17 11.5 28.5T200-720Zm560 0q17 0 28.5-11.5T800-760q0-17-11.5-28.5T760-800q-17 0-28.5 11.5T720-760q0 17 11.5 28.5T760-720ZM313-240h334q9-26 28-45t45-28v-334q-26-9-45-28t-28-45H313q-9 26-28 45t-45 28v334q26 9 45 28t28 45Zm447 80q17 0 28.5-11.5T800-200q0-17-11.5-28.5T760-240q-17 0-28.5 11.5T720-200q0 17 11.5 28.5T760-160Zm-560 0q17 0 28.5-11.5T240-200q0-17-11.5-28.5T200-240q-17 0-28.5 11.5T160-200q0 17 11.5 28.5T200-160Zm0-600Zm560 0Zm0 560Zm-560 0Z"/></svg>
+                    </div>
+                    <div className="middle">
+                      <p className="text-16-medium color-accent">{activity.title}</p>
+                      <p className="text-14-medium color-accent">{activity.description}</p>
+                    </div>
+                    <div className="right">
+                    </div>
+                  </div>
+                )
+              } else {
+                return (
+                  <div className="container">
+                    <div className="left">
+                    </div>
+                    <div className="middle">
+                      <p className="text-16-medium color-accent">{activity.title}</p>
+                      <p className="text-14-medium color-accent">{activity.description}</p>
+                    </div>
+                    <div className="right">
+                    </div>
+                  </div>
+                )
+              }
+            })
+          )
+        ) : (
+          console.log("event.course_activities === FALSE")
+        )}
+        
+        
+        {event.course_activities && event.course_activities.length > 0 ? (
+          <div className="container">
+            <div className="left">
+            </div>
+            {showActivityForm ? (
+              <div className="middle">
+                <div className="activity_form">
+                  <input onChange={(e)=>setActivityTitle(e.target.value)} type="text" className="title" />
+                  <textarea onChange={(e)=>setActivityDescription(e.target.value)} className="description"></textarea>
+                  <button onClick={handleActivityForm}>Save</button>
+                  <button onClick={()=>setShowActivityForm(false)}>Cancel</button>
+                </div>
+              </div>
+              ) : (
+                <div onClick={()=>setShowActivityForm(true)} className="middle">
+                  <p className="text-16-regular color-accent opaque_1">Add activity</p>
+                </div>
+              )}
+            <div className="right">
+              <svg className="fillcolor-accent opaque_1" xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#5f6368"><path d="M478-240q21 0 35.5-14.5T528-290q0-21-14.5-35.5T478-340q-21 0-35.5 14.5T428-290q0 21 14.5 35.5T478-240Zm-36-154h74q0-33 7.5-52t42.5-52q26-26 41-49.5t15-56.5q0-56-41-86t-97-30q-57 0-92.5 30T342-618l66 26q5-18 22.5-39t53.5-21q32 0 48 17.5t16 38.5q0 20-12 37.5T506-526q-44 39-54 59t-10 73Zm38 314q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Zm0-80q134 0 227-93t93-227q0-134-93-227t-227-93q-134 0-227 93t-93 227q0 134 93 227t227 93Zm0-320Z"/></svg>
+            </div>
           </div>
-          <div className="middle">
-            <p className="text-16-regular color-accent opaque_1">Add activity</p>
-          </div>
-          <div className="right">
-            <svg className="fillcolor-accent opaque_1" xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#5f6368"><path d="M478-240q21 0 35.5-14.5T528-290q0-21-14.5-35.5T478-340q-21 0-35.5 14.5T428-290q0 21 14.5 35.5T478-240Zm-36-154h74q0-33 7.5-52t42.5-52q26-26 41-49.5t15-56.5q0-56-41-86t-97-30q-57 0-92.5 30T342-618l66 26q5-18 22.5-39t53.5-21q32 0 48 17.5t16 38.5q0 20-12 37.5T506-526q-44 39-54 59t-10 73Zm38 314q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Zm0-80q134 0 227-93t93-227q0-134-93-227t-227-93q-134 0-227 93t-93 227q0 134 93 227t227 93Zm0-320Z"/></svg>
-          </div>
-        </div>
+        ) : (console.log("LOL:", event.course_activities && event.course_activities.length))}
         <div className="container">
           <div className="left">
             <svg className="fillcolor-accent opaque_1" xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#5f6368"><path d="m382-354 339-339q12-12 28-12t28 12q12 12 12 28.5T777-636L410-268q-12 12-28 12t-28-12L182-440q-12-12-11.5-28.5T183-497q12-12 28.5-12t28.5 12l142 143Z"/></svg>

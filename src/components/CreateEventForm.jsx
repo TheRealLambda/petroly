@@ -16,6 +16,7 @@ const CreateEventForm = ({ startDate, setStartDate, endDate, setEndDate}) => {
       title,
       start_time: startDate,
       end_time: endDate,
+      type: "class"
     }
     const result = await axios.post("http://localhost:3001/api/events", body)
     console.log("===============================================\n",result.data);
