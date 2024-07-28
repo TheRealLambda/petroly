@@ -8,6 +8,9 @@ const EditEventForm = ({ eventModalId, setEventModalId }) => {
   const [showActivityForm, setShowActivityForm] = useState(false)
   const [activityTitle, setActivityTitle] = useState("")
   const [activityDescription, setActivityDescription] = useState("")
+  const [showTaskForm, setShowTaskForm] = useState(false)
+  const [taskTitle, setTaskTitle] = useState("")
+  const [taskDescription, setTaskDescription] = useState("")
 
 
   useEffect(() => {
@@ -26,9 +29,26 @@ const EditEventForm = ({ eventModalId, setEventModalId }) => {
         description: activityDescription
       }
     }
-    const result = await axios.patch("http://localhost:3001/api/events/"+event._id, body)
+    const result = await axios.patch("http://localhost:3001/api/events/"+event._id, body+"/activity")
     console.log(result.data);
     setShowActivityForm(false)
+  }
+
+  const handleTaskForm = async (e) => {
+    const body = {
+      task: {
+        title: taskTitle,
+        description: taskDescription
+      }
+    }
+    const result = await axios.patch("http://localhost:3001/api/events/"+event._id+"/task", body)
+    console.log(result.data);
+    setShowTaskForm(false)
+  }
+
+  const closeModal = (e) => {
+    const modal = document.getElementById("eventCreateModel")
+    modal.scrollTo({top: 0, behavior: "smooth"})
   }
 
   return (
@@ -36,7 +56,7 @@ const EditEventForm = ({ eventModalId, setEventModalId }) => {
       <div className="drag_indicator"></div>
       <div className="block">
         <div className="container">
-          <div className="left">
+          <div onClick={closeModal} className="left">
             <svg className="fillcolor-accent close_button" xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#5f6368"><path d="M480-424 284-228q-11 11-28 11t-28-11q-11-11-11-28t11-28l196-196-196-196q-11-11-11-28t11-28q11-11 28-11t28 11l196 196 196-196q11-11 28-11t28 11q11 11 11 28t-11 28L536-480l196 196q11 11 11 28t-11 28q-11 11-28 11t-28-11L480-424Z"/></svg>
           </div>
           <div className="middle"></div>
@@ -223,7 +243,7 @@ const EditEventForm = ({ eventModalId, setEventModalId }) => {
             </div>
           </div>
         ) : (console.log("LOL:", event.course_activities && event.course_activities.length))}
-        <div className="container">
+        {/* <div className="container">
           <div className="left">
             <svg className="fillcolor-accent opaque_1" xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#5f6368"><path d="m382-354 339-339q12-12 28-12t28 12q12 12 12 28.5T777-636L410-268q-12 12-28 12t-28-12L182-440q-12-12-11.5-28.5T183-497q12-12 28.5-12t28.5 12l142 143Z"/></svg>
           </div>
@@ -231,7 +251,92 @@ const EditEventForm = ({ eventModalId, setEventModalId }) => {
             <p className="text-16-regular color-accent opaque_1">Add task</p>
           </div>
           <div className="right"></div>
-        </div>
+        </div> */}
+
+        {event.tasks ? (
+          event.tasks.length < 1 ? (
+            <div className="container">
+              <div className="left">
+                <svg className="fillcolor-accent opaque_1" xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#5f6368"><path d="m382-354 339-339q12-12 28-12t28 12q12 12 12 28.5T777-636L410-268q-12 12-28 12t-28-12L182-440q-12-12-11.5-28.5T183-497q12-12 28.5-12t28.5 12l142 143Z"/></svg>
+              </div>
+              {showTaskForm ? (
+                <div className="middle">
+                  <div className="activity_form">
+                    <input onChange={(e)=>setTaskTitle(e.target.value)} type="text" className="title" />
+                    <textarea onChange={(e)=>setTaskDescription(e.target.value)} className="description"></textarea>
+                    <button onClick={handleTaskForm}>Save</button>
+                    <button onClick={()=>setShowTaskForm(false)}>Cancel</button>
+                  </div>
+                </div>
+              ) : (
+                <div onClick={()=>setShowTaskForm(true)} className="middle">
+                  <p className="text-16-regular color-accent opaque_1">Add task</p>
+                </div>
+              )}
+              <div className="right">
+              </div>
+            </div>
+          ) : (
+            event.tasks.map((task, i) => {
+              console.log("looping through tasks");
+              if(i === 0) {
+                return (
+                  <div className="container">
+                    <div className="left">
+                      <svg className="fillcolor-accent opaque_1" xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#5f6368"><path d="m382-354 339-339q12-12 28-12t28 12q12 12 12 28.5T777-636L410-268q-12 12-28 12t-28-12L182-440q-12-12-11.5-28.5T183-497q12-12 28.5-12t28.5 12l142 143Z"/></svg>
+                    </div>
+                    <div className="middle">
+                      <p className="text-16-medium color-accent">{task.title}</p>
+                      <p className="text-14-medium color-accent">{task.description}</p>
+                    </div>
+                    <div className="right">
+                    </div>
+                  </div>
+                )
+              } else {
+                return (
+                  <div className="container">
+                    <div className="left">
+                    </div>
+                    <div className="middle">
+                      <p className="text-16-medium color-accent">{task.title}</p>
+                      <p className="text-14-medium color-accent">{task.description}</p>
+                    </div>
+                    <div className="right">
+                    </div>
+                  </div>
+                )
+              }
+            })
+          )
+        ) : (
+          console.log("event.course_activities === FALSE")
+        )}
+        
+        
+        {event.tasks && event.tasks.length > 0 ? (
+          <div className="container">
+            <div className="left">
+            </div>
+            {showTaskForm ? (
+              <div className="middle">
+                <div className="activity_form">
+                  <input onChange={(e)=>setTaskTitle(e.target.value)} type="text" className="title" />
+                  <textarea onChange={(e)=>setTaskDescription(e.target.value)} className="description"></textarea>
+                  <button onClick={handleTaskForm}>Save</button>
+                  <button onClick={()=>setShowTaskForm(false)}>Cancel</button>
+                </div>
+              </div>
+              ) : (
+                <div onClick={()=>setShowTaskForm(true)} className="middle">
+                  <p className="text-16-regular color-accent opaque_1">Add task</p>
+                </div>
+              )}
+            <div className="right">
+            </div>
+          </div>
+        ) : (console.log("LOL:", event.tasks && event.tasks.length))}
+
       </div>
       <div className="separator bgcolor-accent"></div>
       <div className="block">

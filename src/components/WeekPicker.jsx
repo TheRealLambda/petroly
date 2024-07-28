@@ -92,7 +92,7 @@ const WeekPicker = ({ week, setWeek, setEventModalId }) => {
         modal.removeEventListener("scroll", test)
         if(modal.firstElementChild.getBoundingClientRect().top > 300 && modal.firstElementChild.getBoundingClientRect().top < 600) {  
           modal.scrollTo({top: 100, behavior: "smooth"})
-        } else if (modal.firstElementChild.getBoundingClientRect().top < 400) {
+        } else if (modal.firstElementChild.getBoundingClientRect().top < 400 && modal.firstElementChild.getBoundingClientRect().top > 0) {
           modal.scrollTo({top: 640, behavior: "smooth"})
         } else if (modal.firstElementChild.getBoundingClientRect().top > 600) {
           console.log("REMOVE MODAL");
