@@ -4,6 +4,7 @@ import CoursesPage from "./components/CoursesPage.jsx"
 import DiscoverPage from "./components/DiscoverPage.jsx"
 import HomePage from "./components/HomePage.jsx"
 import NavBar from "./components/NavBar.jsx"
+import SandBox from "./components/SandBox.jsx"
 import SchedulePage from "./components/SchedulePage.jsx"
 import SideMenu from "./components/SideMenu.jsx"
 import TasksPage from "./components/TasksPage.jsx"
@@ -15,6 +16,7 @@ function App() {
       <SideMenu />
       <Router>
         <Routes>
+          <Route path="/sandbox" element={<SandBox/>} />
           <Route path="/home" element={<HomePage/>} />
           <Route path="/schedule" element={<SchedulePage/>} />
           <Route path="/schedule/courses" element={<CoursesPage/>} />

@@ -11,21 +11,19 @@ import EditEventForm from "./EditEventForm"
 
 const SchedulePage = () => {
 
-  let now = new Date();
-  now.setHours(0, 0, 0, 0)
-  // now.setDate(now.getDate()+1+4)
-  console.log(now.getDay());
-  let onejan = new Date(now.getFullYear(), 0, 1);
-  onejan.setHours(0, 0, 0, 0)
-  let week1 = Math.floor((((now.getTime() - onejan.getTime()) / 86400000) ) / 7)
+  const [week, setWeek] = useState(() => {
+    let now = new Date();
+    now.setHours(0, 0, 0, 0)
+    // now.setDate(now.getDate()+1+4)
+    let onejan = new Date(now.getFullYear(), 0, 1);
+    onejan.setHours(0, 0, 0, 0)
+    return Math.floor((((now.getTime() - onejan.getTime()) / 86400000) ) / 7)
   
-  console.log("week1?", (((now.getTime() - onejan.getTime()) / 86400000) ) );
-  // console.log(onejan.getDay());
-
-  const [week, setWeek] = useState(week1)
+  })
   const [eventModalId, setEventModalId] = useState({id: "", edit: false})
 
   console.log("[week]", week);
+
   const hideSideMenu = (event) =>{
     const page = document.getElementsByClassName("schedule_page")[0]
     page.classList.remove("side_menu_open")

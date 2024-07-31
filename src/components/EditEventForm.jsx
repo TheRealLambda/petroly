@@ -29,7 +29,7 @@ const EditEventForm = ({ eventModalId, setEventModalId }) => {
         description: activityDescription
       }
     }
-    const result = await axios.patch("http://localhost:3001/api/events/"+event._id, body+"/activity")
+    const result = await axios.patch("http://localhost:3001/api/events/"+event._id+"/activity", body)
     console.log(result.data);
     setShowActivityForm(false)
   }
