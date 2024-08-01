@@ -1,0 +1,20 @@
+.sandbox_page {
+  z-index: 1;
+  position: relative;
+  height: 640px;
+  width: 360px;
+  background-color: #DDECF7;
+  overflow-y: scroll;
+  scrollbar-width: none;
+}
+
+.sandbox_page.side_menu_open {
+  zoom: 0.85;
+  margin-left: 305px;
+  margin-top: 50px;
+  border-radius: 20px;
+}
+
+.sandbox_page::-webkit-scrollbar {
+  display: none;
+}

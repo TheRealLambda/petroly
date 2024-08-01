@@ -11,15 +11,23 @@ import EditEventForm from "./EditEventForm"
 
 const SchedulePage = () => {
 
+  // week is 0-indexed
   const [week, setWeek] = useState(() => {
-    let now = new Date();
-    now.setHours(0, 0, 0, 0)
-    // now.setDate(now.getDate()+1+4)
-    let onejan = new Date(now.getFullYear(), 0, 1);
-    onejan.setHours(0, 0, 0, 0)
-    return Math.floor((((now.getTime() - onejan.getTime()) / 86400000) ) / 7)
+    const firstDayOfYear = new Date(2024, 1-1, 1)
+    const daysUntilFirstSunday = firstDayOfYear.getDay() === 0 ? 0 : 7-firstDayOfYear.getDay()
+    
+    //get first sunday after first day of year. Calculations will use this as the first day of the year
+    const firstSundayOfYear = new Date(firstDayOfYear)
+    firstSundayOfYear.setDate(firstSundayOfYear.getDate() + daysUntilFirstSunday)
+    
+    const currentDate = new Date()
+    const numberOfDays = (currentDate - firstSundayOfYear) / (1*24*60*60*1000)
   
+    const numberOfWeeks = Math.floor(numberOfDays / 7)
+    return numberOfWeeks
   })
+
+  
   const [eventModalId, setEventModalId] = useState({id: "", edit: false})
 
   console.log("[week]", week);

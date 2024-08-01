@@ -1,0 +1,34 @@
+.modal {
+  width: 360px;
+  height: 640px;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  margin: 0 auto;
+  background-color: rgba(255, 0, 0, 0.25);
+  /* overflow: hidden; */
+  z-index: 2;
+}
+.modal .container {
+  width: 100%;
+  height: 640px;
+  position: absolute;
+  background-color: rgba(0, 0, 255, 0.25);
+  transition: top 0.2s ease-out;
+}
+.modal .container.open {
+  top: 0px;
+}
+.modal .container.partial {
+  top: 500px;
+}
+.modal .container.closed {
+  top: 640px;
+}
+
+.modal .container .drag_area {
+  width: 100%;
+  height: 48px;
+  background-color: rgba(0, 0, 0, 0.25);
+}
