@@ -46,14 +46,14 @@ const ShowEventForm = ({ eventModalId, setEventModalId }) => {
   }
 
   return (
-    <div className="show_event_form">
+    <div className="show_event_form modalScrollContainer">
       <div className="drag_indicator bgcolor-accent"></div>
       <div className="container">
         <div className="left">
           <svg onClick={closeModal} className="fillcolor-accent close_button" xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#5f6368"><path d="M480-424 284-228q-11 11-28 11t-28-11q-11-11-11-28t11-28l196-196-196-196q-11-11-11-28t11-28q11-11 28-11t28 11l196 196 196-196q11-11 28-11t28 11q11 11 11 28t-11 28L536-480l196 196q11 11 11 28t-11 28q-11 11-28 11t-28-11L480-424Z"/></svg>
           <div className="color_picker"></div>
         </div>
-        <div className="middle">
+        <div className="middle modalDragArea">
           <p type="text" className="title text-24-regular color-accent" placeholder="Add title">{event && event.title}</p>
           <p className="date_text text-16-regular color-accent opaque">tomorrow, 17 Jul • 16:00-17:00</p>
         </div>
@@ -215,6 +215,46 @@ const ShowEventForm = ({ eventModalId, setEventModalId }) => {
         </div>
         <div className="middle">
           <p className="text-16-regular color-accent opaque">Some description</p>
+        </div>
+      </div>
+      <div className="container">
+        <div className="left">
+          <svg className="fillcolor-accent opaque" xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#5f6368"><path d="M720-330q0 104-73 177T470-80q-104 0-177-73t-73-177v-370q0-75 52.5-127.5T400-880q75 0 127.5 52.5T580-700v350q0 46-32 78t-78 32q-46 0-78-32t-32-78v-330q0-17 11.5-28.5T400-720q17 0 28.5 11.5T440-680v330q0 13 8.5 21.5T470-320q13 0 21.5-8.5T500-350v-350q-1-42-29.5-71T400-800q-42 0-71 29t-29 71v370q-1 71 49 120.5T470-160q70 0 119-49.5T640-330v-350q0-17 11.5-28.5T680-720q17 0 28.5 11.5T720-680v350Z"/></svg>
+        </div>
+        <div className="middle">
+          <p className="text-16-regular color-accent opaque">Some attachments</p>
+        </div>
+      </div>
+      <div className="container">
+        <div className="left">
+          <svg className="fillcolor-accent opaque" xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#5f6368"><path d="M720-330q0 104-73 177T470-80q-104 0-177-73t-73-177v-370q0-75 52.5-127.5T400-880q75 0 127.5 52.5T580-700v350q0 46-32 78t-78 32q-46 0-78-32t-32-78v-330q0-17 11.5-28.5T400-720q17 0 28.5 11.5T440-680v330q0 13 8.5 21.5T470-320q13 0 21.5-8.5T500-350v-350q-1-42-29.5-71T400-800q-42 0-71 29t-29 71v370q-1 71 49 120.5T470-160q70 0 119-49.5T640-330v-350q0-17 11.5-28.5T680-720q17 0 28.5 11.5T720-680v350Z"/></svg>
+        </div>
+        <div className="middle">
+          <p className="text-16-regular color-accent opaque">Some attachments</p>
+        </div>
+      </div>
+      <div className="container">
+        <div className="left">
+          <svg className="fillcolor-accent opaque" xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#5f6368"><path d="M720-330q0 104-73 177T470-80q-104 0-177-73t-73-177v-370q0-75 52.5-127.5T400-880q75 0 127.5 52.5T580-700v350q0 46-32 78t-78 32q-46 0-78-32t-32-78v-330q0-17 11.5-28.5T400-720q17 0 28.5 11.5T440-680v330q0 13 8.5 21.5T470-320q13 0 21.5-8.5T500-350v-350q-1-42-29.5-71T400-800q-42 0-71 29t-29 71v370q-1 71 49 120.5T470-160q70 0 119-49.5T640-330v-350q0-17 11.5-28.5T680-720q17 0 28.5 11.5T720-680v350Z"/></svg>
+        </div>
+        <div className="middle">
+          <p className="text-16-regular color-accent opaque">Some attachments</p>
+        </div>
+      </div>
+      <div className="container">
+        <div className="left">
+          <svg className="fillcolor-accent opaque" xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#5f6368"><path d="M720-330q0 104-73 177T470-80q-104 0-177-73t-73-177v-370q0-75 52.5-127.5T400-880q75 0 127.5 52.5T580-700v350q0 46-32 78t-78 32q-46 0-78-32t-32-78v-330q0-17 11.5-28.5T400-720q17 0 28.5 11.5T440-680v330q0 13 8.5 21.5T470-320q13 0 21.5-8.5T500-350v-350q-1-42-29.5-71T400-800q-42 0-71 29t-29 71v370q-1 71 49 120.5T470-160q70 0 119-49.5T640-330v-350q0-17 11.5-28.5T680-720q17 0 28.5 11.5T720-680v350Z"/></svg>
+        </div>
+        <div className="middle">
+          <p className="text-16-regular color-accent opaque">Some attachments</p>
+        </div>
+      </div>
+      <div className="container">
+        <div className="left">
+          <svg className="fillcolor-accent opaque" xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#5f6368"><path d="M720-330q0 104-73 177T470-80q-104 0-177-73t-73-177v-370q0-75 52.5-127.5T400-880q75 0 127.5 52.5T580-700v350q0 46-32 78t-78 32q-46 0-78-32t-32-78v-330q0-17 11.5-28.5T400-720q17 0 28.5 11.5T440-680v330q0 13 8.5 21.5T470-320q13 0 21.5-8.5T500-350v-350q-1-42-29.5-71T400-800q-42 0-71 29t-29 71v370q-1 71 49 120.5T470-160q70 0 119-49.5T640-330v-350q0-17 11.5-28.5T680-720q17 0 28.5 11.5T720-680v350Z"/></svg>
+        </div>
+        <div className="middle">
+          <p className="text-16-regular color-accent opaque">Some attachments</p>
         </div>
       </div>
       <div className="container">

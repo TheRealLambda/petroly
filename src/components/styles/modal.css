@@ -7,37 +7,40 @@
   left: 0;
   right: 0;
   margin: 0 auto;
-  background-color: rgba(255, 0, 0, 0.25);
-  /* overflow: hidden; */
+  overflow: hidden;
   z-index: 2;
+  transition: background-color 0.2s ease-out;
 }
-.modal .container {
+.modal.darken {
+  background-color: #0230477f;
+}
+.modal .modal_container {
   pointer-events: all;
   width: 100%;
   height: 640px;
   position: absolute;
-  background-color: rgba(0, 0, 255, 0.25);
+  border-top-left-radius: 20px;
+  border-top-right-radius: 20px;
 }
-.modal .container.transition {
+.modal .modal_container.transition {
   transition: top 0.2s ease-out;
 }
-.modal .container.open {
+.modal .modal_container.open {
   top: 0px;
 }
-.modal .container.partial {
+.modal .modal_container.partial {
   top: 500px;
 }
-.modal .container.closed {
+.modal .modal_container.closed {
   top: 640px;
 }
 
-.modal .container .drag_area {
+.modal .modal_container .drag_area {
   width: 100%;
   height: 40px;
-  background-color: rgba(0, 0, 0, 0.25);
 }
 
-.modal .container .scroll_content {
+.modal .modal_container .modal_scroll_content {
   width: 100%;
   height: 600px;
   display: flex;
@@ -46,12 +49,11 @@
   overflow-y: scroll;
   scrollbar-width: none;
 }
-.modal .container .scroll_content.no_scroll {
+.modal .modal_container .modal_scroll_content.no_scroll {
   overflow: hidden;
 }
-.modal .container .scroll_content div {
+.modal .modal_container .modal_scroll_content div {
   flex-shrink: 0;
   width: 100%;
   height: 60px;
-  background-color: rgba(127, 255, 212, 0.498);
 }

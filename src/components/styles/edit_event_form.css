@@ -5,6 +5,8 @@
   flex-direction: column;
   gap: 20px;
   padding-bottom: 50px;
+  overflow-y: scroll;
+  scrollbar-width: none;
 }
 
 .edit_event_form .opaque_1 {

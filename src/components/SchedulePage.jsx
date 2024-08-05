@@ -8,6 +8,7 @@ import axios from "axios"
 import CreateEventForm from "./CreateEventForm"
 import ShowEventForm from "./ShowEventForm"
 import EditEventForm from "./EditEventForm"
+import Modal from "./Modal"
 
 const SchedulePage = () => {
 
@@ -141,13 +142,9 @@ const SchedulePage = () => {
   return (
     <div className="schedule_page">
       <div onClick={hideSideMenu} id="menu_cover"></div>
-      <div id="eventCreateModel" className="event_create_model">
-        <div className="content">
-          {!eventModalId.id  && <CreateEventForm startDate={startDate} setStartDate={setStartDate} endDate={endDate} setEndDate={setEndDate} />}
-          {eventModalId.id && !eventModalId.edit && <ShowEventForm eventModalId={eventModalId} setEventModalId={setEventModalId} />}
-          {eventModalId.id && eventModalId.edit && <EditEventForm eventModalId={eventModalId} setEventModalId={setEventModalId} />}
-        </div>
-      </div>
+          {!eventModalId.id  && <Modal><CreateEventForm startDate={startDate} setStartDate={setStartDate} endDate={endDate} setEndDate={setEndDate} /></Modal>}
+          {eventModalId.id && !eventModalId.edit && <Modal><ShowEventForm eventModalId={eventModalId} setEventModalId={setEventModalId} /></Modal>}
+          {eventModalId.id && eventModalId.edit && <Modal><EditEventForm eventModalId={eventModalId} setEventModalId={setEventModalId} /></Modal>}
       <NavBar />
       <MenuBar />
       <WeekPicker week={week} setWeek={setWeek} setEventModalId={setEventModalId} />
