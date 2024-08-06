@@ -2,7 +2,7 @@ import { useEffect, useState } from "react"
 import "./styles/show_event_form.css"
 import axios from "axios"
 
-const ShowEventForm = ({ eventModalId, setEventModalId }) => {
+const ShowEventForm = ({ setModalState, setForm, eventModalId, setEventModalId }) => {
 
   const [event, setEvent] = useState({title: "Loading"})
   const [showTaskForm, setShowTaskForm] = useState(false)
@@ -19,8 +19,7 @@ const ShowEventForm = ({ eventModalId, setEventModalId }) => {
   console.log(event);
 
   const changeToEdit = (e) => {
-    e.preventDefault()
-    setEventModalId({id: eventModalId.id, edit: true})
+    setForm({type: "edit", event: event})
   }
 
   const deleteEvent = async (e) => {
@@ -29,8 +28,7 @@ const ShowEventForm = ({ eventModalId, setEventModalId }) => {
   }
 
   const closeModal = (e) => {
-    const modal = document.getElementById("eventCreateModel")
-    modal.scrollTo({top: 0, behavior: "smooth"})
+    setModalState("closed")
   }
 
   const handleTaskForm = async (e) => {
@@ -43,6 +41,7 @@ const ShowEventForm = ({ eventModalId, setEventModalId }) => {
     const result = await axios.patch("http://localhost:3001/api/events/"+event._id+"/task", body)
     console.log(result.data);
     setShowTaskForm(false)
+    setModalState("closed")
   }
 
   return (

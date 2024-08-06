@@ -1,7 +1,7 @@
 import { useEffect } from "react"
 import "./styles/time_table.css"
 import axios from "axios"
-const TimeTable = ({ setEventModalId, setStartDate, setEndDate }) => {
+const TimeTable = ({ setModalState, setEventModalId, setStartDate, setEndDate }) => {
 
 
   useEffect(() => {
@@ -198,12 +198,14 @@ const TimeTable = ({ setEventModalId, setStartDate, setEndDate }) => {
         }
         const tempEventClickFunc = (e) => {
                 // e.currentTarget.style.backgroundColor = "red"
-                const modal = document.getElementById("eventCreateModel")
-                modal.style.display = "block"
-                modal.scrollTo({top: 100, behavior: "smooth"})
+                // const modal = document.getElementById("eventCreateModel")
+                // modal.style.display = "block"
+                // modal.scrollTo({top: 100, behavior: "smooth"})
                 
-                modal.removeEventListener("Scroll", test)
-                modal.addEventListener("scroll", test)
+                // modal.removeEventListener("Scroll", test)
+                // modal.addEventListener("scroll", test)
+                setModalState("partial")
+                console.log("\nSETTING MODAL\n");
       
         }
         tempEvent.removeEventListener("click", tempEventClickFunc)

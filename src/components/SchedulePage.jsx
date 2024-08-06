@@ -12,7 +12,12 @@ import Modal from "./Modal"
 
 const SchedulePage = () => {
 
-  // week is 0-indexed
+
+  /*
+    State declarations
+  */
+
+  //week represents the current week of the year starting from week 0
   const [week, setWeek] = useState(() => {
     const firstDayOfYear = new Date(2024, 1-1, 1)
     const daysUntilFirstSunday = firstDayOfYear.getDay() === 0 ? 0 : 7-firstDayOfYear.getDay()
@@ -27,11 +32,16 @@ const SchedulePage = () => {
     const numberOfWeeks = Math.floor(numberOfDays / 7)
     return numberOfWeeks
   })
-
-  
   const [eventModalId, setEventModalId] = useState({id: "", edit: false})
+  //modal is used to control the modal, ie. open or close the modal
+  const [modalState, setModalState] = useState("closed")
+  //form is used to decide what type of form to render with its corresponding event
+  const [form, setForm] = useState({type: "show", event: null}) 
 
-  console.log("[week]", week);
+  /*
+    End of state declarations
+  */
+
 
   const hideSideMenu = (event) =>{
     const page = document.getElementsByClassName("schedule_page")[0]
@@ -60,95 +70,34 @@ const SchedulePage = () => {
     window.requestAnimationFrame(() => {
       div1.addEventListener("scroll", handleScroll1)
     })
-    // console.log("div2");
   }
-
-  const resetSchedule = async () => {
-    document.getElementById("eventCreateModel").scrollTo({top: 0, behavior: "smooth"})
-    document.getElementById("eventCreate").style.display = "none"
-    // console.log("Schedule reset...");
-    Array.from(document.querySelectorAll(".event_create.testingHAHA")).forEach((div => div.remove()))
-    const events = await axios.get("http://localhost:3001/api/events")
-    // console.log("events=", events);
-    Array.from(document.getElementById("week_picker_wrapper").children).forEach((week, i) => {
-      Array.from(week.firstElementChild.children).forEach((day, j) => {
-        // console.log(i, j, (day.offsetLeft-66)%360);
-        // console.log(day);
-        events.data.forEach(event => {
-          const eventDate = new Date(event.start_time)
-          const endDate = new Date(event.end_time)
-          const temp = new Date(event.start_time)
-          temp.setHours(0, 0, 0, 0)
-
-          // console.log("eventDate=", eventDate);
-          const dayDateAttrib = day.getAttribute("data-date").split("-")
-          const dayDate = new Date(Number(dayDateAttrib[0]), Number(dayDateAttrib[1]), Number(dayDateAttrib[2]))
-          // console.log("dayDateAttrib=", dayDateAttrib);
-          // console.log(dayDate);
-          // console.log(day);
-          if(temp.getTime() === dayDate.getTime()) {
-            // console.log("DAY FOUND!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-            const newDiv = document.createElement("div")
-            newDiv.innerText = event.title
-            newDiv.classList.add("event_create")
-            newDiv.classList.add("testingHAHA")
-            newDiv.style.top = (eventDate.getHours()+eventDate.getMinutes()/60)*75+"px"
-            // console.log("top=", (eventDate.getHours()+eventDate.getMinutes()/60)*75);
-
-            newDiv.style.left = ((day.offsetLeft-66)%360)+"px"
-            // console.log("left=", day.offsetLeft);
-
-            const height = (endDate.getHours()+endDate.getMinutes()/60)*75 - (eventDate.getHours()+eventDate.getMinutes()/60)*75
-            newDiv.style.height = height+"px"
-            newDiv.style.display = "block"
-            // console.log(document.querySelectorAll("#div2_wrapper .div2")[1]);
-            document.querySelectorAll("#div2_wrapper .div2")[i].appendChild(newDiv)
-          }
-        })
-      })
-    })
-  }
-
-  const postEvent = (e) => {
-    const tempEvent = document.getElementById("eventCreate")
-    // console.log(tempEvent.getAttribute("data-start"));
-    const object = {
-      start_time: tempEvent.getAttribute("data-start"),
-      end_time: tempEvent.getAttribute("data-end"),
-      title: "test",
-      desc: "description for testing"
-    }
-    axios.post("http://localhost:3001/api/events", object).then(result => {
-      console.log(result);
-      resetSchedule()
-    })
-  }
+  const [startDate, setStartDate] = useState(new Date())
+  const [endDate, setEndDate] = useState(new Date())
 
   useEffect(() => {
-    // console.log("ATTACHING SCROLL EVENT");
     const div1 = document.getElementById("week_picker_wrapper")
     const div2 = document.getElementById("div2_wrapper")
     div1.addEventListener("scroll", handleScroll1)
-    // div2.addEventListener("scroll", handleScroll2)
   }, [])
-
-  console.log(eventModalId);
-
-
-  const [startDate, setStartDate] = useState(new Date())
-  const [endDate, setEndDate] = useState(new Date())
 
 
   return (
     <div className="schedule_page">
       <div onClick={hideSideMenu} id="menu_cover"></div>
-          {!eventModalId.id  && <Modal><CreateEventForm startDate={startDate} setStartDate={setStartDate} endDate={endDate} setEndDate={setEndDate} /></Modal>}
-          {eventModalId.id && !eventModalId.edit && <Modal><ShowEventForm eventModalId={eventModalId} setEventModalId={setEventModalId} /></Modal>}
-          {eventModalId.id && eventModalId.edit && <Modal><EditEventForm eventModalId={eventModalId} setEventModalId={setEventModalId} /></Modal>}
+
+      <Modal state={modalState} setState={setModalState}>
+        { 
+          form.type === "show" ? <ShowEventForm setModalState={setModalState} setForm={setForm} eventModalId={eventModalId} setEventModalId={setEventModalId} />
+        : form.type === "edit" ? <EditEventForm setModalState={setModalState} eventModalId={eventModalId} setEventModalId={setEventModalId} />
+        : form.type === "create" ? <CreateEventForm setModalState={setModalState} startDate={startDate} setStartDate={setStartDate} endDate={endDate} setEndDate={setEndDate} />
+        : 0
+        }
+      </Modal>
+
       <NavBar />
       <MenuBar />
-      <WeekPicker week={week} setWeek={setWeek} setEventModalId={setEventModalId} />
-      <TimeTable week={week} setWeek={setWeek} setEventModalId={setEventModalId} setStartDate={setStartDate} setEndDate={setEndDate} />
+      <WeekPicker setModalState={setModalState} week={week} setWeek={setWeek} setEventModalId={setEventModalId} />
+      <TimeTable setModalState={setModalState} week={week} setWeek={setWeek} setEventModalId={setEventModalId} setStartDate={setStartDate} setEndDate={setEndDate} />
     </div>
   )
 }

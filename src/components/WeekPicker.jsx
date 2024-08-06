@@ -2,7 +2,7 @@ import { useCallback, useEffect } from "react"
 import "./styles/week_picker.css"
 import axios from "axios"
 
-const WeekPicker = ({ week, setWeek, setEventModalId }) => {
+const WeekPicker = ({ setModalState, week, setWeek, setEventModalId }) => {
   const handleScroll = (event) => {
     const first = document.getElementById("first")
     const offsetLeft = first.getBoundingClientRect().left-document.getElementsByClassName("schedule_page")[0].offsetLeft
@@ -14,8 +14,8 @@ const WeekPicker = ({ week, setWeek, setEventModalId }) => {
         setWeek(week => week-1)
         setTimeout(() => {
         document.getElementById("week_picker_wrapper").classList.remove("lock_scroll") 
-        }, 50)
-      }, 450)
+        }, 100)
+      }, 500)
     }
     const last = document.getElementById("last")
     const offsetRight = last.getBoundingClientRect().right-document.getElementsByClassName("schedule_page")[0].getBoundingClientRect().right
@@ -26,14 +26,15 @@ const WeekPicker = ({ week, setWeek, setEventModalId }) => {
         setWeek(week => week+1)
         setTimeout(() => {
         document.getElementById("week_picker_wrapper").classList.remove("lock_scroll") 
-        }, 50)
-      },450)
+        }, 100)
+      },500)
     }
   }
 
   const resetSchedule = async () => {
-    document.getElementById("eventCreateModel").scrollTo({top: 0, behavior: "smooth"})
-    document.getElementById("eventCreate").style.display = "none"
+    setModalState("closed")
+    // document.getElementById("eventCreateModel").scrollTo({top: 0, behavior: "smooth"})
+    // document.getElementById("eventCreate").style.display = "none"
     // console.log("Schedule reset...");
     Array.from(document.querySelectorAll(".event_create.testingHAHA")).forEach((div => div.remove()))
     const events = await axios.get("http://localhost:3001/api/events")
@@ -73,8 +74,9 @@ const WeekPicker = ({ week, setWeek, setEventModalId }) => {
             // console.log(document.querySelectorAll("#div2_wrapper .div2")[1]);
             newDiv.addEventListener("click", (e) => {
               setEventModalId({id: event._id, edit: false})
-              document.getElementById("eventCreateModel").scrollTo({top: 640, behavior: "smooth"})
-              document.getElementById("eventCreate").style.display = "none"
+              setModalState("open")
+              // document.getElementById("eventCreateModel").scrollTo({top: 640, behavior: "smooth"})
+              // document.getElementById("eventCreate").style.display = "none"
             })
             document.querySelectorAll("#div2_wrapper .div2")[i].appendChild(newDiv)
           }
@@ -104,13 +106,13 @@ const WeekPicker = ({ week, setWeek, setEventModalId }) => {
     }
     const tempEventClickFunc = (e) => {
             // e.currentTarget.style.backgroundColor = "red"
-            const modal = document.getElementById("eventCreateModel")
-            modal.style.display = "block"
-            modal.scrollTo({top: 640, behavior: "smooth"})
+            // const modal = document.getElementById("eventCreateModel")
+            // modal.style.display = "block"
+            // modal.scrollTo({top: 640, behavior: "smooth"})
             
-            modal.removeEventListener("Scroll", test)
-            modal.addEventListener("scroll", test)
-  
+            // modal.removeEventListener("Scroll", test)
+            // modal.addEventListener("scroll", test)
+            setModalState("partial")
     }
     Array.from(document.getElementsByClassName("event_create")).forEach(div => {
       // console.log(div);

@@ -2,7 +2,7 @@ import { useState } from "react"
 import "./styles/create_event_form.css"
 import axios from "axios"
 
-const CreateEventForm = ({ startDate, setStartDate, endDate, setEndDate}) => {
+const CreateEventForm = ({ setModalState, startDate, setStartDate, endDate, setEndDate}) => {
 
   const [color, setColor] = useState("#0000000")
   const [title, setTitle] = useState("")
@@ -20,11 +20,11 @@ const CreateEventForm = ({ startDate, setStartDate, endDate, setEndDate}) => {
     }
     const result = await axios.post("http://localhost:3001/api/events", body)
     console.log("===============================================\n",result.data);
+    setModalState("closed")
   }
 
   const closeModal = (e) => {
-    const modal = document.getElementById("eventCreateModel")
-    modal.scrollTo({top: 0, behavior: "smooth"})
+    setModalState("closed")
   }
 
   console.log("startDate", startDate, "\nendDate", endDate);
