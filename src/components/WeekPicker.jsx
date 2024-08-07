@@ -1,35 +1,191 @@
-import { useCallback, useEffect } from "react"
+import { useEffect, useState } from "react"
 import "./styles/week_picker.css"
 import axios from "axios"
 
 const WeekPicker = ({ setModalState, week, setWeek, setEventModalId }) => {
-  const handleScroll = (event) => {
-    const first = document.getElementById("first")
-    const offsetLeft = first.getBoundingClientRect().left-document.getElementsByClassName("schedule_page")[0].offsetLeft
 
-    if(!check && offsetLeft > 55 && offsetLeft < 65) {
-      check = true
-      document.getElementById("week_picker_wrapper").classList.add("lock_scroll")  
-      setTimeout(() =>{
-        setWeek(week => week-1)
-        setTimeout(() => {
-        document.getElementById("week_picker_wrapper").classList.remove("lock_scroll") 
-        }, 100)
-      }, 500)
-    }
-    const last = document.getElementById("last")
-    const offsetRight = last.getBoundingClientRect().right-document.getElementsByClassName("schedule_page")[0].getBoundingClientRect().right
-    if(!check && offsetRight > -5 && offsetRight < 5) {
-      check = true
-      document.getElementById("week_picker_wrapper").classList.add("lock_scroll")  
-      setTimeout(() =>{
-        setWeek(week => week+1)
-        setTimeout(() => {
-        document.getElementById("week_picker_wrapper").classList.remove("lock_scroll") 
-        }, 100)
-      },500)
+  const [state, setState] = useState({pos: "middle", trans: true})
+  console.log("[state]", state);
+  let weekPicker
+  let timetable
+  let container
+  let clicked = false
+  let mouseDown = false
+  let initialMouseX
+  let initialOffset
+  let a
+  let timeout
+  let timeout2
+
+
+  const stateLeft = () => {
+    container.style = ""
+    timetable.style = ""
+    state.trans ? container.classList.add("transition") : 0
+    state.trans ? timetable.classList.add("transition") : 0
+    clearTimeout(timeout2)
+    timeout2 = setTimeout(() => {
+      container.classList.remove("transition")
+      timetable.classList.remove("transition")
+      setWeek(prev => prev-1)
+      setState({pos: "middle", trans: false})
+    }, 200) // same time as transition duration
+    container.classList.remove("middle")
+    container.classList.remove("right")
+    container.classList.add("left")
+    timetable.classList.remove("middle")
+    timetable.classList.remove("right")
+    timetable.classList.add("left")
+  }
+  const stateMiddle = () => {
+    container.style = ""
+    timetable.style = ""
+    state.trans ? container.classList.add("transition") : 0
+    state.trans ? timetable.classList.add("transition") : 0
+    clearTimeout(timeout2)
+    timeout2 = setTimeout(() => {
+      container.classList.remove("transition")
+      timetable.classList.remove("transition")
+    }, 200) // same time as transition duration
+    container.classList.remove("left")
+    container.classList.remove("right")
+    container.classList.add("middle")
+    timetable.classList.remove("left")
+    timetable.classList.remove("right")
+    timetable.classList.add("middle")
+  }
+  const stateRight = () => {
+    console.log("====stateRight");
+    container.style = ""
+    timetable.style = ""
+    state.trans ? container.classList.add("transition") : 0
+    state.trans ? timetable.classList.add("transition") : 0
+    clearTimeout(timeout2)
+    timeout2 = setTimeout(() => {
+      container.classList.remove("transition")
+      timetable.classList.remove("transition")
+      setWeek(prev => prev+1)
+      setState({pos: "middle", trans: false})
+    }, 200) // same time as transition duration
+    container.classList.remove("left")
+    container.classList.remove("middle")
+    container.classList.add("right")
+    timetable.classList.remove("left")
+    timetable.classList.remove("middle")
+    timetable.classList.add("right")
+  }
+  
+
+  const pointerDown = (e) => {
+    
+    initialMouseX = e.clientX
+    initialOffset = e.clientX - container.getBoundingClientRect().left
+                    + weekPicker.getBoundingClientRect().left
+    mouseDown = true
+    clicked = true
+    clearTimeout(timeout)
+    timeout = setTimeout(() => {
+      clicked = false
+    }, 500)
+  }
+  const pointerMove = (e) => {
+    if(mouseDown) {
+      const mouseX = e.clientX
+      const left = (mouseX-initialOffset)
+      console.log(left);
+      if(left <= 0 && left >= -600) {
+        timetable.style.left = left+"px"
+        container.style.left = left+"px"
+      } else if(left > 0) {
+        timetable.style.left = "0px"
+        container.style.left = "0px"
+      } else if(left < -600) {
+        timetable.style.left = "-600px"
+        container.style.left = "-600px"
+      }
     }
   }
+  const pointerUp = (e) => {
+    
+    mouseDown = false
+    container.style.transition = ""
+    const finalMouseX = e.clientX
+    const left = finalMouseX-initialOffset
+    console.log("====UP====", left);  
+    if(clicked && finalMouseX > initialMouseX) {
+      //swipe left
+      console.log("====swipe left");
+      setState({pos: "left", trans: true})
+    } else if(clicked && finalMouseX < initialMouseX) {
+      //swipe right
+      console.log("====swipe right");
+      setState({pos: "right", trans: true})
+    } else if(left > -150) {
+      //drag to left
+      console.log("left====");
+      setState({pos: "left", trans: true})
+    } else if(left < -450) {
+      //drag to right
+      setState({pos: "right", trans: true})
+    } else  {
+      //drag to middle
+      setState({pos: "middle", trans: true})
+    }
+  }
+
+
+  useEffect(() => {
+
+    weekPicker = document.getElementsByClassName("week_picker_wrapper")[0]
+    container = weekPicker.firstElementChild
+    timetable = document.getElementById("div2_wrapperContainer")
+    weekPicker.addEventListener("pointerdown", pointerDown)
+    weekPicker.addEventListener("pointermove", pointerMove)
+    weekPicker.addEventListener("pointerup", pointerUp)
+
+    if(state.pos === "left") {
+      stateLeft()
+    } else if(state.pos === "middle") {
+      stateMiddle()
+    } else if(state.pos === "right") {
+      stateRight()
+    }
+
+    return () => {
+      document.getElementsByClassName("week_picker_wrapper")[0].removeEventListener("pointerdown", pointerDown)
+      document.getElementsByClassName("week_picker_wrapper")[0].removeEventListener("pointermove", pointerMove)
+      document.getElementsByClassName("week_picker_wrapper")[0].removeEventListener("pointerup", pointerUp)
+    }
+  }, [state])
+
+
+  // const handleScroll = (event) => {
+  //   const first = document.getElementById("first")
+  //   const offsetLeft = first.getBoundingClientRect().left-document.getElementsByClassName("schedule_page")[0].offsetLeft
+
+  //   if(!check && offsetLeft > 55 && offsetLeft < 65) {
+  //     check = true
+  //     document.getElementById("week_picker_wrapper").classList.add("lock_scroll")  
+  //     setTimeout(() =>{
+  //       setWeek(week => week-1)
+  //       setTimeout(() => {
+  //       document.getElementById("week_picker_wrapper").classList.remove("lock_scroll") 
+  //       }, 100)
+  //     }, 500)
+  //   }
+  //   const last = document.getElementById("last")
+  //   const offsetRight = last.getBoundingClientRect().right-document.getElementsByClassName("schedule_page")[0].getBoundingClientRect().right
+  //   if(!check && offsetRight > -5 && offsetRight < 5) {
+  //     check = true
+  //     document.getElementById("week_picker_wrapper").classList.add("lock_scroll")  
+  //     setTimeout(() =>{
+  //       setWeek(week => week+1)
+  //       setTimeout(() => {
+  //       document.getElementById("week_picker_wrapper").classList.remove("lock_scroll") 
+  //       }, 100)
+  //     },500)
+  //   }
+  // }
 
   const resetSchedule = async () => {
     setModalState("closed")
@@ -39,7 +195,7 @@ const WeekPicker = ({ setModalState, week, setWeek, setEventModalId }) => {
     Array.from(document.querySelectorAll(".event_create.testingHAHA")).forEach((div => div.remove()))
     const events = await axios.get("http://localhost:3001/api/events")
     console.log("events=", events);
-    Array.from(document.getElementById("week_picker_wrapper").children).forEach((week, i) => {
+    Array.from(document.getElementById("week_picker_wrapper").firstElementChild.children).forEach((week, i) => {
       Array.from(week.firstElementChild.children).forEach((day, j) => {
         // console.log(i, j, (day.offsetLeft-66)%360);
         // console.log(day);
@@ -124,6 +280,10 @@ const WeekPicker = ({ setModalState, week, setWeek, setEventModalId }) => {
 
   let check = false
   useEffect(() => {
+
+
+
+
     document.getElementById("monthText").innerText = (() => {
       const now = new Date()
       const firstDayOfYear = new Date(now.getFullYear(), 0, 1)
@@ -140,13 +300,14 @@ const WeekPicker = ({ setModalState, week, setWeek, setEventModalId }) => {
     // console.log("rendering...");
     document.getElementById("week_picker_wrapper").scrollTo({ behavior: "instant", left: 360})
     resetSchedule()
-    document.getElementById("week_picker_wrapper").addEventListener("scroll", handleScroll);
+    // document.getElementById("week_picker_wrapper").addEventListener("scroll", handleScroll);
     
     
 
     return () => {
+
       if(document.getElementById("week_picker_wrapper")) {
-        document.getElementById("week_picker_wrapper").removeEventListener("scroll", handleScroll)
+        // document.getElementById("week_picker_wrapper").removeEventListener("scroll", handleScroll)
       }
     }
   }, [week])
@@ -180,7 +341,6 @@ const WeekPicker = ({ setModalState, week, setWeek, setEventModalId }) => {
     const saturday = new Date(now.getFullYear(), 0, 1+toFirstSundayOfYear+(week)*7+6)
     return [sunday, monday, tuesday, wednesday, thursday, friday, saturday]
   }
-  console.log(activeWeekDays()[0]);
   const nextWeekDays = () => {
     const now = new Date()
     const firstDayOfYear = new Date(now.getFullYear(), 0, 1)
@@ -197,183 +357,185 @@ const WeekPicker = ({ setModalState, week, setWeek, setEventModalId }) => {
   }
 
   return (
-    <div id="week_picker_wrapper" className="week_picker_wrapper">
-      <div id="first" className="week_picker">
-        <div className="flex_container">
-          <div className="week_day" data-date={prevWeekDays()[0].getFullYear()+"-"+(prevWeekDays()[0].getMonth())+"-"+prevWeekDays()[0].getDate()}>
-            <div className="day_name">  
-              <p className="text-14-semibold color-accent">S</p>
+    <div id="week_picker_wrapper" className="week_picker_wrapper bgcolor-BG">
+      <div className="container">
+        <div id="first" className="week_picker">
+          <div className="flex_container">
+            <div className="week_day" data-date={prevWeekDays()[0].getFullYear()+"-"+(prevWeekDays()[0].getMonth())+"-"+prevWeekDays()[0].getDate()}>
+              <div className="day_name">  
+                <p className="text-14-semibold color-accent">S</p>
+              </div>
+              <div className="day_number">
+                <p className="text-14-medium color-accent">{prevWeekDays()[0].getDate()}</p>
+              </div>
             </div>
-            <div className="day_number">
-              <p className="text-14-medium color-accent">{prevWeekDays()[0].getDate()}</p>
+            <div className="week_day today" data-date={prevWeekDays()[1].getFullYear()+"-"+(prevWeekDays()[1].getMonth())+"-"+prevWeekDays()[1].getDate()}>
+              <div className="day_name">  
+                <p className="text-14-semibold color-accent">M</p>
+              </div>
+              <div className="day_number">
+                <p className="text-14-medium color-accent">{prevWeekDays()[1].getDate()}</p>
+              </div>
             </div>
-          </div>
-          <div className="week_day today" data-date={prevWeekDays()[1].getFullYear()+"-"+(prevWeekDays()[1].getMonth())+"-"+prevWeekDays()[1].getDate()}>
-            <div className="day_name">  
-              <p className="text-14-semibold color-accent">M</p>
+            <div className="week_day" data-date={prevWeekDays()[2].getFullYear()+"-"+(prevWeekDays()[2].getMonth())+"-"+prevWeekDays()[2].getDate()}>
+              <div className="day_name">  
+                <p className="text-14-semibold color-accent">T</p>
+              </div>
+              <div className="day_number">
+                <p className="text-14-medium color-accent">{prevWeekDays()[2].getDate()}</p>
+              </div>
             </div>
-            <div className="day_number">
-              <p className="text-14-medium color-accent">{prevWeekDays()[1].getDate()}</p>
+            <div className="week_day" data-date={prevWeekDays()[3].getFullYear()+"-"+(prevWeekDays()[3].getMonth())+"-"+prevWeekDays()[3].getDate()}>
+              <div className="day_name">  
+                <p className="text-14-semibold color-accent">W</p>
+              </div>
+              <div className="day_number">
+                <p className="text-14-medium color-accent">{prevWeekDays()[3].getDate()}</p>
+              </div>
             </div>
-          </div>
-          <div className="week_day" data-date={prevWeekDays()[2].getFullYear()+"-"+(prevWeekDays()[2].getMonth())+"-"+prevWeekDays()[2].getDate()}>
-            <div className="day_name">  
-              <p className="text-14-semibold color-accent">T</p>
+            <div className="week_day" data-date={prevWeekDays()[4].getFullYear()+"-"+(prevWeekDays()[4].getMonth())+"-"+prevWeekDays()[4].getDate()}>
+              <div className="day_name">  
+                <p className="text-14-semibold color-accent">T</p>
+              </div>
+              <div className="day_number">
+                <p className="text-14-medium color-accent">{prevWeekDays()[4].getDate()}</p>
+              </div>
             </div>
-            <div className="day_number">
-              <p className="text-14-medium color-accent">{prevWeekDays()[2].getDate()}</p>
+            <div className="week_day" data-date={prevWeekDays()[5].getFullYear()+"-"+(prevWeekDays()[5].getMonth())+"-"+prevWeekDays()[5].getDate()}>
+              <div className="day_name">  
+                <p className="text-14-semibold color-accent">F</p>
+              </div>
+              <div className="day_number">
+                <p className="text-14-medium color-accent">{prevWeekDays()[5].getDate()}</p>
+              </div>
             </div>
-          </div>
-          <div className="week_day" data-date={prevWeekDays()[3].getFullYear()+"-"+(prevWeekDays()[3].getMonth())+"-"+prevWeekDays()[3].getDate()}>
-            <div className="day_name">  
-              <p className="text-14-semibold color-accent">W</p>
-            </div>
-            <div className="day_number">
-              <p className="text-14-medium color-accent">{prevWeekDays()[3].getDate()}</p>
-            </div>
-          </div>
-          <div className="week_day" data-date={prevWeekDays()[4].getFullYear()+"-"+(prevWeekDays()[4].getMonth())+"-"+prevWeekDays()[4].getDate()}>
-            <div className="day_name">  
-              <p className="text-14-semibold color-accent">T</p>
-            </div>
-            <div className="day_number">
-              <p className="text-14-medium color-accent">{prevWeekDays()[4].getDate()}</p>
-            </div>
-          </div>
-          <div className="week_day" data-date={prevWeekDays()[5].getFullYear()+"-"+(prevWeekDays()[5].getMonth())+"-"+prevWeekDays()[5].getDate()}>
-            <div className="day_name">  
-              <p className="text-14-semibold color-accent">F</p>
-            </div>
-            <div className="day_number">
-              <p className="text-14-medium color-accent">{prevWeekDays()[5].getDate()}</p>
-            </div>
-          </div>
-          <div className="week_day" data-date={prevWeekDays()[6].getFullYear()+"-"+(prevWeekDays()[6].getMonth())+"-"+prevWeekDays()[6].getDate()}>
-            <div className="day_name">  
-              <p className="text-14-semibold color-accent">S</p>
-            </div>
-            <div className="day_number">
-              <p className="text-14-medium color-accent">{prevWeekDays()[6].getDate()}</p>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div id="active" className="week_picker">
-        <div className="flex_container">
-          <div className="week_day" data-date={activeWeekDays()[0].getFullYear()+"-"+(activeWeekDays()[0].getMonth())+"-"+activeWeekDays()[0].getDate()}>
-            <div className="day_name">  
-              <p className="text-14-semibold color-accent">S</p>
-            </div>
-            <div className="day_number">
-              <p className="text-14-medium color-accent">{activeWeekDays()[0].getDate()}</p>
-            </div>
-          </div>
-          <div className="week_day today" data-date={activeWeekDays()[1].getFullYear()+"-"+(activeWeekDays()[1].getMonth())+"-"+activeWeekDays()[1].getDate()}>
-            <div className="day_name">  
-              <p className="text-14-semibold color-accent">M</p>
-            </div>
-            <div className="day_number">
-              <p className="text-14-medium color-accent">{activeWeekDays()[1].getDate()}</p>
-            </div>
-          </div>
-          <div className="week_day" data-date={activeWeekDays()[2].getFullYear()+"-"+(activeWeekDays()[2].getMonth())+"-"+activeWeekDays()[2].getDate()}>
-            <div className="day_name">  
-              <p className="text-14-semibold color-accent">T</p>
-            </div>
-            <div className="day_number">
-              <p className="text-14-medium color-accent">{activeWeekDays()[2].getDate()}</p>
-            </div>
-          </div>
-          <div className="week_day" data-date={activeWeekDays()[3].getFullYear()+"-"+(activeWeekDays()[3].getMonth())+"-"+activeWeekDays()[3].getDate()}>
-            <div className="day_name">  
-              <p className="text-14-semibold color-accent">W</p>
-            </div>
-            <div className="day_number">
-              <p className="text-14-medium color-accent">{activeWeekDays()[3].getDate()}</p>
-            </div>
-          </div>
-          <div className="week_day" data-date={activeWeekDays()[4].getFullYear()+"-"+(activeWeekDays()[4].getMonth())+"-"+activeWeekDays()[4].getDate()}>
-            <div className="day_name">  
-              <p className="text-14-semibold color-accent">T</p>
-            </div>
-            <div className="day_number">
-              <p className="text-14-medium color-accent">{activeWeekDays()[4].getDate()}</p>
-            </div>
-          </div>
-          <div className="week_day" data-date={activeWeekDays()[5].getFullYear()+"-"+(activeWeekDays()[5].getMonth())+"-"+activeWeekDays()[5].getDate()}>
-            <div className="day_name">  
-              <p className="text-14-semibold color-accent">F</p>
-            </div>
-            <div className="day_number">
-              <p className="text-14-medium color-accent">{activeWeekDays()[5].getDate()}</p>
-            </div>
-          </div>
-          <div className="week_day" data-date={activeWeekDays()[6].getFullYear()+"-"+(activeWeekDays()[6].getMonth())+"-"+activeWeekDays()[6].getDate()}>
-            <div className="day_name">  
-              <p className="text-14-semibold color-accent">S</p>
-            </div>
-            <div className="day_number">
-              <p className="text-14-medium color-accent">{activeWeekDays()[6].getDate()}</p>
+            <div className="week_day" data-date={prevWeekDays()[6].getFullYear()+"-"+(prevWeekDays()[6].getMonth())+"-"+prevWeekDays()[6].getDate()}>
+              <div className="day_name">  
+                <p className="text-14-semibold color-accent">S</p>
+              </div>
+              <div className="day_number">
+                <p className="text-14-medium color-accent">{prevWeekDays()[6].getDate()}</p>
+              </div>
             </div>
           </div>
         </div>
-      </div>
-      <div id="last" className="week_picker">
-        <div className="flex_container">
-          <div className="week_day" data-date={nextWeekDays()[0].getFullYear()+"-"+(nextWeekDays()[0].getMonth())+"-"+nextWeekDays()[0].getDate()}>
-            <div className="day_name">  
-              <p className="text-14-semibold color-accent">S</p>
+        <div id="active" className="week_picker">
+          <div className="flex_container">
+            <div className="week_day" data-date={activeWeekDays()[0].getFullYear()+"-"+(activeWeekDays()[0].getMonth())+"-"+activeWeekDays()[0].getDate()}>
+              <div className="day_name">  
+                <p className="text-14-semibold color-accent">S</p>
+              </div>
+              <div className="day_number">
+                <p className="text-14-medium color-accent">{activeWeekDays()[0].getDate()}</p>
+              </div>
             </div>
-            <div className="day_number">
-              <p className="text-14-medium color-accent">{nextWeekDays()[0].getDate()}</p>
+            <div className="week_day today" data-date={activeWeekDays()[1].getFullYear()+"-"+(activeWeekDays()[1].getMonth())+"-"+activeWeekDays()[1].getDate()}>
+              <div className="day_name">  
+                <p className="text-14-semibold color-accent">M</p>
+              </div>
+              <div className="day_number">
+                <p className="text-14-medium color-accent">{activeWeekDays()[1].getDate()}</p>
+              </div>
+            </div>
+            <div className="week_day" data-date={activeWeekDays()[2].getFullYear()+"-"+(activeWeekDays()[2].getMonth())+"-"+activeWeekDays()[2].getDate()}>
+              <div className="day_name">  
+                <p className="text-14-semibold color-accent">T</p>
+              </div>
+              <div className="day_number">
+                <p className="text-14-medium color-accent">{activeWeekDays()[2].getDate()}</p>
+              </div>
+            </div>
+            <div className="week_day" data-date={activeWeekDays()[3].getFullYear()+"-"+(activeWeekDays()[3].getMonth())+"-"+activeWeekDays()[3].getDate()}>
+              <div className="day_name">  
+                <p className="text-14-semibold color-accent">W</p>
+              </div>
+              <div className="day_number">
+                <p className="text-14-medium color-accent">{activeWeekDays()[3].getDate()}</p>
+              </div>
+            </div>
+            <div className="week_day" data-date={activeWeekDays()[4].getFullYear()+"-"+(activeWeekDays()[4].getMonth())+"-"+activeWeekDays()[4].getDate()}>
+              <div className="day_name">  
+                <p className="text-14-semibold color-accent">T</p>
+              </div>
+              <div className="day_number">
+                <p className="text-14-medium color-accent">{activeWeekDays()[4].getDate()}</p>
+              </div>
+            </div>
+            <div className="week_day" data-date={activeWeekDays()[5].getFullYear()+"-"+(activeWeekDays()[5].getMonth())+"-"+activeWeekDays()[5].getDate()}>
+              <div className="day_name">  
+                <p className="text-14-semibold color-accent">F</p>
+              </div>
+              <div className="day_number">
+                <p className="text-14-medium color-accent">{activeWeekDays()[5].getDate()}</p>
+              </div>
+            </div>
+            <div className="week_day" data-date={activeWeekDays()[6].getFullYear()+"-"+(activeWeekDays()[6].getMonth())+"-"+activeWeekDays()[6].getDate()}>
+              <div className="day_name">  
+                <p className="text-14-semibold color-accent">S</p>
+              </div>
+              <div className="day_number">
+                <p className="text-14-medium color-accent">{activeWeekDays()[6].getDate()}</p>
+              </div>
             </div>
           </div>
-          <div className="week_day today" data-date={nextWeekDays()[1].getFullYear()+"-"+(nextWeekDays()[1].getMonth())+"-"+nextWeekDays()[1].getDate()}>
-            <div className="day_name">  
-              <p className="text-14-semibold color-accent">M</p>
+        </div>
+        <div id="last" className="week_picker">
+          <div className="flex_container">
+            <div className="week_day" data-date={nextWeekDays()[0].getFullYear()+"-"+(nextWeekDays()[0].getMonth())+"-"+nextWeekDays()[0].getDate()}>
+              <div className="day_name">  
+                <p className="text-14-semibold color-accent">S</p>
+              </div>
+              <div className="day_number">
+                <p className="text-14-medium color-accent">{nextWeekDays()[0].getDate()}</p>
+              </div>
             </div>
-            <div className="day_number">
-              <p className="text-14-medium color-accent">{nextWeekDays()[1].getDate()}</p>
+            <div className="week_day today" data-date={nextWeekDays()[1].getFullYear()+"-"+(nextWeekDays()[1].getMonth())+"-"+nextWeekDays()[1].getDate()}>
+              <div className="day_name">  
+                <p className="text-14-semibold color-accent">M</p>
+              </div>
+              <div className="day_number">
+                <p className="text-14-medium color-accent">{nextWeekDays()[1].getDate()}</p>
+              </div>
             </div>
-          </div>
-          <div className="week_day" data-date={nextWeekDays()[2].getFullYear()+"-"+(nextWeekDays()[2].getMonth())+"-"+nextWeekDays()[2].getDate()}>
-            <div className="day_name">  
-              <p className="text-14-semibold color-accent">T</p>
+            <div className="week_day" data-date={nextWeekDays()[2].getFullYear()+"-"+(nextWeekDays()[2].getMonth())+"-"+nextWeekDays()[2].getDate()}>
+              <div className="day_name">  
+                <p className="text-14-semibold color-accent">T</p>
+              </div>
+              <div className="day_number">
+                <p className="text-14-medium color-accent">{nextWeekDays()[2].getDate()}</p>
+              </div>
             </div>
-            <div className="day_number">
-              <p className="text-14-medium color-accent">{nextWeekDays()[2].getDate()}</p>
+            <div className="week_day" data-date={nextWeekDays()[3].getFullYear()+"-"+(nextWeekDays()[3].getMonth())+"-"+nextWeekDays()[3].getDate()}>
+              <div className="day_name">  
+                <p className="text-14-semibold color-accent">W</p>
+              </div>
+              <div className="day_number">
+                <p className="text-14-medium color-accent">{nextWeekDays()[3].getDate()}</p>
+              </div>
             </div>
-          </div>
-          <div className="week_day" data-date={nextWeekDays()[3].getFullYear()+"-"+(nextWeekDays()[3].getMonth())+"-"+nextWeekDays()[3].getDate()}>
-            <div className="day_name">  
-              <p className="text-14-semibold color-accent">W</p>
+            <div className="week_day" data-date={nextWeekDays()[4].getFullYear()+"-"+(nextWeekDays()[4].getMonth())+"-"+nextWeekDays()[4].getDate()}>
+              <div className="day_name">  
+                <p className="text-14-semibold color-accent">T</p>
+              </div>
+              <div className="day_number">
+                <p className="text-14-medium color-accent">{nextWeekDays()[4].getDate()}</p>
+              </div>
             </div>
-            <div className="day_number">
-              <p className="text-14-medium color-accent">{nextWeekDays()[3].getDate()}</p>
+            <div className="week_day" data-date={nextWeekDays()[5].getFullYear()+"-"+(nextWeekDays()[5].getMonth())+"-"+nextWeekDays()[5].getDate()}>
+              <div className="day_name">  
+                <p className="text-14-semibold color-accent">F</p>
+              </div>
+              <div className="day_number">
+                <p className="text-14-medium color-accent">{nextWeekDays()[5].getDate()}</p>
+              </div>
             </div>
-          </div>
-          <div className="week_day" data-date={nextWeekDays()[4].getFullYear()+"-"+(nextWeekDays()[4].getMonth())+"-"+nextWeekDays()[4].getDate()}>
-            <div className="day_name">  
-              <p className="text-14-semibold color-accent">T</p>
-            </div>
-            <div className="day_number">
-              <p className="text-14-medium color-accent">{nextWeekDays()[4].getDate()}</p>
-            </div>
-          </div>
-          <div className="week_day" data-date={nextWeekDays()[5].getFullYear()+"-"+(nextWeekDays()[5].getMonth())+"-"+nextWeekDays()[5].getDate()}>
-            <div className="day_name">  
-              <p className="text-14-semibold color-accent">F</p>
-            </div>
-            <div className="day_number">
-              <p className="text-14-medium color-accent">{nextWeekDays()[5].getDate()}</p>
-            </div>
-          </div>
-          <div className="week_day" data-date={nextWeekDays()[6].getFullYear()+"-"+(nextWeekDays()[6].getMonth())+"-"+nextWeekDays()[6].getDate()}>
-            <div className="day_name">  
-              <p className="text-14-semibold color-accent">S</p>
-            </div>
-            <div className="day_number">
-              <p className="text-14-medium color-accent">{nextWeekDays()[6].getDate()}</p>
+            <div className="week_day" data-date={nextWeekDays()[6].getFullYear()+"-"+(nextWeekDays()[6].getMonth())+"-"+nextWeekDays()[6].getDate()}>
+              <div className="day_name">  
+                <p className="text-14-semibold color-accent">S</p>
+              </div>
+              <div className="day_number">
+                <p className="text-14-medium color-accent">{nextWeekDays()[6].getDate()}</p>
+              </div>
             </div>
           </div>
         </div>

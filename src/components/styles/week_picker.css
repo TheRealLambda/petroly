@@ -1,54 +1,66 @@
-.schedule_page .week_picker_wrapper {
-  display: flex;
-  overflow-x: scroll;
-  /* gap: 10px; */
-  scrollbar-width: none;
-  scroll-snap-type: x mandatory;
-}
-.schedule_page .week_picker_wrapper.lock_scroll {
-  overflow: hidden;
-  scroll-snap-type: none;
+.week_picker_wrapper {
+  overflow: clip;
+  position: absolute;
+  z-index: 1;
+  width: 300px;
 }
 
-.schedule_page .week_picker {
-  scroll-snap-align: end;
+.week_picker_wrapper .container {
+  display: flex;
+  width: fit-content;
+  position: relative;
+  left: -360px;
+}
+.week_picker_wrapper .container.transition {
+  transition: left 0.2s ease-in-out;
+}
+.week_picker_wrapper .container.left {
+  left: 0px;
+}
+.week_picker_wrapper .container.middle {
+  left: -300px;
+}
+.week_picker_wrapper .container.right {
+  left: -600px;
+}
+
+.week_picker_wrapper .week_picker {
   flex-shrink: 0;
   width: 300px;
   margin-top: 20px;
-  margin-left: 60px;
 }
 
-.schedule_page .week_picker .flex_container {
+.week_picker_wrapper .week_picker .flex_container {
   display: flex;
   flex-direction: row;
   justify-content: space-around;
 }
-.schedule_page .week_picker .flex_container .week_day {
+.week_picker_wrapper .week_picker .flex_container .week_day {
   display: flex;
   flex-direction: column;
   align-items: center
 }
-.schedule_page .week_picker .flex_container .week_day div {
+.week_picker_wrapper .week_picker .flex_container .week_day div {
   display: flex;
   justify-content: center;
   align-items: center;
   height: 30px;
   width: 30px;
 }
-.schedule_page .week_picker .flex_container .week_day div.day_name p {
+.week_picker_wrapper .week_picker .flex_container .week_day div.day_name p {
   opacity: 0.5;
 }
-.schedule_page .week_picker .flex_container .week_day.chosen div.day_number {
+.week_picker_wrapper .week_picker .flex_container .week_day.chosen div.day_number {
   background-color: #00A36C;
   border-radius: 20px;
 }
-.schedule_page .week_picker .flex_container .week_day.chosen div.day_number p {
+.week_picker_wrapper .week_picker .flex_container .week_day.chosen div.day_number p {
   color: #F0F6FB;
 }
-.schedule_page .week_picker .flex_container .week_day.today {
+.week_picker_wrapper .week_picker .flex_container .week_day.today {
   position: relative;
 }
-.schedule_page .week_picker .flex_container .week_day.today::after {
+.week_picker_wrapper .week_picker .flex_container .week_day.today::after {
   position: absolute;
   bottom: 0px;
   content: "";
@@ -57,7 +69,7 @@
   background-color: #00A36C;
   border-radius: 3px;
 }
-.schedule_page .week_picker .icon {
+.week_picker_wrapper .week_picker .icon {
   margin: auto;
   height: 28px;
 }
