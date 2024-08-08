@@ -12,10 +12,12 @@ const WeekPicker = ({ setModalState, week, setWeek, setEventModalId }) => {
   let clicked = false
   let mouseDown = false
   let initialMouseX
+  let initialMouseY
   let initialOffset
-  let a
   let timeout
   let timeout2
+  let lockSwipe = false
+  let boolian = false
 
 
   const stateLeft = () => {
@@ -79,6 +81,7 @@ const WeekPicker = ({ setModalState, week, setWeek, setEventModalId }) => {
   const pointerDown = (e) => {
     
     initialMouseX = e.clientX
+    initialMouseY = e.clientY
     initialOffset = e.clientX - container.getBoundingClientRect().left
                     + weekPicker.getBoundingClientRect().left
     mouseDown = true
@@ -89,10 +92,20 @@ const WeekPicker = ({ setModalState, week, setWeek, setEventModalId }) => {
     }, 500)
   }
   const pointerMove = (e) => {
-    if(mouseDown) {
-      const mouseX = e.clientX
-      const left = (mouseX-initialOffset)
-      console.log(left);
+    const mouseX = e.clientX
+    const mouseY = e.clientY
+    const left = (mouseX-initialOffset)
+    console.log(left);
+    if(!boolian && (mouseY < initialMouseY-10 || mouseY > initialMouseY+10)) {
+      console.log("--------------lock horizontal--------------");
+      lockSwipe = true
+      boolian = true
+    } else if(!boolian && (mouseX < initialMouseX-10 || mouseX > initialMouseX+10)) {
+      console.log("--------------lock vertical--------------");
+      document.getElementsByClassName("time_table")[0].style.overflow = "hidden"
+      boolian = true
+    }
+    if(mouseDown && !lockSwipe && boolian) {
       if(left <= 0 && left >= -600) {
         timetable.style.left = left+"px"
         container.style.left = left+"px"
@@ -109,35 +122,39 @@ const WeekPicker = ({ setModalState, week, setWeek, setEventModalId }) => {
     
     mouseDown = false
     container.style.transition = ""
+    document.getElementsByClassName("time_table")[0].style = ""
     const finalMouseX = e.clientX
     const left = finalMouseX-initialOffset
-    console.log("====UP====", left);  
-    if(clicked && finalMouseX > initialMouseX) {
+    console.log("====UP====", boolian, lockSwipe);  
+    if(clicked && boolian && !lockSwipe && finalMouseX > initialMouseX) {
       //swipe left
       console.log("====swipe left");
       setState({pos: "left", trans: true})
-    } else if(clicked && finalMouseX < initialMouseX) {
+    } else if(clicked && boolian && !lockSwipe && finalMouseX < initialMouseX) {
       //swipe right
       console.log("====swipe right");
       setState({pos: "right", trans: true})
-    } else if(left > -150) {
+    } else if(boolian && !lockSwipe && left > -150) {
       //drag to left
       console.log("left====");
       setState({pos: "left", trans: true})
-    } else if(left < -450) {
+    } else if(boolian && !lockSwipe && left < -450) {
       //drag to right
       setState({pos: "right", trans: true})
-    } else  {
+    } else if(boolian && !lockSwipe) {
       //drag to middle
       setState({pos: "middle", trans: true})
     }
+    lockSwipe = false
+    boolian = false
   }
 
 
   useEffect(() => {
 
-    weekPicker = document.getElementsByClassName("week_picker_wrapper")[0]
-    container = weekPicker.firstElementChild
+    weekPicker = document.getElementById("div2_wrapper")
+    // weekPicker = document.getElementById("week_picker_wrapper")
+    container = document.getElementById("week_picker_wrapper").firstElementChild
     timetable = document.getElementById("div2_wrapperContainer")
     weekPicker.addEventListener("pointerdown", pointerDown)
     weekPicker.addEventListener("pointermove", pointerMove)
@@ -152,9 +169,9 @@ const WeekPicker = ({ setModalState, week, setWeek, setEventModalId }) => {
     }
 
     return () => {
-      document.getElementsByClassName("week_picker_wrapper")[0].removeEventListener("pointerdown", pointerDown)
-      document.getElementsByClassName("week_picker_wrapper")[0].removeEventListener("pointermove", pointerMove)
-      document.getElementsByClassName("week_picker_wrapper")[0].removeEventListener("pointerup", pointerUp)
+      document.getElementById("div2_wrapper").removeEventListener("pointerdown", pointerDown)
+      document.getElementById("div2_wrapper").removeEventListener("pointermove", pointerMove)
+      document.getElementById("div2_wrapper").removeEventListener("pointerup", pointerUp)
     }
   }, [state])
 

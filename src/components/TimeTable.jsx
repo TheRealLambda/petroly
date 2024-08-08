@@ -254,7 +254,6 @@ const TimeTable = ({ setModalState, setEventModalId, week, setWeek, setStartDate
       
       <div className="div1">
         <div className="bgcolor-BG"></div>
-        <p className="text-12-semibold color-accent">00:00</p>
         <p className="text-12-semibold color-accent">01:00</p>
         <p className="text-12-semibold color-accent">02:00</p>
         <p className="text-12-semibold color-accent">03:00</p>
@@ -278,7 +277,6 @@ const TimeTable = ({ setModalState, setEventModalId, week, setWeek, setStartDate
         <p className="text-12-semibold color-accent">21:00</p>
         <p className="text-12-semibold color-accent">22:00</p>
         <p className="text-12-semibold color-accent">23:00</p>
-        <p className="text-12-semibold color-accent">24:00</p>
       </div>
       <div id="div2_wrapper" className="div2_wrapper">
         <div id="eventCreate" className="event_create">

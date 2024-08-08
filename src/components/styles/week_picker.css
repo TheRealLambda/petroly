@@ -34,6 +34,8 @@
   display: flex;
   flex-direction: row;
   justify-content: space-around;
+  height: 50px;
+  align-items: end;
 }
 .week_picker_wrapper .week_picker .flex_container .week_day {
   display: flex;
@@ -47,8 +49,9 @@
   height: 30px;
   width: 30px;
 }
-.week_picker_wrapper .week_picker .flex_container .week_day div.day_name p {
+.week_picker_wrapper .week_picker .flex_container .week_day div.day_name {
   opacity: 0.5;
+  height: 20px;
 }
 .week_picker_wrapper .week_picker .flex_container .week_day.chosen div.day_number {
   background-color: #00A36C;

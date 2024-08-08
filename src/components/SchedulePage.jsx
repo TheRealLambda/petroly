@@ -96,7 +96,6 @@ const SchedulePage = () => {
 
       <NavBar />
       <MenuBar />
-      {/* <WeekPicker setModalState={setModalState} week={week} setWeek={setWeek} setEventModalId={setEventModalId} /> */}
       <TimeTable setModalState={setModalState} week={week} setWeek={setWeek} setEventModalId={setEventModalId} setStartDate={setStartDate} setEndDate={setEndDate} />
     </div>
   )
