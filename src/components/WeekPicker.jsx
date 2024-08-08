@@ -4,205 +4,6 @@ import axios from "axios"
 
 const WeekPicker = ({ setModalState, week, setWeek, setEventModalId }) => {
 
-  const [state, setState] = useState({pos: "middle", trans: true})
-  console.log("[state]", state);
-  let weekPicker
-  let timetable
-  let container
-  let clicked = false
-  let mouseDown = false
-  let initialMouseX
-  let initialMouseY
-  let initialOffset
-  let timeout
-  let timeout2
-  let lockSwipe = false
-  let boolian = false
-
-
-  const stateLeft = () => {
-    container.style = ""
-    timetable.style = ""
-    state.trans ? container.classList.add("transition") : 0
-    state.trans ? timetable.classList.add("transition") : 0
-    clearTimeout(timeout2)
-    timeout2 = setTimeout(() => {
-      container.classList.remove("transition")
-      timetable.classList.remove("transition")
-      setWeek(prev => prev-1)
-      setState({pos: "middle", trans: false})
-    }, 200) // same time as transition duration
-    container.classList.remove("middle")
-    container.classList.remove("right")
-    container.classList.add("left")
-    timetable.classList.remove("middle")
-    timetable.classList.remove("right")
-    timetable.classList.add("left")
-  }
-  const stateMiddle = () => {
-    container.style = ""
-    timetable.style = ""
-    state.trans ? container.classList.add("transition") : 0
-    state.trans ? timetable.classList.add("transition") : 0
-    clearTimeout(timeout2)
-    timeout2 = setTimeout(() => {
-      container.classList.remove("transition")
-      timetable.classList.remove("transition")
-    }, 200) // same time as transition duration
-    container.classList.remove("left")
-    container.classList.remove("right")
-    container.classList.add("middle")
-    timetable.classList.remove("left")
-    timetable.classList.remove("right")
-    timetable.classList.add("middle")
-  }
-  const stateRight = () => {
-    console.log("====stateRight");
-    container.style = ""
-    timetable.style = ""
-    state.trans ? container.classList.add("transition") : 0
-    state.trans ? timetable.classList.add("transition") : 0
-    clearTimeout(timeout2)
-    timeout2 = setTimeout(() => {
-      container.classList.remove("transition")
-      timetable.classList.remove("transition")
-      setWeek(prev => prev+1)
-      setState({pos: "middle", trans: false})
-    }, 200) // same time as transition duration
-    container.classList.remove("left")
-    container.classList.remove("middle")
-    container.classList.add("right")
-    timetable.classList.remove("left")
-    timetable.classList.remove("middle")
-    timetable.classList.add("right")
-  }
-  
-
-  const pointerDown = (e) => {
-    
-    initialMouseX = e.clientX
-    initialMouseY = e.clientY
-    initialOffset = e.clientX - container.getBoundingClientRect().left
-                    + weekPicker.getBoundingClientRect().left
-    mouseDown = true
-    clicked = true
-    clearTimeout(timeout)
-    timeout = setTimeout(() => {
-      clicked = false
-    }, 500)
-  }
-  const pointerMove = (e) => {
-    const mouseX = e.clientX
-    const mouseY = e.clientY
-    const left = (mouseX-initialOffset)
-    console.log(left);
-    if(!boolian && (mouseY < initialMouseY-10 || mouseY > initialMouseY+10)) {
-      console.log("--------------lock horizontal--------------");
-      lockSwipe = true
-      boolian = true
-    } else if(!boolian && (mouseX < initialMouseX-10 || mouseX > initialMouseX+10)) {
-      console.log("--------------lock vertical--------------");
-      document.getElementsByClassName("time_table")[0].style.overflow = "hidden"
-      boolian = true
-    }
-    if(mouseDown && !lockSwipe && boolian) {
-      if(left <= 0 && left >= -600) {
-        timetable.style.left = left+"px"
-        container.style.left = left+"px"
-      } else if(left > 0) {
-        timetable.style.left = "0px"
-        container.style.left = "0px"
-      } else if(left < -600) {
-        timetable.style.left = "-600px"
-        container.style.left = "-600px"
-      }
-    }
-  }
-  const pointerUp = (e) => {
-    
-    mouseDown = false
-    container.style.transition = ""
-    document.getElementsByClassName("time_table")[0].style = ""
-    const finalMouseX = e.clientX
-    const left = finalMouseX-initialOffset
-    console.log("====UP====", boolian, lockSwipe);  
-    if(clicked && boolian && !lockSwipe && finalMouseX > initialMouseX) {
-      //swipe left
-      console.log("====swipe left");
-      setState({pos: "left", trans: true})
-    } else if(clicked && boolian && !lockSwipe && finalMouseX < initialMouseX) {
-      //swipe right
-      console.log("====swipe right");
-      setState({pos: "right", trans: true})
-    } else if(boolian && !lockSwipe && left > -150) {
-      //drag to left
-      console.log("left====");
-      setState({pos: "left", trans: true})
-    } else if(boolian && !lockSwipe && left < -450) {
-      //drag to right
-      setState({pos: "right", trans: true})
-    } else if(boolian && !lockSwipe) {
-      //drag to middle
-      setState({pos: "middle", trans: true})
-    }
-    lockSwipe = false
-    boolian = false
-  }
-
-
-  useEffect(() => {
-
-    weekPicker = document.getElementById("div2_wrapper")
-    // weekPicker = document.getElementById("week_picker_wrapper")
-    container = document.getElementById("week_picker_wrapper").firstElementChild
-    timetable = document.getElementById("div2_wrapperContainer")
-    weekPicker.addEventListener("pointerdown", pointerDown)
-    weekPicker.addEventListener("pointermove", pointerMove)
-    weekPicker.addEventListener("pointerup", pointerUp)
-
-    if(state.pos === "left") {
-      stateLeft()
-    } else if(state.pos === "middle") {
-      stateMiddle()
-    } else if(state.pos === "right") {
-      stateRight()
-    }
-
-    return () => {
-      document.getElementById("div2_wrapper").removeEventListener("pointerdown", pointerDown)
-      document.getElementById("div2_wrapper").removeEventListener("pointermove", pointerMove)
-      document.getElementById("div2_wrapper").removeEventListener("pointerup", pointerUp)
-    }
-  }, [state])
-
-
-  // const handleScroll = (event) => {
-  //   const first = document.getElementById("first")
-  //   const offsetLeft = first.getBoundingClientRect().left-document.getElementsByClassName("schedule_page")[0].offsetLeft
-
-  //   if(!check && offsetLeft > 55 && offsetLeft < 65) {
-  //     check = true
-  //     document.getElementById("week_picker_wrapper").classList.add("lock_scroll")  
-  //     setTimeout(() =>{
-  //       setWeek(week => week-1)
-  //       setTimeout(() => {
-  //       document.getElementById("week_picker_wrapper").classList.remove("lock_scroll") 
-  //       }, 100)
-  //     }, 500)
-  //   }
-  //   const last = document.getElementById("last")
-  //   const offsetRight = last.getBoundingClientRect().right-document.getElementsByClassName("schedule_page")[0].getBoundingClientRect().right
-  //   if(!check && offsetRight > -5 && offsetRight < 5) {
-  //     check = true
-  //     document.getElementById("week_picker_wrapper").classList.add("lock_scroll")  
-  //     setTimeout(() =>{
-  //       setWeek(week => week+1)
-  //       setTimeout(() => {
-  //       document.getElementById("week_picker_wrapper").classList.remove("lock_scroll") 
-  //       }, 100)
-  //     },500)
-  //   }
-  // }
 
   const resetSchedule = async () => {
     setModalState("closed")
@@ -295,11 +96,7 @@ const WeekPicker = ({ setModalState, week, setWeek, setEventModalId }) => {
   }
 
 
-  let check = false
   useEffect(() => {
-
-
-
 
     document.getElementById("monthText").innerText = (() => {
       const now = new Date()
@@ -314,20 +111,11 @@ const WeekPicker = ({ setModalState, week, setWeek, setEventModalId }) => {
         return months[sunday.getMonth()].substring(0, 3)+" "+sunday.getFullYear()
       }
     })()
-    // console.log("rendering...");
     document.getElementById("week_picker_wrapper").scrollTo({ behavior: "instant", left: 360})
     resetSchedule()
-    // document.getElementById("week_picker_wrapper").addEventListener("scroll", handleScroll);
     
-    
-
-    return () => {
-
-      if(document.getElementById("week_picker_wrapper")) {
-        // document.getElementById("week_picker_wrapper").removeEventListener("scroll", handleScroll)
-      }
-    }
   }, [week])
+
 
   const prevWeekDays = () => {
     const now = new Date()
