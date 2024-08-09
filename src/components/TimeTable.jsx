@@ -1,10 +1,11 @@
 import { useEffect, useState } from "react"
 import "./styles/time_table.css"
 import WeekPicker from "./WeekPicker"
+import CalendarEvent from "./CalendarEvent"
 const TimeTable = ({ setModalState, setEventModalId, week, setWeek, setStartDate, setEndDate }) => {
 
-
-
+  const [calendarEvents, setCalendarEvents] = useState([])
+  console.log(calendarEvents);
 
 
 
@@ -25,13 +26,11 @@ const TimeTable = ({ setModalState, setEventModalId, week, setWeek, setStartDate
     })
 
     let startDate;
-    console.log(Array.from(document.getElementById("week_picker_wrapper").firstElementChild.children));
     Array.from(document.getElementById("week_picker_wrapper").firstElementChild.children).forEach((child, i) => {
       if(i === gridIndex) {
         Array.from(child.firstChild.children).forEach((childd, j) => {
           if(j === column) {
             startDate = childd.getAttribute("data-date")
-            console.log("101010101010101010101010101010\n10101010101010");
           }
         })
       }
@@ -73,11 +72,49 @@ const TimeTable = ({ setModalState, setEventModalId, week, setWeek, setStartDate
     return [newDiv, topSlider, bottomSlider]
   }
 
+
   const funcOne = (e) => {
+    
+
+    /*
+      Initializing variables
+    */
     const container = document.getElementById("clickContainer")
+    const width = container.offsetWidth
+    const height = container.offsetHeight
     const mouseX = e.clientX - container.getBoundingClientRect().left
     const mouseY = e.clientY - container.getBoundingClientRect().top
-    console.log("mouseX:", mouseX, "mouseY:", mouseY);
+    //period: number of days shown at once, i.e. 7, 5, 3 or 1
+    const period = 7
+    //periodWidth: width of a single day in pixels
+    const periodWidth = width / period
+    //periodHeight: height of 30mins in pixels
+    const periodHeight = (height / 24) / 2
+    /*
+      End of variable initializing
+    */
+   
+
+   if(!e.target.classList.contains("calendar_event")) {
+      //only consider clicks on empty area
+
+      const columnIndex = Math.floor(mouseX / periodWidth) //0-indexed
+      const halfRowIndex =  Math.floor(mouseY / periodHeight) //0-indexed
+      
+      const weekDay = document.getElementById("active").firstElementChild.children[columnIndex]
+      const date = new Date(weekDay.getAttribute("data-date"))
+      date.setMinutes(30*halfRowIndex)
+
+      const posLeft = periodWidth * columnIndex
+      const posTop = periodHeight * halfRowIndex
+      console.log(calendarEvents);
+      if(calendarEvents.length > 0 && calendarEvents[calendarEvents.length-1].editing === true) {
+        setCalendarEvents(calendarEvents => calendarEvents.slice(0, -1))
+      } else {
+        setCalendarEvents(calendarEvents => calendarEvents.concat({left: posLeft, top: posTop, week: "current", editing: true}))
+      }
+
+    } 
   }
 
 
@@ -85,7 +122,6 @@ const TimeTable = ({ setModalState, setEventModalId, week, setWeek, setStartDate
     if(!event.target.classList.contains("testingHAHA")) {
       setEventModalId({id: "", edit: false})
     }
-    // console.log(event.target.classList.length);
     if(1/*event.target.classList.length === 0*/) {
       const [tempEvent, topSlider, bottomSlider] = createEventDiv(event.target, event.target.parentNode)
       const grid = event.target.parentNode
@@ -101,14 +137,10 @@ const TimeTable = ({ setModalState, setEventModalId, week, setWeek, setStartDate
         const newDate = new Date(tempEvent.getAttribute("data-start"))
         newDate.setHours(hour, minute)
         tempEvent.setAttribute("data-start", newDate)
-        // console.log(minute);
         const prevHeight = tempEvent.offsetHeight
         const tempEventY = tempEvent.offsetTop
         tempEvent.style.top = mappedMouseY+"px"
 
-        // console.log(hourEnd+":"+minuteEnd);
-        // console.log(hourEnd+":"+minuteEnd);
-        // console.log("prevHeight=", prevHeight, "tempEventY=", tempEventY, "hour=", hour, `\nRESULT: ${prevHeight+(tempEventY-hour)}     ${prevHeight}+(${tempEventY}-${hour})`, );
         if(prevHeight < 25) {
           tempEvent.style.height = "25px"
         } else {
@@ -120,7 +152,6 @@ const TimeTable = ({ setModalState, setEventModalId, week, setWeek, setStartDate
         const newDateEnd = new Date(tempEvent.getAttribute("data-end"))
         newDateEnd.setHours(hourEnd, minuteEnd)
         tempEvent.setAttribute("data-end", newDateEnd)
-        // console.log(tempEvent.getAttribute("data-end"));
 
         setStartDate(newDate)
         setEndDate(newDateEnd)
@@ -134,7 +165,6 @@ const TimeTable = ({ setModalState, setEventModalId, week, setWeek, setStartDate
         newDate.setHours(hour, minute)
         if(newDate.getTime() >= new Date(tempEvent.getAttribute("data-start")).getTime()+20*60*1000) {
           tempEvent.setAttribute("data-end", newDate)
-          console.log(newDate);
         }
         const prevHeight = tempEvent.offsetHeight
         const tempEventY = tempEvent.offsetTop
@@ -151,8 +181,6 @@ const TimeTable = ({ setModalState, setEventModalId, week, setWeek, setStartDate
         const mouseY = e.clientY-e.currentTarget.getBoundingClientRect().top
         const mappedMouseY = Math.floor(Math.round(mouseY/12.5)*12.5)
         const hour = mappedMouseY*24/1800
-        // console.log((hour*60)%60);
-        // console.log(mappedMouseY-initTopOffset);
         const prevHeight = tempEvent.offsetHeight
         const tempEventY = tempEvent.offsetTop
         if(tempEvent.offsetTop < 0) {
@@ -166,8 +194,6 @@ const TimeTable = ({ setModalState, setEventModalId, week, setWeek, setStartDate
         const newDateStart = new Date(tempEvent.getAttribute("data-start"))
         newDateStart.setHours(hourStart, minuteStart)
         tempEvent.setAttribute("data-start", newDateStart)
-        // console.log(tempEvent.getAttribute("data-start"));
-        // console.log(tempEvent.offsetTop < 0 ? 0 : tempEvent.offsetTop);
 
         const yEnd = Math.floor(Math.round(((tempEvent.offsetTop < 0 ? 0 : tempEvent.offsetTop)+tempEvent.scrollHeight-1)/12.5)*12.5)
         const hourEnd = Math.floor(yEnd*24/1800)
@@ -175,8 +201,6 @@ const TimeTable = ({ setModalState, setEventModalId, week, setWeek, setStartDate
         const newDateEnd = new Date(tempEvent.getAttribute("data-end"))
         newDateEnd.setHours(hourEnd, minuteEnd)
         tempEvent.setAttribute("data-end", newDateEnd)
-        // console.log(tempEvent.getAttribute("data-end"));
-        // console.log(yEnd);
 
         setStartDate(newDateStart)
         setEndDate(newDateEnd)
@@ -190,14 +214,12 @@ const TimeTable = ({ setModalState, setEventModalId, week, setWeek, setStartDate
           clearTimeout(timeout)
         }
         timeout = setTimeout(()=>{
-          console.log("SCROLLING");
           modal.removeEventListener("scroll", test)
           if(modal.firstElementChild.getBoundingClientRect().top > 300 && modal.firstElementChild.getBoundingClientRect().top < 600) {  
             modal.scrollTo({top: 100, behavior: "smooth"})
           } else if (modal.firstElementChild.getBoundingClientRect().top < 400 && modal.firstElementChild.getBoundingClientRect().top > 0) {
             modal.scrollTo({top: 640, behavior: "smooth"})
           } else if (modal.firstElementChild.getBoundingClientRect().top > 600) {
-            console.log("REMOVE MODAL");
             modal.scrollTo({top: 0, behavior: "instant"})
             tempEvent.style.display = "none"
           }
@@ -213,13 +235,11 @@ const TimeTable = ({ setModalState, setEventModalId, week, setWeek, setStartDate
               // modal.removeEventListener("Scroll", test)
               // modal.addEventListener("scroll", test)
               setModalState("partial")
-              console.log("\nSETTING MODAL\n");
     
       }
       tempEvent.removeEventListener("click", tempEventClickFunc)
       tempEvent.addEventListener("click", tempEventClickFunc)
       // Array.from(document.getElementsByClassName("event_create")).forEach(div => {
-      //   console.log("LOOOOOOOOOOOOOOOOOOOOOOOOOOOoo");
       //   div.removeEventListener("click", tempEventClickFunc)
       //   div.addEventListener("click", tempEventClickFunc)
       // })
@@ -227,8 +247,6 @@ const TimeTable = ({ setModalState, setEventModalId, week, setWeek, setStartDate
       tempEvent.addEventListener("pointerdown", (e)=> {
         const temp = (e.clientY - grid.getBoundingClientRect().top) - tempEvent.offsetTop
         initTopOffset = Math.floor(Math.round(temp/12.5)*12.5)
-        // console.log("OFFSET:", initTopOffset);
-        console.log("e.clientY=", e.clientY - (grid.getBoundingClientRect().top), "\ntempEvent.offsetTop=", tempEvent.offsetTop);
         grid.addEventListener("pointermove", moveTempEvent)
       })
       topSlider.addEventListener("pointerdown", (e)=> {
@@ -269,7 +287,8 @@ const TimeTable = ({ setModalState, setEventModalId, week, setWeek, setStartDate
   let initialOffsetY
   let timeout
   let timeout2
-  let lockSwipe = false
+  let lockHorizontalScrolling = false
+  let lockVerticalScrolling = false
   let boolian = false
 
 
@@ -345,18 +364,21 @@ const TimeTable = ({ setModalState, setEventModalId, week, setWeek, setStartDate
     }, 500)
   }
   const pointerMove = (e) => {
+    // log
     const mouseX = e.clientX
     const mouseY = e.clientY
     const left = (mouseX-initialOffsetX)
     const top = -(mouseY-initialMouseY)+initialOffsetY
     if(mouseDown && !boolian && (mouseY < initialMouseY-10 || mouseY > initialMouseY+10)) {
-      lockSwipe = true
+      //scroll vertically
+      lockHorizontalScrolling = true
       boolian = true
     } else if(mouseDown && !boolian && (mouseX < initialMouseX-10 || mouseX > initialMouseX+10)) {
-      document.getElementsByClassName("time_table")[0].style.overflow = "hidden"
+      //scroll horizontally
+      lockHorizontalScrolling = false
       boolian = true
     }
-    if(mouseDown && !lockSwipe && boolian) {
+    if(mouseDown && !lockHorizontalScrolling && boolian) {
       if(left <= 0 && left >= -600) {
         timetable.style.left = left+"px"
         container.style.left = left+"px"
@@ -368,36 +390,38 @@ const TimeTable = ({ setModalState, setEventModalId, week, setWeek, setStartDate
         container.style.left = "-600px"
       }
     }
-    else if (mouseDown && lockSwipe && boolian) {
+    else if (mouseDown && lockHorizontalScrolling && boolian) {
       document.getElementsByClassName("time_table")[0].scrollTo({top: top})
     }
   }
   const pointerUp = (e) => {
-
-    mouseDown = false
     container.style.transition = ""
     document.getElementsByClassName("time_table")[0].style = ""
     const finalMouseX = e.clientX
     const left = finalMouseX-initialOffsetX
-    if(clicked && boolian && !lockSwipe && finalMouseX > initialMouseX) {
+    if(clicked && boolian && !lockHorizontalScrolling && finalMouseX > initialMouseX) {
       //swipe left
       setState({pos: "left", trans: true})
-    } else if(clicked && boolian && !lockSwipe && finalMouseX < initialMouseX) {
+    } else if(clicked && boolian && !lockHorizontalScrolling && finalMouseX < initialMouseX) {
       //swipe right
       setState({pos: "right", trans: true})
     } else if(clicked && !boolian) {
       //click
       funcOne(e)
-    } else if(boolian && !lockSwipe && left > -150) {
+    } else if(boolian && !lockHorizontalScrolling && left > -150) {
       //drag to left
       setState({pos: "left", trans: true})
-    } else if(boolian && !lockSwipe && left < -450) {
+    } else if(boolian && !lockHorizontalScrolling && left < -450) {
       //drag to right
       setState({pos: "right", trans: true})
-    } else if(boolian && !lockSwipe) {
+    } else if(boolian && !lockHorizontalScrolling) {
       //drag to middle
       setState({pos: "middle", trans: true})
     }
+
+    mouseDown = false
+    lockHorizontalScrolling = false
+    boolian = false
   }
 
 
@@ -423,7 +447,7 @@ const TimeTable = ({ setModalState, setEventModalId, week, setWeek, setStartDate
       document.getElementById("div2_wrapper").removeEventListener("pointermove", pointerMove)
       document.getElementById("div2_wrapper").removeEventListener("pointerup", pointerUp)
     }
-  }, [state])
+  }, [state, calendarEvents])
 
 
 
@@ -461,20 +485,120 @@ const TimeTable = ({ setModalState, setEventModalId, week, setWeek, setStartDate
         <p className="text-12-semibold color-accent">23:00</p>
       </div>
       <div id="div2_wrapper" className="div2_wrapper">
-        <div id="eventCreate" className="event_create">
-          <div className="top_slider"></div>
-          <div className="bottom_slider"></div>
-        </div>
+  
         <WeekPicker setModalState={setModalState} week={week} setWeek={setWeek} setEventModalId={setEventModalId} />
         <div id="div2_wrapperContainer" className="container">
           <div className="div2">
-           
+            <div className="horizontal_lines">
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+            </div>
+            <div className="vertical_lines">
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+            </div>
           </div>
           <div id="clickContainer" className="div2">
-            
+            <div className="horizontal_lines">
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+            </div>
+            <div className="vertical_lines">
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+            </div>
+            {calendarEvents.map(event => event.week === "current" ? <CalendarEvent initialPosition={{left: event.left, top: event.top}} /> : false)}
           </div>
           <div className="div2">
-
+            <div className="horizontal_lines">
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+            </div>
+            <div className="vertical_lines">
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+            </div>
           </div>
         </div>
       </div>

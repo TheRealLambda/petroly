@@ -5,8 +5,7 @@
   width: 100%;
   height: 580px;
   border-radius: 20px;
-  overflow-y: scroll;
-  scrollbar-width: none;
+  overflow-y: hidden;
 }
 .schedule_page::-webkit-scrollbar {
   display: none;
@@ -48,23 +47,37 @@
   grid-template-rows: repeat(24, 1fr);
   position: relative;
 }
-.time_table .div2 div:nth-child(7n+1)::after {
-  pointer-events: none;
-  content: "";
+
+.time_table .div2 .horizontal_lines {
   position: absolute;
-  background-color: #023047;
-  opacity: 0.3;
+  top: 0px;
+  left: 0px;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  padding-top: 75px;
+  gap: 74px;
+}
+.time_table .div2 .horizontal_lines div {
   width: 100%;
   height: 1px;
+  background-color: #0230474c;
 }
-.time_table .div2 div:nth-child(-n+7)::before {
-  pointer-events: none;
-  content: "";
+
+.time_table .div2 .vertical_lines {
   position: absolute;
-  background-color: #023047;
-  opacity: 0.3;
+  top: 0px;
+  left: 0px;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: space-between;
+}
+.time_table .div2 .vertical_lines div {
   width: 1px;
   height: 100%;
+  background-color: #0230474c;
 }
 
 .time_table .event_create {

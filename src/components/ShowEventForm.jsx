@@ -16,7 +16,6 @@ const ShowEventForm = ({ setModalState, setForm, eventModalId, setEventModalId }
     }
     loadEvent()
   }, [eventModalId])
-  console.log(event);
 
   const changeToEdit = (e) => {
     setForm({type: "edit", event: event})
@@ -24,7 +23,6 @@ const ShowEventForm = ({ setModalState, setForm, eventModalId, setEventModalId }
 
   const deleteEvent = async (e) => {
     const result = await axios.delete("http://localhost:3001/api/events/"+eventModalId.id)
-    console.log(result.data);
   }
 
   const closeModal = (e) => {
@@ -39,7 +37,6 @@ const ShowEventForm = ({ setModalState, setForm, eventModalId, setEventModalId }
       }
     }
     const result = await axios.patch("http://localhost:3001/api/events/"+event._id+"/task", body)
-    console.log(result.data);
     setShowTaskForm(false)
     setModalState("closed")
   }
@@ -137,7 +134,6 @@ const ShowEventForm = ({ setModalState, setForm, eventModalId, setEventModalId }
           </div>
         ) : (
           event.tasks.map((task, i) => {
-            console.log("looping through tasks");
             if(i === 0) {
               return (
                 <div className="container">
@@ -168,9 +164,7 @@ const ShowEventForm = ({ setModalState, setForm, eventModalId, setEventModalId }
             }
           })
         )
-      ) : (
-        console.log("event.course_activities === FALSE")
-      )}
+      ) : 0}
       
       
       {event.tasks && event.tasks.length > 0 ? (
@@ -195,7 +189,7 @@ const ShowEventForm = ({ setModalState, setForm, eventModalId, setEventModalId }
           <div className="right">
           </div>
         </div>
-      ) : (console.log("LOL:", event.tasks && event.tasks.length))}
+      ) : 0}
 
 
 

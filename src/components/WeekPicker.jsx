@@ -166,7 +166,7 @@ const WeekPicker = ({ setModalState, week, setWeek, setEventModalId }) => {
       <div className="container">
         <div id="first" className="week_picker">
           <div className="flex_container">
-            <div className="week_day" data-date={prevWeekDays()[0].getFullYear()+"-"+(prevWeekDays()[0].getMonth())+"-"+prevWeekDays()[0].getDate()}>
+            <div className="week_day" data-date={prevWeekDays()[0].getFullYear()+"-"+(prevWeekDays()[0].getMonth()+1)+"-"+prevWeekDays()[0].getDate()}>
               <div className="day_name">  
                 <p className="text-14-semibold color-accent">S</p>
               </div>
@@ -174,7 +174,7 @@ const WeekPicker = ({ setModalState, week, setWeek, setEventModalId }) => {
                 <p className="text-14-medium color-accent">{prevWeekDays()[0].getDate()}</p>
               </div>
             </div>
-            <div className="week_day today" data-date={prevWeekDays()[1].getFullYear()+"-"+(prevWeekDays()[1].getMonth())+"-"+prevWeekDays()[1].getDate()}>
+            <div className="week_day today" data-date={prevWeekDays()[1].getFullYear()+"-"+(prevWeekDays()[1].getMonth()+1)+"-"+prevWeekDays()[1].getDate()}>
               <div className="day_name">  
                 <p className="text-14-semibold color-accent">M</p>
               </div>
@@ -182,7 +182,7 @@ const WeekPicker = ({ setModalState, week, setWeek, setEventModalId }) => {
                 <p className="text-14-medium color-accent">{prevWeekDays()[1].getDate()}</p>
               </div>
             </div>
-            <div className="week_day" data-date={prevWeekDays()[2].getFullYear()+"-"+(prevWeekDays()[2].getMonth())+"-"+prevWeekDays()[2].getDate()}>
+            <div className="week_day" data-date={prevWeekDays()[2].getFullYear()+"-"+(prevWeekDays()[2].getMonth()+1)+"-"+prevWeekDays()[2].getDate()}>
               <div className="day_name">  
                 <p className="text-14-semibold color-accent">T</p>
               </div>
@@ -190,7 +190,7 @@ const WeekPicker = ({ setModalState, week, setWeek, setEventModalId }) => {
                 <p className="text-14-medium color-accent">{prevWeekDays()[2].getDate()}</p>
               </div>
             </div>
-            <div className="week_day" data-date={prevWeekDays()[3].getFullYear()+"-"+(prevWeekDays()[3].getMonth())+"-"+prevWeekDays()[3].getDate()}>
+            <div className="week_day" data-date={prevWeekDays()[3].getFullYear()+"-"+(prevWeekDays()[3].getMonth()+1)+"-"+prevWeekDays()[3].getDate()}>
               <div className="day_name">  
                 <p className="text-14-semibold color-accent">W</p>
               </div>
@@ -198,7 +198,7 @@ const WeekPicker = ({ setModalState, week, setWeek, setEventModalId }) => {
                 <p className="text-14-medium color-accent">{prevWeekDays()[3].getDate()}</p>
               </div>
             </div>
-            <div className="week_day" data-date={prevWeekDays()[4].getFullYear()+"-"+(prevWeekDays()[4].getMonth())+"-"+prevWeekDays()[4].getDate()}>
+            <div className="week_day" data-date={prevWeekDays()[4].getFullYear()+"-"+(prevWeekDays()[4].getMonth()+1)+"-"+prevWeekDays()[4].getDate()}>
               <div className="day_name">  
                 <p className="text-14-semibold color-accent">T</p>
               </div>
@@ -206,7 +206,7 @@ const WeekPicker = ({ setModalState, week, setWeek, setEventModalId }) => {
                 <p className="text-14-medium color-accent">{prevWeekDays()[4].getDate()}</p>
               </div>
             </div>
-            <div className="week_day" data-date={prevWeekDays()[5].getFullYear()+"-"+(prevWeekDays()[5].getMonth())+"-"+prevWeekDays()[5].getDate()}>
+            <div className="week_day" data-date={prevWeekDays()[5].getFullYear()+"-"+(prevWeekDays()[5].getMonth()+1)+"-"+prevWeekDays()[5].getDate()}>
               <div className="day_name">  
                 <p className="text-14-semibold color-accent">F</p>
               </div>
@@ -214,7 +214,7 @@ const WeekPicker = ({ setModalState, week, setWeek, setEventModalId }) => {
                 <p className="text-14-medium color-accent">{prevWeekDays()[5].getDate()}</p>
               </div>
             </div>
-            <div className="week_day" data-date={prevWeekDays()[6].getFullYear()+"-"+(prevWeekDays()[6].getMonth())+"-"+prevWeekDays()[6].getDate()}>
+            <div className="week_day" data-date={prevWeekDays()[6].getFullYear()+"-"+(prevWeekDays()[6].getMonth()+1)+"-"+prevWeekDays()[6].getDate()}>
               <div className="day_name">  
                 <p className="text-14-semibold color-accent">S</p>
               </div>
@@ -226,7 +226,7 @@ const WeekPicker = ({ setModalState, week, setWeek, setEventModalId }) => {
         </div>
         <div id="active" className="week_picker">
           <div className="flex_container">
-            <div className="week_day" data-date={activeWeekDays()[0].getFullYear()+"-"+(activeWeekDays()[0].getMonth())+"-"+activeWeekDays()[0].getDate()}>
+            <div className="week_day" data-date={activeWeekDays()[0].getFullYear()+"-"+(activeWeekDays()[0].getMonth()+1)+"-"+activeWeekDays()[0].getDate()}>
               <div className="day_name">  
                 <p className="text-14-semibold color-accent">S</p>
               </div>
@@ -234,7 +234,7 @@ const WeekPicker = ({ setModalState, week, setWeek, setEventModalId }) => {
                 <p className="text-14-medium color-accent">{activeWeekDays()[0].getDate()}</p>
               </div>
             </div>
-            <div className="week_day today" data-date={activeWeekDays()[1].getFullYear()+"-"+(activeWeekDays()[1].getMonth())+"-"+activeWeekDays()[1].getDate()}>
+            <div className="week_day today" data-date={activeWeekDays()[1].getFullYear()+"-"+(activeWeekDays()[1].getMonth()+1)+"-"+activeWeekDays()[1].getDate()}>
               <div className="day_name">  
                 <p className="text-14-semibold color-accent">M</p>
               </div>
@@ -242,7 +242,7 @@ const WeekPicker = ({ setModalState, week, setWeek, setEventModalId }) => {
                 <p className="text-14-medium color-accent">{activeWeekDays()[1].getDate()}</p>
               </div>
             </div>
-            <div className="week_day" data-date={activeWeekDays()[2].getFullYear()+"-"+(activeWeekDays()[2].getMonth())+"-"+activeWeekDays()[2].getDate()}>
+            <div className="week_day" data-date={activeWeekDays()[2].getFullYear()+"-"+(activeWeekDays()[2].getMonth()+1)+"-"+activeWeekDays()[2].getDate()}>
               <div className="day_name">  
                 <p className="text-14-semibold color-accent">T</p>
               </div>
@@ -250,7 +250,7 @@ const WeekPicker = ({ setModalState, week, setWeek, setEventModalId }) => {
                 <p className="text-14-medium color-accent">{activeWeekDays()[2].getDate()}</p>
               </div>
             </div>
-            <div className="week_day" data-date={activeWeekDays()[3].getFullYear()+"-"+(activeWeekDays()[3].getMonth())+"-"+activeWeekDays()[3].getDate()}>
+            <div className="week_day" data-date={activeWeekDays()[3].getFullYear()+"-"+(activeWeekDays()[3].getMonth()+1)+"-"+activeWeekDays()[3].getDate()}>
               <div className="day_name">  
                 <p className="text-14-semibold color-accent">W</p>
               </div>
@@ -258,7 +258,7 @@ const WeekPicker = ({ setModalState, week, setWeek, setEventModalId }) => {
                 <p className="text-14-medium color-accent">{activeWeekDays()[3].getDate()}</p>
               </div>
             </div>
-            <div className="week_day" data-date={activeWeekDays()[4].getFullYear()+"-"+(activeWeekDays()[4].getMonth())+"-"+activeWeekDays()[4].getDate()}>
+            <div className="week_day" data-date={activeWeekDays()[4].getFullYear()+"-"+(activeWeekDays()[4].getMonth()+1)+"-"+activeWeekDays()[4].getDate()}>
               <div className="day_name">  
                 <p className="text-14-semibold color-accent">T</p>
               </div>
@@ -266,7 +266,7 @@ const WeekPicker = ({ setModalState, week, setWeek, setEventModalId }) => {
                 <p className="text-14-medium color-accent">{activeWeekDays()[4].getDate()}</p>
               </div>
             </div>
-            <div className="week_day" data-date={activeWeekDays()[5].getFullYear()+"-"+(activeWeekDays()[5].getMonth())+"-"+activeWeekDays()[5].getDate()}>
+            <div className="week_day" data-date={activeWeekDays()[5].getFullYear()+"-"+(activeWeekDays()[5].getMonth()+1)+"-"+activeWeekDays()[5].getDate()}>
               <div className="day_name">  
                 <p className="text-14-semibold color-accent">F</p>
               </div>
@@ -274,7 +274,7 @@ const WeekPicker = ({ setModalState, week, setWeek, setEventModalId }) => {
                 <p className="text-14-medium color-accent">{activeWeekDays()[5].getDate()}</p>
               </div>
             </div>
-            <div className="week_day" data-date={activeWeekDays()[6].getFullYear()+"-"+(activeWeekDays()[6].getMonth())+"-"+activeWeekDays()[6].getDate()}>
+            <div className="week_day" data-date={activeWeekDays()[6].getFullYear()+"-"+(activeWeekDays()[6].getMonth()+1)+"-"+activeWeekDays()[6].getDate()}>
               <div className="day_name">  
                 <p className="text-14-semibold color-accent">S</p>
               </div>
@@ -286,7 +286,7 @@ const WeekPicker = ({ setModalState, week, setWeek, setEventModalId }) => {
         </div>
         <div id="last" className="week_picker">
           <div className="flex_container">
-            <div className="week_day" data-date={nextWeekDays()[0].getFullYear()+"-"+(nextWeekDays()[0].getMonth())+"-"+nextWeekDays()[0].getDate()}>
+            <div className="week_day" data-date={nextWeekDays()[0].getFullYear()+"-"+(nextWeekDays()[0].getMonth()+1)+"-"+nextWeekDays()[0].getDate()}>
               <div className="day_name">  
                 <p className="text-14-semibold color-accent">S</p>
               </div>
@@ -294,7 +294,7 @@ const WeekPicker = ({ setModalState, week, setWeek, setEventModalId }) => {
                 <p className="text-14-medium color-accent">{nextWeekDays()[0].getDate()}</p>
               </div>
             </div>
-            <div className="week_day today" data-date={nextWeekDays()[1].getFullYear()+"-"+(nextWeekDays()[1].getMonth())+"-"+nextWeekDays()[1].getDate()}>
+            <div className="week_day today" data-date={nextWeekDays()[1].getFullYear()+"-"+(nextWeekDays()[1].getMonth()+1)+"-"+nextWeekDays()[1].getDate()}>
               <div className="day_name">  
                 <p className="text-14-semibold color-accent">M</p>
               </div>
@@ -302,7 +302,7 @@ const WeekPicker = ({ setModalState, week, setWeek, setEventModalId }) => {
                 <p className="text-14-medium color-accent">{nextWeekDays()[1].getDate()}</p>
               </div>
             </div>
-            <div className="week_day" data-date={nextWeekDays()[2].getFullYear()+"-"+(nextWeekDays()[2].getMonth())+"-"+nextWeekDays()[2].getDate()}>
+            <div className="week_day" data-date={nextWeekDays()[2].getFullYear()+"-"+(nextWeekDays()[2].getMonth()+1)+"-"+nextWeekDays()[2].getDate()}>
               <div className="day_name">  
                 <p className="text-14-semibold color-accent">T</p>
               </div>
@@ -310,7 +310,7 @@ const WeekPicker = ({ setModalState, week, setWeek, setEventModalId }) => {
                 <p className="text-14-medium color-accent">{nextWeekDays()[2].getDate()}</p>
               </div>
             </div>
-            <div className="week_day" data-date={nextWeekDays()[3].getFullYear()+"-"+(nextWeekDays()[3].getMonth())+"-"+nextWeekDays()[3].getDate()}>
+            <div className="week_day" data-date={nextWeekDays()[3].getFullYear()+"-"+(nextWeekDays()[3].getMonth()+1)+"-"+nextWeekDays()[3].getDate()}>
               <div className="day_name">  
                 <p className="text-14-semibold color-accent">W</p>
               </div>
@@ -318,7 +318,7 @@ const WeekPicker = ({ setModalState, week, setWeek, setEventModalId }) => {
                 <p className="text-14-medium color-accent">{nextWeekDays()[3].getDate()}</p>
               </div>
             </div>
-            <div className="week_day" data-date={nextWeekDays()[4].getFullYear()+"-"+(nextWeekDays()[4].getMonth())+"-"+nextWeekDays()[4].getDate()}>
+            <div className="week_day" data-date={nextWeekDays()[4].getFullYear()+"-"+(nextWeekDays()[4].getMonth()+1)+"-"+nextWeekDays()[4].getDate()}>
               <div className="day_name">  
                 <p className="text-14-semibold color-accent">T</p>
               </div>
@@ -326,7 +326,7 @@ const WeekPicker = ({ setModalState, week, setWeek, setEventModalId }) => {
                 <p className="text-14-medium color-accent">{nextWeekDays()[4].getDate()}</p>
               </div>
             </div>
-            <div className="week_day" data-date={nextWeekDays()[5].getFullYear()+"-"+(nextWeekDays()[5].getMonth())+"-"+nextWeekDays()[5].getDate()}>
+            <div className="week_day" data-date={nextWeekDays()[5].getFullYear()+"-"+(nextWeekDays()[5].getMonth()+1)+"-"+nextWeekDays()[5].getDate()}>
               <div className="day_name">  
                 <p className="text-14-semibold color-accent">F</p>
               </div>
@@ -334,7 +334,7 @@ const WeekPicker = ({ setModalState, week, setWeek, setEventModalId }) => {
                 <p className="text-14-medium color-accent">{nextWeekDays()[5].getDate()}</p>
               </div>
             </div>
-            <div className="week_day" data-date={nextWeekDays()[6].getFullYear()+"-"+(nextWeekDays()[6].getMonth())+"-"+nextWeekDays()[6].getDate()}>
+            <div className="week_day" data-date={nextWeekDays()[6].getFullYear()+"-"+(nextWeekDays()[6].getMonth()+1)+"-"+nextWeekDays()[6].getDate()}>
               <div className="day_name">  
                 <p className="text-14-semibold color-accent">S</p>
               </div>

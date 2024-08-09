@@ -6,7 +6,6 @@ const Modal = ({ state, setState, options, children }) => {
 
   options = options || {}
   
-  console.log("\n\n\n\n[MODAL STATE]", state);
   
   let dragging = false
   let clicked = false
@@ -45,7 +44,7 @@ const Modal = ({ state, setState, options, children }) => {
     container.classList.remove("partial")
     container.classList.add("open")
     modal.classList.add("darken")
-    scrollContainer ? scrollContainer.classList.remove("no_scroll") : console.log("=======:", scrollContainer); //allow content to be scrolled
+    scrollContainer ? scrollContainer.classList.remove("no_scroll") : 0 //allow content to be scrolled
   }
   const partial = () => {
     container.style = ""
@@ -57,8 +56,8 @@ const Modal = ({ state, setState, options, children }) => {
     container.classList.remove("closed")
     container.classList.add("partial")
     modal.classList.remove("darken")
-    scrollContainer ? scrollContainer.scrollTo({top:0}) : console.log("==scrollContainer::==", scrollContainer); //prevent content to be scrolled
-    scrollContainer ? scrollContainer.classList.add("no_scroll") : console.log("==not working"); //prevent content to be scrolled
+    scrollContainer ? scrollContainer.scrollTo({top:0}) : 0 //prevent content to be scrolled
+    scrollContainer ? scrollContainer.classList.add("no_scroll") : 0 //prevent content to be scrolled
   }
   const closed = () => {
     container.style = ""
