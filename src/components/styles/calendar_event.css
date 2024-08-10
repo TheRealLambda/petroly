@@ -2,7 +2,6 @@
   touch-action: none;
   user-select: none;
   position: absolute;
-  display: none;
   width: 42px;
   height: 75px;
   border: 3px solid #00A36C;
@@ -10,7 +9,6 @@
 }
 .calendar_event.edit .top_slider {
   user-select: none;
-  z-index: 1;
   position: absolute;
   top: -6px;
   left: 60%;

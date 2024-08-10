@@ -107,7 +107,6 @@ const TimeTable = ({ setModalState, setEventModalId, week, setWeek, setStartDate
 
       const posLeft = periodWidth * columnIndex
       const posTop = periodHeight * halfRowIndex
-      console.log(calendarEvents);
       if(calendarEvents.length > 0 && calendarEvents[calendarEvents.length-1].editing === true) {
         setCalendarEvents(calendarEvents => calendarEvents.slice(0, -1))
       } else {
@@ -561,7 +560,7 @@ const TimeTable = ({ setModalState, setEventModalId, week, setWeek, setStartDate
               <div></div>
               <div></div>
             </div>
-            {calendarEvents.map(event => event.week === "current" ? <CalendarEvent initialPosition={{left: event.left, top: event.top}} /> : false)}
+            {calendarEvents.map((event) => event.week === "current" ? <CalendarEvent initialPosition={{left: event.left, top: event.top}} editing={event.editing} /> : false)}
           </div>
           <div className="div2">
             <div className="horizontal_lines">
