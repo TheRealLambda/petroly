@@ -95,7 +95,7 @@ const TimeTable = ({ setModalState, setEventModalId, week, setWeek, setStartDate
     */
    
 
-   if(!e.target.classList.contains("calendar_event")) {
+   if(!e.target.matches(".calendar_event, .calendar_event .top_slider, .calendar_event .bottom_slider")) {
       //only consider clicks on empty area
 
       const columnIndex = Math.floor(mouseX / periodWidth) //0-indexed
@@ -355,7 +355,9 @@ const TimeTable = ({ setModalState, setEventModalId, week, setWeek, setStartDate
     initialOffsetX = e.clientX - container.getBoundingClientRect().left
                      + weekPicker.getBoundingClientRect().left
     initialOffsetY = document.getElementsByClassName("time_table")[0].scrollTop
-    mouseDown = true
+    if(!e.target.matches(".calendar_event.edit, .calendar_event.edit .top_slider, .calendar_event.edit .bottom_slider")) {
+      mouseDown = true
+    }
     clicked = true
     clearTimeout(timeout)
     timeout = setTimeout(() => {
@@ -363,11 +365,12 @@ const TimeTable = ({ setModalState, setEventModalId, week, setWeek, setStartDate
     }, 500)
   }
   const pointerMove = (e) => {
-    // log
+
     const mouseX = e.clientX
     const mouseY = e.clientY
     const left = (mouseX-initialOffsetX)
     const top = -(mouseY-initialMouseY)+initialOffsetY
+    
     if(mouseDown && !boolian && (mouseY < initialMouseY-10 || mouseY > initialMouseY+10)) {
       //scroll vertically
       lockHorizontalScrolling = true
