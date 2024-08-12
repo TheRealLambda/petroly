@@ -2,7 +2,7 @@ import { useEffect, useState } from "react"
 import "./styles/show_event_form.css"
 import axios from "axios"
 
-const ShowEventForm = ({ setModalState, setForm, eventModalId, setEventModalId }) => {
+const ShowEventForm = ({ askForConfirmation, setModalState, setForm, eventModalId, setEventModalId }) => {
 
   const [event, setEvent] = useState({title: "Loading"})
   const [showTaskForm, setShowTaskForm] = useState(false)
@@ -26,7 +26,13 @@ const ShowEventForm = ({ setModalState, setForm, eventModalId, setEventModalId }
   }
 
   const closeModal = (e) => {
-    setModalState("closed")
+    if(askForConfirmation) {
+      if(confirm("Close modal?")) {
+        setModalState("closed")
+      }
+    } else {
+      setModalState("closed")
+    }
   }
 
   const handleTaskForm = async (e) => {

@@ -3,7 +3,7 @@ import WeekPicker from "./WeekPicker"
 import NavBar from "./NavBar"
 import "./styles/schedule_page.css"
 import TimeTable from "./TimeTable"
-import { useEffect, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import axios from "axios"
 import CreateEventForm from "./CreateEventForm"
 import ShowEventForm from "./ShowEventForm"
@@ -12,6 +12,9 @@ import Modal from "./Modal"
 
 const SchedulePage = () => {
 
+  
+  const options = {swipeDownToClose: false, dragDownToClose: false}
+  const [askForConfirmation, setAskForConfirmation] = useState(false)
 
   /*
     State declarations
@@ -85,18 +88,18 @@ const SchedulePage = () => {
     <div className="schedule_page">
       <div onClick={hideSideMenu} id="menu_cover"></div>
 
-      <Modal state={modalState} setState={setModalState}>
+      <Modal options={options} state={modalState} setState={setModalState} askForConfirmation={askForConfirmation}>
         { 
-          form.type === "show" ? <ShowEventForm setModalState={setModalState} setForm={setForm} eventModalId={eventModalId} setEventModalId={setEventModalId} />
-        : form.type === "edit" ? <EditEventForm setModalState={setModalState} eventModalId={eventModalId} setEventModalId={setEventModalId} />
-        : form.type === "create" ? <CreateEventForm setModalState={setModalState} startDate={startDate} setStartDate={setStartDate} endDate={endDate} setEndDate={setEndDate} />
+          form.type === "show" ? <ShowEventForm askForConfirmation={askForConfirmation} setModalState={setModalState} setForm={setForm} eventModalId={eventModalId} setEventModalId={setEventModalId} />
+        : form.type === "edit" ? <EditEventForm askForConfirmation={askForConfirmation} setModalState={setModalState} eventModalId={eventModalId} setEventModalId={setEventModalId} />
+        : form.type === "create" ? <CreateEventForm askForConfirmation={askForConfirmation} setModalState={setModalState} startDate={startDate} setStartDate={setStartDate} endDate={endDate} setEndDate={setEndDate} />
         : 0
         }
       </Modal>
 
       <NavBar />
       <MenuBar />
-      <TimeTable setModalState={setModalState} week={week} setWeek={setWeek} setEventModalId={setEventModalId} setStartDate={setStartDate} setEndDate={setEndDate} />
+      <TimeTable setAskForConfirmation={setAskForConfirmation} modalState={modalState} setModalState={setModalState} week={week} setWeek={setWeek} setEventModalId={setEventModalId} setStartDate={setStartDate} setEndDate={setEndDate} />
     </div>
   )
 }

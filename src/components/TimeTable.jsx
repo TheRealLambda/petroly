@@ -1,15 +1,14 @@
-import { useEffect, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import "./styles/time_table.css"
 import WeekPicker from "./WeekPicker"
 import CalendarEvent from "./CalendarEvent"
-const TimeTable = ({ setModalState, setEventModalId, week, setWeek, setStartDate, setEndDate }) => {
+import Modal from "./Modal"
+
+const TimeTable = ({ setAskForConfirmation, modalState, setModalState, setEventModalId, week, setWeek, setStartDate, setEndDate }) => {
 
   const [calendarEvents, setCalendarEvents] = useState([])
+  const editMode = useRef(false)
   console.log(calendarEvents);
-
-
-
-
 
 
   const createEventDiv = (div, grid) => {
@@ -94,8 +93,7 @@ const TimeTable = ({ setModalState, setEventModalId, week, setWeek, setStartDate
       End of variable initializing
     */
    
-
-   if(!e.target.matches(".calendar_event, .calendar_event .top_slider, .calendar_event .bottom_slider")) {
+   if(!editMode.current && !e.target.matches(".calendar_event, .calendar_event .top_slider, .calendar_event .bottom_slider")) {
       //only consider clicks on empty area
 
       const columnIndex = Math.floor(mouseX / periodWidth) //0-indexed
@@ -109,6 +107,7 @@ const TimeTable = ({ setModalState, setEventModalId, week, setWeek, setStartDate
       const posTop = periodHeight * halfRowIndex
       if(calendarEvents.length > 0 && calendarEvents[calendarEvents.length-1].editing === true) {
         setCalendarEvents(calendarEvents => calendarEvents.slice(0, -1))
+        setModalState("closed")
       } else {
         setCalendarEvents(calendarEvents => calendarEvents.concat({left: posLeft, top: posTop, week: "current", editing: true}))
       }
@@ -459,11 +458,10 @@ const TimeTable = ({ setModalState, setEventModalId, week, setWeek, setStartDate
 
   return (
     <div className="time_table bgcolor-white">
-      
+    
       <div className="div1">
         <div className="bgcolor-BG"></div>
-        <p id="preciseTime" className="text-12-semibold color-primary"></p>
-        <p id="cirrentTime" className="text-12-semibold color-accent"></p>
+        <p className="text-12-semibold color-accent"></p>
         <p className="text-12-semibold color-accent">01:00</p>
         <p className="text-12-semibold color-accent">02:00</p>
         <p className="text-12-semibold color-accent">03:00</p>
@@ -487,6 +485,8 @@ const TimeTable = ({ setModalState, setEventModalId, week, setWeek, setStartDate
         <p className="text-12-semibold color-accent">21:00</p>
         <p className="text-12-semibold color-accent">22:00</p>
         <p className="text-12-semibold color-accent">23:00</p>
+        <p id="selectTime" className="text-12-semibold color-primary"></p>
+        <p id="currentTime" className="text-12-semibold color-accent"></p>
       </div>
       <div id="div2_wrapper" className="div2_wrapper">
   
@@ -565,7 +565,7 @@ const TimeTable = ({ setModalState, setEventModalId, week, setWeek, setStartDate
               <div></div>
               <div></div>
             </div>
-            {calendarEvents.map((event) => event.week === "current" ? <CalendarEvent initialPosition={{left: event.left, top: event.top}} editing={event.editing} /> : false)}
+            {calendarEvents.map((event) => event.week === "current" ? <CalendarEvent setCalendarEvents={setCalendarEvents} setAskForConfirmation={setAskForConfirmation} modalState={modalState} setModalState={setModalState} initialPosition={{left: event.left, top: event.top}} editing={event.editing} editMode={editMode}/> : false)}
           </div>
           <div className="div2">
             <div className="horizontal_lines">

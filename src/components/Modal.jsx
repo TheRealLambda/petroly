@@ -2,10 +2,9 @@ import { useEffect, useState } from "react"
 import "./styles/modal.css"
 
 
-const Modal = ({ state, setState, options, children }) => {
-
+const Modal = ({ state, setState, options, askForConfirmation, children }) => {
+  console.log();
   options = options || {}
-  
   
   let dragging = false
   let clicked = false
@@ -22,10 +21,9 @@ const Modal = ({ state, setState, options, children }) => {
   
   const openThresold = options.openThresold || 200
   const partialThresold = options.partialThresold || 500
-  const clickAwayToClose = options.clickAwayToClose || true
-  const swipeDownToClose = options.swipeDownToClose || true
-  const dragDownToClose = options.dragDownToClose || true
-
+  const clickAwayToClose = options.clickAwayToClose === true ? true : false
+  const swipeDownToClose = options.swipeDownToClose  === true ? true : false
+  const dragDownToClose = options.dragDownToClose  === true ? true : false
 
   /*
     These 3 functions (open, partial and closed) control the state of the modal.
