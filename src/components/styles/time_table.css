@@ -33,6 +33,7 @@
   height: 0px;
 }
 
+
 .time_table .div2_wrapper {
   overflow: hidden;
   height: fit-content;
@@ -42,6 +43,7 @@
   flex-shrink: 0;
   width: 300px;
   height: 1800px;
+  margin-bottom: 90px;
   display: grid;
   grid-template-columns: repeat(7, 1fr);
   grid-template-rows: repeat(24, 1fr);

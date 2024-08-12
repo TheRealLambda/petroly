@@ -462,6 +462,8 @@ const TimeTable = ({ setModalState, setEventModalId, week, setWeek, setStartDate
       
       <div className="div1">
         <div className="bgcolor-BG"></div>
+        <p id="preciseTime" className="text-12-semibold color-primary"></p>
+        <p id="cirrentTime" className="text-12-semibold color-accent"></p>
         <p className="text-12-semibold color-accent">01:00</p>
         <p className="text-12-semibold color-accent">02:00</p>
         <p className="text-12-semibold color-accent">03:00</p>

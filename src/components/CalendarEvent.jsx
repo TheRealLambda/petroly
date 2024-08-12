@@ -12,6 +12,7 @@ const CalendarEvent = ({ initialPosition, editing }) => {
   let pointerAction = null
   let initialMouseY
   let initialOffsetY
+  let initialHeight
 
   useEffect(() => {
     container = document.getElementById("clickContainer")
@@ -47,43 +48,70 @@ const CalendarEvent = ({ initialPosition, editing }) => {
 
     const mouseX = e.clientX - container.getBoundingClientRect().left    
     const mouseY = e.clientY - container.getBoundingClientRect().top - initialOffsetY
-    const left = divRef.current.getBoundingClientRect().left - container.getBoundingClientRect().left
     const top = divRef.current.getBoundingClientRect().top - container.getBoundingClientRect().top
+    const bottom = divRef.current.getBoundingClientRect().top+divRef.current.offsetHeight - container.getBoundingClientRect().top
     const width = container.offsetWidth
     const height = container.offsetHeight
     const columnWidth = width / 7
     const rowHeight = height / 24 / 6
     const columnIndex = Math.floor(mouseX/columnWidth)
     const rowIndex = Math.floor(mouseY/rowHeight)
-
+    const topRowIndex = Math.round(top/rowHeight)
+    const bottomRowIndex = Math.round(bottom/rowHeight)
+    
+    const maxRow = Math.floor(height/rowHeight)
     if(columnIndex >= 0 && columnIndex <= 6) {
       divRef.current.style.left = columnIndex*columnWidth+"px"
     }
-    if(rowIndex >= 0 && rowIndex <= 138) {
-      divRef.current.style.top = rowIndex*rowHeight+"px"
+    if(rowIndex >= 0 && rowIndex+(bottomRowIndex-topRowIndex) <= maxRow) {
+      divRef.current.style.top = Math.floor(rowIndex*rowHeight)+"px"
     }
-    console.log(columnIndex, rowIndex);
 
   }
   
   const slideUp = (e) => {
     const mouseY = e.clientY - container.getBoundingClientRect().top - initialOffsetY
-    const top = divRef.current.getBoundingClientRect().top - container.getBoundingClientRect().top
     const height = container.offsetHeight
+    const divHeight = divRef.current.getBoundingClientRect().height
+    const top = divRef.current.getBoundingClientRect().top - container.getBoundingClientRect().top
+    const bottom = divRef.current.getBoundingClientRect().top+divHeight - container.getBoundingClientRect().top
     const rowHeight = height / 24 / 6
     const rowIndex = Math.floor(mouseY/rowHeight)
-
+    const topRowIndex = Math.round(top/rowHeight)
+    const bottomRowIndex = Math.round(bottom/rowHeight)
+    
+    const maxRow = Math.floor(height/rowHeight)
+    if((bottomRowIndex-rowIndex) >= 1 && rowIndex >= 0 && bottomRowIndex <= maxRow) {
+      divRef.current.style.top = rowIndex*rowHeight+"px"
+      divRef.current.style.height = (bottomRowIndex-rowIndex)*rowHeight+"px"
+    }
+    
   }
 
   const slideDown = (e) => {
-    console.log("slideDown()");
+    const mouseY = e.clientY - container.getBoundingClientRect().top - initialOffsetY + initialHeight
+    const height = container.offsetHeight
+    const divHeight = divRef.current.getBoundingClientRect().height
+    const top = divRef.current.getBoundingClientRect().top - container.getBoundingClientRect().top
+    const rowHeight = height / 24 / 6
+    const rowIndex = Math.floor(mouseY/rowHeight)
+    const topRowIndex = Math.round(top/rowHeight)
+    
+    const bottom = divRef.current.getBoundingClientRect().top+divHeight - container.getBoundingClientRect().top
+    const bottomRowIndex = Math.round(bottom/rowHeight)
+    const maxRow = Math.floor(height/rowHeight)
+    if((rowIndex-topRowIndex) >= 1 && rowIndex >= 0 && bottomRowIndex <= maxRow) {
+      divRef.current.style.height = (rowIndex-topRowIndex)*rowHeight+"px"
+    }
+
   }
 
 
   const pointerDown = (e) => {
-    
+    console.log(e.target);
     initialMouseY = e.clientY
     initialOffsetY = initialMouseY - divRef.current.getBoundingClientRect().top
+    initialHeight = divRef.current.getBoundingClientRect().height
     if(e.target.matches(".calendar_event")) {
       pointerAction = "move"
     } else if(e.target.matches(".calendar_event .top_slider")) {
