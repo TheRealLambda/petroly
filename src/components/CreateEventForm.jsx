@@ -2,7 +2,7 @@ import { useState } from "react"
 import "./styles/create_event_form.css"
 import axios from "axios"
 
-const CreateEventForm = ({ setModalState, startDate, setStartDate, endDate, setEndDate}) => {
+const CreateEventForm = ({ setModalState, startDate, endDate }) => {
 
   const [color, setColor] = useState("#0000000")
   const [title, setTitle] = useState("")
@@ -16,7 +16,7 @@ const CreateEventForm = ({ setModalState, startDate, setStartDate, endDate, setE
       title,
       start_time: startDate,
       end_time: endDate,
-      type: "class"
+      type: "event"
     }
     const result = await axios.post("http://localhost:3001/api/events", body)
     console.log("===============================================\n",result.data);
@@ -24,7 +24,13 @@ const CreateEventForm = ({ setModalState, startDate, setStartDate, endDate, setE
   }
 
   const closeModal = (e) => {
-    setModalState("closed")
+    if(color !== "#0000000" || title !== "" || repeat !== false || reminders == true || description !== "" || attachments == true) {
+      if(confirm("Cancel this event?")) {
+        setModalState("closed")
+      }
+    } else {
+      setModalState("closed")
+    }
   }
 
   console.log("startDate", startDate, "\nendDate", endDate);

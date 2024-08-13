@@ -4,7 +4,7 @@ import WeekPicker from "./WeekPicker"
 import CalendarEvent from "./CalendarEvent"
 import Modal from "./Modal"
 
-const TimeTable = ({ setAskForConfirmation, modalState, setModalState, setEventModalId, week, setWeek, setStartDate, setEndDate }) => {
+const TimeTable = ({ setEventModalId, week, setWeek, setStartDate, setEndDate }) => {
 
   const [calendarEvents, setCalendarEvents] = useState([])
   const editMode = useRef(false)
@@ -107,7 +107,6 @@ const TimeTable = ({ setAskForConfirmation, modalState, setModalState, setEventM
       const posTop = periodHeight * halfRowIndex
       if(calendarEvents.length > 0 && calendarEvents[calendarEvents.length-1].editing === true) {
         setCalendarEvents(calendarEvents => calendarEvents.slice(0, -1))
-        setModalState("closed")
       } else {
         setCalendarEvents(calendarEvents => calendarEvents.concat({left: posLeft, top: posTop, week: "current", editing: true}))
       }
@@ -286,7 +285,6 @@ const TimeTable = ({ setAskForConfirmation, modalState, setModalState, setEventM
   let timeout
   let timeout2
   let lockHorizontalScrolling = false
-  let lockVerticalScrolling = false
   let boolian = false
 
 
@@ -490,7 +488,7 @@ const TimeTable = ({ setAskForConfirmation, modalState, setModalState, setEventM
       </div>
       <div id="div2_wrapper" className="div2_wrapper">
   
-        <WeekPicker setModalState={setModalState} week={week} setWeek={setWeek} setEventModalId={setEventModalId} />
+        <WeekPicker week={week} setWeek={setWeek} setEventModalId={setEventModalId} />
         <div id="div2_wrapperContainer" className="container">
           <div className="div2">
             <div className="horizontal_lines">
@@ -565,7 +563,7 @@ const TimeTable = ({ setAskForConfirmation, modalState, setModalState, setEventM
               <div></div>
               <div></div>
             </div>
-            {calendarEvents.map((event) => event.week === "current" ? <CalendarEvent setCalendarEvents={setCalendarEvents} setAskForConfirmation={setAskForConfirmation} modalState={modalState} setModalState={setModalState} initialPosition={{left: event.left, top: event.top}} editing={event.editing} editMode={editMode}/> : false)}
+            {calendarEvents.map((event) => event.week === "current" ? <CalendarEvent setCalendarEvents={setCalendarEvents} initialPosition={{left: event.left, top: event.top}} editing={event.editing} editMode={editMode}/> : false)}
           </div>
           <div className="div2">
             <div className="horizontal_lines">

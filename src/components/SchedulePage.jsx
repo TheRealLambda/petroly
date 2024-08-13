@@ -14,7 +14,6 @@ const SchedulePage = () => {
 
   
   const options = {swipeDownToClose: false, dragDownToClose: false}
-  const [askForConfirmation, setAskForConfirmation] = useState(false)
 
   /*
     State declarations
@@ -36,8 +35,6 @@ const SchedulePage = () => {
     return numberOfWeeks
   })
   const [eventModalId, setEventModalId] = useState({id: "", edit: false})
-  //modal is used to control the modal, ie. open or close the modal
-  const [modalState, setModalState] = useState("closed")
   //form is used to decide what type of form to render with its corresponding event
   const [form, setForm] = useState({type: "show", event: null}) 
 
@@ -88,18 +85,9 @@ const SchedulePage = () => {
     <div className="schedule_page">
       <div onClick={hideSideMenu} id="menu_cover"></div>
 
-      <Modal options={options} state={modalState} setState={setModalState} askForConfirmation={askForConfirmation}>
-        { 
-          form.type === "show" ? <ShowEventForm askForConfirmation={askForConfirmation} setModalState={setModalState} setForm={setForm} eventModalId={eventModalId} setEventModalId={setEventModalId} />
-        : form.type === "edit" ? <EditEventForm askForConfirmation={askForConfirmation} setModalState={setModalState} eventModalId={eventModalId} setEventModalId={setEventModalId} />
-        : form.type === "create" ? <CreateEventForm askForConfirmation={askForConfirmation} setModalState={setModalState} startDate={startDate} setStartDate={setStartDate} endDate={endDate} setEndDate={setEndDate} />
-        : 0
-        }
-      </Modal>
-
       <NavBar />
       <MenuBar />
-      <TimeTable setAskForConfirmation={setAskForConfirmation} modalState={modalState} setModalState={setModalState} week={week} setWeek={setWeek} setEventModalId={setEventModalId} setStartDate={setStartDate} setEndDate={setEndDate} />
+      <TimeTable week={week} setWeek={setWeek} setEventModalId={setEventModalId} setStartDate={setStartDate} setEndDate={setEndDate} />
     </div>
   )
 }

@@ -1,11 +1,18 @@
 import { useEffect, useRef, useState } from "react"
 import "./styles/calendar_event.css"
+import Modal from "./Modal"
+import ShowEventForm from "./ShowEventForm"
+import EditEventForm from "./EditEventForm"
+import CreateEventForm from "./CreateEventForm"
 
-const CalendarEvent = ({ setCalendarEvents, setAskForConfirmation, modalState, setModalState, initialPosition, editing, editMode }) => {
+const CalendarEvent = ({ setCalendarEvents, eventObject, initialPosition, editing, editMode }) => {
 
   const [state, setState] = useState(editing ? "edit" : "view")
   const [position, setPosition] = useState(initialPosition || {left: 0, top: 0})
-  const [event, setEvent] = useState(null)
+  const [event, setEvent] = useState(eventObject ? eventObject : null)
+  const [modalState, setModalState] = useState(null)
+  const [form, setForm] = useState(null)
+  const [AskForConfirmation, setAskForConfirmation] = useState(false)
   const divRef = useRef(null)
 
   let container
@@ -18,21 +25,21 @@ const CalendarEvent = ({ setCalendarEvents, setAskForConfirmation, modalState, s
   let initialOffsetY
   let initialHeight
 
-  if(modalState === "closed" && state === "edit" && divRef.current) {
-    setState("view")
-    editMode.current = false
-    setCalendarEvents(events => {
-      const newState = Array.from(events)
-      newState[newState.length-1].editing = false
-      return newState
-    })
-  }
+  useEffect(() => {
+    
+    
+  }, [])
+
+  useEffect(() => {
+    if(modalState === "closed") {
+      if(form === "create") {
+        setCalendarEvents(events => events.slice(0,-1))
+      } else if(form === "edit"){}
+    }
+  }, [modalState])
 
   useEffect(() => {
     
-    if(state === "edit") {
-      setModalState("partial")
-    }
     selectTime = document.getElementById("selectTime")
     container = document.getElementById("clickContainer")
     container.addEventListener("pointerdown", pointerDown)
@@ -40,9 +47,12 @@ const CalendarEvent = ({ setCalendarEvents, setAskForConfirmation, modalState, s
     container.addEventListener("pointerup", pointerUp)
 
     if(state === "view") {
+      setModalState("closed")
+      setAskForConfirmation(false)
       divRef.current.classList.remove("edit")
       divRef.current.classList.add("view")
     } else if(state === "edit") {
+      setModalState("partial")
       divRef.current.classList.remove("view")
       divRef.current.classList.add("edit")
     }
@@ -216,18 +226,25 @@ const CalendarEvent = ({ setCalendarEvents, setAskForConfirmation, modalState, s
        && finalMouseY < initialMouseY+10 && finalMouseY > initialMouseY-10) {
       reposition(e)
     } else if(state === "view" && !editMode.current
-              && e.target.matches(".calendar_event, .calendar_event .top_slider, .calendar_event .bottom_slider")) {
-             setModalState("partial")
-           }
+              && e.target.matches(".calendar_event.view, .calendar_event.view .top_slider, .calendar_event.view .bottom_slider")) {
+      setModalState("open")
+    }
 
     selectTime.style.display = "none"
-           console.log(e.target.matches(".calendar_event"));
   }
 
 
 
   return (
     <div ref={divRef} className="calendar_event">
+      <Modal>
+        {
+          form === "create" ? <CreateEventForm setModalState={setModalState} /> :
+          form === "view" ? <ShowEventForm /> : 
+          form === "edit" ? <EditEventForm /> :
+          0
+        }
+      </Modal>
       <div className="top_slider"></div>
       <div className="bottom_slider"></div>
     </div>
