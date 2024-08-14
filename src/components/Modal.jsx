@@ -1,8 +1,8 @@
-import { useEffect, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import "./styles/modal.css"
 
 
-const Modal = ({ state, setState, options, askForConfirmation, children }) => {
+const Modal = ({ state, setState, options, children }) => {
   console.log();
   options = options || {}
   
@@ -15,7 +15,7 @@ const Modal = ({ state, setState, options, askForConfirmation, children }) => {
   let initialMouseY;
   let timeout;
   let timeout2;
-  let modal;
+  const modal = useRef(null)
   let container;
   let scrollContainer;
   
@@ -34,6 +34,7 @@ const Modal = ({ state, setState, options, askForConfirmation, children }) => {
   */
   const open = () => {
     container.style = ""
+    console.log("ZZZZZZZZZZZZ::", container);
     container.classList.add("transition")
     setTimeout(()=>{
       container.classList.remove("transition")
@@ -41,7 +42,7 @@ const Modal = ({ state, setState, options, askForConfirmation, children }) => {
     container.classList.remove("closed")
     container.classList.remove("partial")
     container.classList.add("open")
-    modal.classList.add("darken")
+    modal.current.classList.add("darken")
     scrollContainer ? scrollContainer.classList.remove("no_scroll") : 0 //allow content to be scrolled
   }
   const partial = () => {
@@ -53,11 +54,12 @@ const Modal = ({ state, setState, options, askForConfirmation, children }) => {
     container.classList.remove("open")
     container.classList.remove("closed")
     container.classList.add("partial")
-    modal.classList.remove("darken")
+    modal.current.classList.remove("darken")
     scrollContainer ? scrollContainer.scrollTo({top:0}) : 0 //prevent content to be scrolled
     scrollContainer ? scrollContainer.classList.add("no_scroll") : 0 //prevent content to be scrolled
   }
   const closed = () => {
+    console.log("closed");
     container.style = ""
     container.classList.add("transition")
     setTimeout(()=>{
@@ -66,7 +68,7 @@ const Modal = ({ state, setState, options, askForConfirmation, children }) => {
     container.classList.remove("partial")
     container.classList.remove("open")
     container.classList.add("closed")
-    modal.classList.remove("darken")
+    modal.current.classList.remove("darken")
     scrollContainer ? scrollContainer.classList.add("no_scroll") : 0 //prevent content to be scrolled
   }
 
@@ -81,7 +83,7 @@ const Modal = ({ state, setState, options, askForConfirmation, children }) => {
     initialOffset = e.clientY - container.getBoundingClientRect().top
     mouseDown = true
     
-    modal.style.pointerEvents = "all"
+    modal.current.style.pointerEvents = "all"
 
     if(e.target.classList.contains("modalDragArea")) {
       dragging = true
@@ -229,7 +231,7 @@ const Modal = ({ state, setState, options, askForConfirmation, children }) => {
     const top = container.getBoundingClientRect().top
     const finalMouseY = e.clientY
     
-    modal.style.pointerEvents = "none"
+    modal.current.style.pointerEvents = "none"
 
     if(locked && scrollContainer.scrollTop === 0) {
       clearTimeout(timeout2)
@@ -281,14 +283,14 @@ const Modal = ({ state, setState, options, askForConfirmation, children }) => {
 
 
   useEffect(() => {
-
-    modal = document.getElementById("modal")
-    container = modal.firstElementChild
+    // modal = document.getElementById("modal")
+    
+    container = modal.current.firstElementChild
     scrollContainer = document.getElementsByClassName("modalScrollContainer")[0] || null
 
-    modal.addEventListener("pointerdown", pointerDown)
-    modal.addEventListener("pointermove", pointerMove)
-    modal.addEventListener("pointerup", pointerUp)
+    modal.current.addEventListener("pointerdown", pointerDown)
+    modal.current.addEventListener("pointermove", pointerMove)
+    modal.current.addEventListener("pointerup", pointerUp)
 
     if(state === "open") {
       open()
@@ -298,15 +300,19 @@ const Modal = ({ state, setState, options, askForConfirmation, children }) => {
       closed()
     }
 
+    let localRef = null
+    if(modal.current) {
+      localRef = modal.current
+    }
     return () => {
-      modal.removeEventListener("pointerdown", pointerDown)
-      modal.removeEventListener("pointermove", pointerMove)
-      modal.removeEventListener("pointerup", pointerUp)
+      localRef.removeEventListener("pointerdown", pointerDown)
+      localRef.removeEventListener("pointermove", pointerMove)
+      localRef.removeEventListener("pointerup", pointerUp)
     }
   }, [state])
 
   return (
-    <div id="modal" className="modal">
+    <div ref={modal} className="modal">
       <div className="modal_container bgcolor-BG closed">
         {children}
       </div>

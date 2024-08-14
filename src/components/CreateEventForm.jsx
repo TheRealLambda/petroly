@@ -1,11 +1,12 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import "./styles/create_event_form.css"
 import axios from "axios"
 
-const CreateEventForm = ({ setModalState, startDate, endDate }) => {
+const CreateEventForm = ({ setState, setCalendarEvents, editMode, setModalState, position }) => {
 
   const [color, setColor] = useState("#0000000")
   const [title, setTitle] = useState("")
+  const [time, setTime] = useState({start: new Date(), end: new Date()})
   const [repeat, setRepeat] = useState(false)
   const [reminders, setReminders] = useState([])
   const [description, setDescription] = useState("")
@@ -14,12 +15,22 @@ const CreateEventForm = ({ setModalState, startDate, endDate }) => {
   const postEvent = async (e) => {
     const body = {
       title,
-      start_time: startDate,
-      end_time: endDate,
+      start_time: time.start,
+      end_time: time.end,
       type: "event"
     }
-    const result = await axios.post("http://localhost:3001/api/events", body)
-    console.log("===============================================\n",result.data);
+    console.log(body);
+    setCalendarEvents(events => {
+      const newArray = events.slice(0,-1)
+      newArray.push({
+        initialPosition: position,
+        eventObject: body,
+        week: "current"
+      })
+      return newArray
+    })
+    editMode.current = false
+    setState("view")
     setModalState("closed")
   }
 
@@ -27,15 +38,47 @@ const CreateEventForm = ({ setModalState, startDate, endDate }) => {
     if(color !== "#0000000" || title !== "" || repeat !== false || reminders == true || description !== "" || attachments == true) {
       if(confirm("Cancel this event?")) {
         setModalState("closed")
+        setCalendarEvents(events => events.slice(0,-1))
+        editMode.current = false
       }
     } else {
       setModalState("closed")
+      setCalendarEvents(events => events.slice(0,-1))
+      editMode.current = false
     }
   }
 
-  console.log("startDate", startDate, "\nendDate", endDate);
+  useEffect(() => {
+    if(color !== "#0000000" || title !== "" || repeat !== false || reminders == true || description !== "" || attachments == true) {
+      editMode.current = true
+    }
+  })
+
+  useEffect(() => {
+    const container = document.getElementById("clickContainer")
+    const height = container.offsetHeight
+    const rowHeight = height / 24 / 6
+    const rowIndex = Math.round(position.top/rowHeight)
+    const hour = Math.floor(rowIndex/6)
+    const minute = (rowIndex % 6)*10
+    const width = container.offsetWidth
+    const columnWidth = width / 7
+    const columnIndex = Math.floor(position.left/columnWidth)
+    const date = document.getElementById("active").firstElementChild.children[columnIndex].getAttribute("data-date")
+    const startDate = new Date(date)
+    startDate.setHours(hour, minute)
+
+    const rowIndexEnd = Math.round((position.top+position.height)/rowHeight)
+    const hourEnd = Math.floor(rowIndexEnd/6)
+    const minuteEnd = (rowIndexEnd % 6)*10
+    const endDate = new Date(date)
+    endDate.setHours(hourEnd, minuteEnd)
+
+    setTime({start: startDate, end: endDate})
+  }, [position])
+
   return (
-    <div className="create_event_form">
+    <div className="create_event_form scrollContainer">
       <div className="drag_indicator bgcolor-accent"></div>
       <div className="container">
         <div className="left">
@@ -61,13 +104,13 @@ const CreateEventForm = ({ setModalState, startDate, endDate }) => {
         </div>
         <div className="middle">
           <p className="time text-16-regular color-accent">Time</p>
-          <p className="time_and_repeat text-16-regular color-accent">{startDate.toString()}</p>
-          <p className="time_and_repeat text-16-regular color-accent">{endDate.toString()}</p>
+          <p className="time_and_repeat text-16-regular color-accent">{time.start.toDateString()}</p>
+          <p className="time_and_repeat text-16-regular color-accent">{time.end.toDateString()}</p>
           <p className="time_and_repeat text-16-regular color-accent">Does not repeat</p>
         </div>
         <div className="right">
-          <p className="time_number1 text-16-regular color-accent">16:00</p>
-          <p className="time_number2 text-16-regular color-accent">17:00</p>
+          <p className="time_number1 text-16-regular color-accent">{time.start.getHours()}:{time.start.getMinutes()}</p>
+          <p className="time_number2 text-16-regular color-accent">{time.end.getHours()}:{time.end.getMinutes()}</p>
         </div>
       </div>
       <div className="separator"></div>

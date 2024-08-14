@@ -5,13 +5,13 @@ import ShowEventForm from "./ShowEventForm"
 import EditEventForm from "./EditEventForm"
 import CreateEventForm from "./CreateEventForm"
 
-const CalendarEvent = ({ setCalendarEvents, eventObject, initialPosition, editing, editMode }) => {
+const CalendarEvent = ({ setCalendarEvents, eventObject, initialPosition, editMode }) => {
 
-  const [state, setState] = useState(editing ? "edit" : "view")
-  const [position, setPosition] = useState(initialPosition || {left: 0, top: 0})
+  console.log("editMode:", editMode);
+  const [state, setState] = useState(editMode.current ? "edit" : "view")
+  const [position, setPosition] = useState(initialPosition || {left: 0, top: 0, height: 75})
   const [event, setEvent] = useState(eventObject ? eventObject : null)
   const [modalState, setModalState] = useState(null)
-  const [form, setForm] = useState(null)
   const [AskForConfirmation, setAskForConfirmation] = useState(false)
   const divRef = useRef(null)
 
@@ -26,17 +26,17 @@ const CalendarEvent = ({ setCalendarEvents, eventObject, initialPosition, editin
   let initialHeight
 
   useEffect(() => {
-    
+    if(event) {
+      setModalState("closed")
+      setState("view")
+      setAskForConfirmation(false)
+    } else {
+      setModalState("partial")
+      setState("edit")
+      setAskForConfirmation(false)
+    }
     
   }, [])
-
-  useEffect(() => {
-    if(modalState === "closed") {
-      if(form === "create") {
-        setCalendarEvents(events => events.slice(0,-1))
-      } else if(form === "edit"){}
-    }
-  }, [modalState])
 
   useEffect(() => {
     
@@ -56,7 +56,7 @@ const CalendarEvent = ({ setCalendarEvents, eventObject, initialPosition, editin
       divRef.current.classList.remove("view")
       divRef.current.classList.add("edit")
     }
-
+    console.log("[state]", state, event, editMode.current);
     return () => {
       container.removeEventListener("pointerdown", pointerDown)
       container.removeEventListener("pointermove", pointerMove)
@@ -67,9 +67,12 @@ const CalendarEvent = ({ setCalendarEvents, eventObject, initialPosition, editin
   useEffect(() => {
     divRef.current.style.top = position.top+"px" 
     divRef.current.style.left = position.left+"px"
+    divRef.current.style.height = position.height+"px"
   }, [position])
 
+  const saveEvent = () => {
 
+  }
 
   const updateSelectTime = (rowIndex, rowHeight) => {
 
@@ -98,12 +101,18 @@ const CalendarEvent = ({ setCalendarEvents, eventObject, initialPosition, editin
     
     const maxRow = Math.floor(height/rowHeight)
     if(columnIndex >= 0 && columnIndex <= 6) {
-      divRef.current.style.left = columnIndex*columnWidth+"px"
+      setPosition(prev => {
+        return {left: columnIndex*columnWidth, top: prev.top, height: prev.height}
+      })
     }
     if(rowIndex >= 0 && rowIndex+(bottomRowIndex-topRowIndex) <= maxRow) {
-      divRef.current.style.top = Math.floor(rowIndex*rowHeight)+"px"
+      setPosition(prev => {
+        return {left: prev.left, top: Math.floor(rowIndex*rowHeight), height: prev.height}
+      })
     } else if(rowIndex+(bottomRowIndex-topRowIndex) > maxRow) {
-      divRef.current.style.top = Math.floor((maxRow-(bottomRowIndex-topRowIndex))*rowHeight)+"px"
+      setPosition(prev => {
+        return {left: prev.left, top: Math.floor((maxRow-(bottomRowIndex-topRowIndex))*rowHeight), height: prev.height}
+      })
     }
 
   }
@@ -125,12 +134,16 @@ const CalendarEvent = ({ setCalendarEvents, eventObject, initialPosition, editin
     
     const maxRow = Math.floor(height/rowHeight)
     if(columnIndex >= 0 && columnIndex <= 6) {
-      divRef.current.style.left = columnIndex*columnWidth+"px"
       updateSelectTime(topRowIndex, rowHeight)
+      setPosition(prev => {
+        return {left: columnIndex*columnWidth, top: prev.top, height: prev.height}
+      })
     }
     if(rowIndex >= 0 && rowIndex+(bottomRowIndex-topRowIndex) <= maxRow) {
-      divRef.current.style.top = Math.floor(rowIndex*rowHeight)+"px"
       updateSelectTime(topRowIndex, rowHeight)
+      setPosition(prev => {
+        return {left: prev.left, top: Math.floor(rowIndex*rowHeight), height: prev.height}
+      })
     }
 
   }
@@ -146,9 +159,10 @@ const CalendarEvent = ({ setCalendarEvents, eventObject, initialPosition, editin
     
     const maxRow = Math.floor(height/rowHeight)
     if((bottomRowIndex-rowIndex) >= 1 && rowIndex >= 0 && bottomRowIndex <= maxRow) {
-      divRef.current.style.top = rowIndex*rowHeight+"px"
-      divRef.current.style.height = (bottomRowIndex-rowIndex)*rowHeight+"px"
       updateSelectTime(rowIndex, rowHeight)
+      setPosition(prev => {
+        return {left: prev.left, top: rowIndex*rowHeight, height: (bottomRowIndex-rowIndex)*rowHeight}
+      })
     }
         
   }
@@ -163,8 +177,10 @@ const CalendarEvent = ({ setCalendarEvents, eventObject, initialPosition, editin
     
     const maxRow = Math.floor(height/rowHeight)
     if((rowIndex-topRowIndex) >= 1 && rowIndex >= 0 && rowIndex <= maxRow) {
-      divRef.current.style.height = (rowIndex-topRowIndex)*rowHeight+"px"
       updateSelectTime(rowIndex, rowHeight)
+      setPosition(prev => {
+        return {left: prev.left, top: top, height: (rowIndex-topRowIndex)*rowHeight}
+      })
     }
 
   }
@@ -193,7 +209,6 @@ const CalendarEvent = ({ setCalendarEvents, eventObject, initialPosition, editin
   }
 
   const pointerMove = (e) => {
-    console.log(pointerAction);
     if(pointerAction === "move") {
       if(!editMode.current) {
         editMode.current = true
@@ -217,17 +232,18 @@ const CalendarEvent = ({ setCalendarEvents, eventObject, initialPosition, editin
   const pointerUp = (e) => {
   
     pointerAction = null
-
+    
     const finalMouseX = e.clientX
     const finalMouseY = e.clientY
     if(state === "edit" && editMode.current 
-       && !e.target.matches(".calendar_event, .calendar_event .top_slider, .calendar_event .bottom_slider")
+       && e.target.matches(".vertical_lines")
        && clicked && finalMouseX < initialMouseX+10 && finalMouseX > initialMouseX-10
        && finalMouseY < initialMouseY+10 && finalMouseY > initialMouseY-10) {
       reposition(e)
     } else if(state === "view" && !editMode.current
-              && e.target.matches(".calendar_event.view, .calendar_event.view .top_slider, .calendar_event.view .bottom_slider")) {
+              && e.target == divRef.current) {
       setModalState("open")
+      console.log("HAAHHAHHAHHAHAHAHAHHAHAHAHAHAHAHAHAHAHHAHHAHAHAHHAHAHA");
     }
 
     selectTime.style.display = "none"
@@ -237,11 +253,12 @@ const CalendarEvent = ({ setCalendarEvents, eventObject, initialPosition, editin
 
   return (
     <div ref={divRef} className="calendar_event">
-      <Modal>
+      {state === "view" && <p>{event && event.title}</p>}
+      <Modal state={modalState} setState={setModalState} options={{swipeDownToClose:false,DragDownToClose:false,clickAwayToClose:false}}>
         {
-          form === "create" ? <CreateEventForm setModalState={setModalState} /> :
-          form === "view" ? <ShowEventForm /> : 
-          form === "edit" ? <EditEventForm /> :
+          state === "edit"&&!event ? <CreateEventForm setState={setState} setCalendarEvents={setCalendarEvents} editMode={editMode} setModalState={setModalState} position={position} /> :
+          state === "view" ? <ShowEventForm /> : 
+          state === "edit" ? <EditEventForm /> :
           0
         }
       </Modal>

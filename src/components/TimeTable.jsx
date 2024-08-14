@@ -93,7 +93,7 @@ const TimeTable = ({ setEventModalId, week, setWeek, setStartDate, setEndDate })
       End of variable initializing
     */
    
-   if(!editMode.current && !e.target.matches(".calendar_event, .calendar_event .top_slider, .calendar_event .bottom_slider")) {
+   if(!editMode.current && e.target.matches(".vertical_lines")) {
       //only consider clicks on empty area
 
       const columnIndex = Math.floor(mouseX / periodWidth) //0-indexed
@@ -105,10 +105,12 @@ const TimeTable = ({ setEventModalId, week, setWeek, setStartDate, setEndDate })
 
       const posLeft = periodWidth * columnIndex
       const posTop = periodHeight * halfRowIndex
-      if(calendarEvents.length > 0 && calendarEvents[calendarEvents.length-1].editing === true) {
+      if(calendarEvents.length > 0 && !calendarEvents[calendarEvents.length-1].eventObject && !editMode.current) {
         setCalendarEvents(calendarEvents => calendarEvents.slice(0, -1))
+        console.log("CHOP CHOP CHOP");
       } else {
-        setCalendarEvents(calendarEvents => calendarEvents.concat({left: posLeft, top: posTop, week: "current", editing: true}))
+        console.log("ADDD ADDD ADDD");
+        setCalendarEvents(calendarEvents => calendarEvents.concat({initialPosition: {left: posLeft, top: posTop, height: 75}, week: "current", eventObject: null}))
       }
 
     } 
@@ -352,7 +354,8 @@ const TimeTable = ({ setEventModalId, week, setWeek, setStartDate, setEndDate })
     initialOffsetX = e.clientX - container.getBoundingClientRect().left
                      + weekPicker.getBoundingClientRect().left
     initialOffsetY = document.getElementsByClassName("time_table")[0].scrollTop
-    if(!e.target.matches(".calendar_event.edit, .calendar_event.edit .top_slider, .calendar_event.edit .bottom_slider")) {
+    console.log(e.target);
+    if(e.target.matches(".vertical_lines")) {
       mouseDown = true
     }
     clicked = true
@@ -563,7 +566,7 @@ const TimeTable = ({ setEventModalId, week, setWeek, setStartDate, setEndDate })
               <div></div>
               <div></div>
             </div>
-            {calendarEvents.map((event) => event.week === "current" ? <CalendarEvent setCalendarEvents={setCalendarEvents} initialPosition={{left: event.left, top: event.top}} editing={event.editing} editMode={editMode}/> : false)}
+            {calendarEvents.map((event) => event.week === "current" ? <CalendarEvent setCalendarEvents={setCalendarEvents} eventObject={event.eventObject} initialPosition={event.initialPosition} editMode={editMode}/> : false)}
           </div>
           <div className="div2">
             <div className="horizontal_lines">
