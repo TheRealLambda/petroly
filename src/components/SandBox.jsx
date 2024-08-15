@@ -1,77 +1,34 @@
-import { useEffect, useState } from "react"
-import Modal from "./Modal"
-import NavBar from "./NavBar"
-import "./styles/sandbox_page.css"
-import ShowEventForm from "./ShowEventForm"
-import axios from "axios"
-import EditEventForm from "./EditEventForm"
-
-const Form = ({ setState, setForm }) => {
-
-  return (
-    <div>
-      <div className="dragArea drag_area"></div>
-      <div className="scrollContainer scroll_content">
-        <div onClick={()=>setForm("edit")} className="dragArea2 drag_area2"></div>
-        <div ></div>
-        <div></div>
-        <div></div>
-        <div></div>
-        <div></div>
-        <div></div>
-        <div></div>
-        <div></div>
-        <div></div>
-        <div></div>
-        <div></div>
-        <div></div>
-      </div>
-    </div>
-  )
-}
-
-const FormEdit = ({ setState, setForm }) => {
-
-  return (
-    <div>
-      <div className="dragArea drag_area"></div>
-      <div className=" scroll_content">
-        <div onClick={()=>setForm("show")} className="dragArea2 drag_area2"></div>
-        <div></div>
-      </div>
-    </div>
-  )
-}
-
 const SandBox = () => {
 
-  const [state, setState] = useState("closed")
-  const [form, setForm] = useState("show") //show, edit, 
-  const [eventModalId, setEventModalId] = useState(null) 
+  const firstDayOfYear = new Date(2024, 1-1, 1)
+  const daysUntilFirstSunday = firstDayOfYear.getDay() === 0 ? 0 : 7-firstDayOfYear.getDay()
+  
+  //get first sunday after first day of year. Calculations will use this as the first day of the year
+  const firstSundayOfYear = new Date(firstDayOfYear)
+  firstSundayOfYear.setDate(firstSundayOfYear.getDate() + daysUntilFirstSunday)
+  
+  const currentDate = new Date()
+  const numberOfDays = (currentDate - firstSundayOfYear) / (1*24*60*60*1000)
 
-  useEffect(() => {
-    async function load() {
-      const result = await axios.get("http://localhost:3001/api/events")
-      console.log(result.data[0]._id);
-      setEventModalId({id: result.data[0]._id, edit: false})
-    }  
-    load()
-  }, [])
+  const numberOfWeeks = Math.floor(numberOfDays / 7)
 
-  console.log("eventModalId:", eventModalId);
+  const prevWeekStart = new Date(firstSundayOfYear.getFullYear(), 1-1, firstSundayOfYear.getDate()+7*(numberOfWeeks-1), 0, 0)
+  const prevWeekEnd = new Date(firstSundayOfYear.getFullYear(), 1-1, firstSundayOfYear.getDate()+7*(numberOfWeeks-1) + 6, 23, 59)
+
+  const currentWeekStart = new Date(firstSundayOfYear.getFullYear(), 1-1, firstSundayOfYear.getDate()+7*numberOfWeeks, 0, 0)
+  const currentWeekEnd = new Date(firstSundayOfYear.getFullYear(), 1-1, firstSundayOfYear.getDate()+7*numberOfWeeks + 6, 23, 59)
+
+  const nextWeekStart = new Date(firstSundayOfYear.getFullYear(), 1-1, firstSundayOfYear.getDate()+7*(numberOfWeeks+1), 0, 0)
+  const nextWeekEnd = new Date(firstSundayOfYear.getFullYear(), 1-1, firstSundayOfYear.getDate()+7*(numberOfWeeks+1) + 6, 23, 59)
+
+  const testDate = new Date(firstSundayOfYear.getFullYear(), 1-1, firstSundayOfYear.getDate()+7*numberOfWeeks+2, 0, 0)
+
+  const result = testDate.getTime() >= currentWeekStart.getTime() && testDate.getTime() <= currentWeekEnd.getTime()
+  console.log(testDate, testDate.getDay());
+
   return (
     <div className="sandbox_page">
-      <NavBar />
-      <button onClick={()=>setState("partial")}>open modal</button>
-      <Modal state={state} setState={setState}>
-        {/* {
-          form === "show" ? <Form setState={setState} setForm={setForm} />
-          : form === "edit" ? <FormEdit setState={setState} setForm={setForm}/>
-          : 1
-        } */}
-        {/* {eventModalId && <ShowEventForm eventModalId={eventModalId} setEventModalId={setEventModalId}/>} */}
-        {eventModalId && <EditEventForm eventModalId={eventModalId} setEventModalId={setEventModalId}/>}
-      </Modal>
+      
     </div>
   )
 }

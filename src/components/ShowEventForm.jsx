@@ -2,23 +2,23 @@ import { useEffect, useState } from "react"
 import "./styles/show_event_form.css"
 import axios from "axios"
 
-const ShowEventForm = ({ askForConfirmation, setModalState, setForm, eventModalId, setEventModalId }) => {
+const ShowEventForm = ({ askForConfirmation, setModalState, setState, eventObject, setEventObject }) => {
 
-  const [event, setEvent] = useState({title: "Loading"})
+  const [event, setEvent] = useState(eventObject ? eventObject : {title: "loading"})
   const [showTaskForm, setShowTaskForm] = useState(false)
   const [taskTitle, setTaskTitle] = useState("")
   const [taskDescription, setTaskDescription] = useState("")
 
-  useEffect(() => {
-    async function loadEvent() {
-      const result = await axios.get("http://localhost:3001/api/events/"+eventModalId.id)
-      setEvent(result.data)
-    }
-    loadEvent()
-  }, [eventModalId])
+  // useEffect(() => {
+  //   async function loadEvent() {
+  //     const result = await axios.get("http://localhost:3001/api/events/"+eventModalId.id)
+  //     setEvent(result.data)
+  //   }
+  //   loadEvent()
+  // }, [eventModalId])
 
   const changeToEdit = (e) => {
-    setForm({type: "edit", event: event})
+    setState("edit")
   }
 
   const deleteEvent = async (e) => {
@@ -26,13 +26,7 @@ const ShowEventForm = ({ askForConfirmation, setModalState, setForm, eventModalI
   }
 
   const closeModal = (e) => {
-    if(askForConfirmation) {
-      if(confirm("Close modal?")) {
-        setModalState("closed")
-      }
-    } else {
-      setModalState("closed")
-    }
+    setModalState("closed")
   }
 
   const handleTaskForm = async (e) => {

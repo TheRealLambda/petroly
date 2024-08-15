@@ -1,15 +1,41 @@
-import { useEffect, useRef, useState } from "react"
+import { useDeferredValue, useEffect, useRef, useState } from "react"
 import "./styles/time_table.css"
 import WeekPicker from "./WeekPicker"
 import CalendarEvent from "./CalendarEvent"
 import Modal from "./Modal"
+import axios from "axios"
 
 const TimeTable = ({ setEventModalId, week, setWeek, setStartDate, setEndDate }) => {
 
   const [calendarEvents, setCalendarEvents] = useState([])
   const editMode = useRef(false)
-  console.log(calendarEvents);
 
+
+  const updateSchedule = () => {
+    async function loadEvents() {
+      const result = await axios.get("http://localhost:3001/api/events?week="+week)
+
+      const modifiedResult = result.data.map(event => {
+
+        const container = document.getElementById("clickContainer")
+        const width = container.offsetWidth
+        const height = container.offsetHeight
+        const columnWidth = width / 7
+        const rowHeight = height / 24 / 6
+        const columnIndex = new Date(event.eventObject.start_time).getDay()
+        const rowIndex = Math.floor((new Date(event.eventObject.start_time).getHours()*60 + new Date(event.eventObject.start_time).getMinutes()) / 10)
+        const rowIndexEnd = Math.floor((new Date(event.eventObject.end_time).getHours()*60 + new Date(event.eventObject.end_time).getMinutes()) / 10)
+        const divHeight = (rowIndexEnd-rowIndex)*rowHeight
+        const newEvent = {...event, initialPosition: {left: columnIndex*columnWidth, top: rowIndex*rowHeight, height: divHeight}}
+        return newEvent
+      })
+
+      console.log(modifiedResult);
+
+      setCalendarEvents(modifiedResult)
+    }
+    loadEvents()
+  }
 
   const createEventDiv = (div, grid) => {
     const index = Array.from(grid.children).indexOf(div) + 1
@@ -107,9 +133,7 @@ const TimeTable = ({ setEventModalId, week, setWeek, setStartDate, setEndDate })
       const posTop = periodHeight * halfRowIndex
       if(calendarEvents.length > 0 && !calendarEvents[calendarEvents.length-1].eventObject && !editMode.current) {
         setCalendarEvents(calendarEvents => calendarEvents.slice(0, -1))
-        console.log("CHOP CHOP CHOP");
       } else {
-        console.log("ADDD ADDD ADDD");
         setCalendarEvents(calendarEvents => calendarEvents.concat({initialPosition: {left: posLeft, top: posTop, height: 75}, week: "current", eventObject: null}))
       }
 
@@ -354,8 +378,7 @@ const TimeTable = ({ setEventModalId, week, setWeek, setStartDate, setEndDate })
     initialOffsetX = e.clientX - container.getBoundingClientRect().left
                      + weekPicker.getBoundingClientRect().left
     initialOffsetY = document.getElementsByClassName("time_table")[0].scrollTop
-    console.log(e.target);
-    if(e.target.matches(".vertical_lines")) {
+    if(e.target.matches(".vertical_lines, .calendar_event.view, p")) {
       mouseDown = true
     }
     clicked = true
@@ -426,7 +449,10 @@ const TimeTable = ({ setEventModalId, week, setWeek, setStartDate, setEndDate })
     boolian = false
   }
 
-
+  useEffect(() => {
+    updateSchedule()
+  }, [week])
+  
   useEffect(() => {
 
     weekPicker = document.getElementById("div2_wrapper")
@@ -529,6 +555,7 @@ const TimeTable = ({ setEventModalId, week, setWeek, setStartDate, setEndDate })
               <div></div>
               <div></div>
             </div>
+            {calendarEvents.map((event) => event.week === "previous" ? <CalendarEvent setCalendarEvents={setCalendarEvents} eventObject={event.eventObject} initialPosition={event.initialPosition} editMode={editMode}/> : false)}
           </div>
           <div id="clickContainer" className="div2">
             <div className="horizontal_lines">
@@ -566,7 +593,7 @@ const TimeTable = ({ setEventModalId, week, setWeek, setStartDate, setEndDate })
               <div></div>
               <div></div>
             </div>
-            {calendarEvents.map((event) => event.week === "current" ? <CalendarEvent setCalendarEvents={setCalendarEvents} eventObject={event.eventObject} initialPosition={event.initialPosition} editMode={editMode}/> : false)}
+            {calendarEvents.map((event) => event.week === "current" ? <CalendarEvent updateSchedule={updateSchedule} setCalendarEvents={setCalendarEvents} eventObject={event.eventObject} initialPosition={event.initialPosition} editMode={editMode}/> : false)}
           </div>
           <div className="div2">
             <div className="horizontal_lines">
@@ -604,6 +631,7 @@ const TimeTable = ({ setEventModalId, week, setWeek, setStartDate, setEndDate })
               <div></div>
               <div></div>
             </div>
+            {calendarEvents.map((event) => event.week === "next" ? <CalendarEvent setCalendarEvents={setCalendarEvents} eventObject={event.eventObject} initialPosition={event.initialPosition} editMode={editMode}/> : false)}
           </div>
         </div>
       </div>

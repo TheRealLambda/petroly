@@ -2,7 +2,7 @@ import { useEffect, useState } from "react"
 import "./styles/create_event_form.css"
 import axios from "axios"
 
-const CreateEventForm = ({ setState, setCalendarEvents, editMode, setModalState, position }) => {
+const CreateEventForm = ({ saveEvent, setState, setCalendarEvents, editMode, setModalState, position }) => {
 
   const [color, setColor] = useState("#0000000")
   const [title, setTitle] = useState("")
@@ -19,19 +19,7 @@ const CreateEventForm = ({ setState, setCalendarEvents, editMode, setModalState,
       end_time: time.end,
       type: "event"
     }
-    console.log(body);
-    setCalendarEvents(events => {
-      const newArray = events.slice(0,-1)
-      newArray.push({
-        initialPosition: position,
-        eventObject: body,
-        week: "current"
-      })
-      return newArray
-    })
-    editMode.current = false
-    setState("view")
-    setModalState("closed")
+    saveEvent(body)
   }
 
   const closeModal = (e) => {
@@ -78,7 +66,7 @@ const CreateEventForm = ({ setState, setCalendarEvents, editMode, setModalState,
   }, [position])
 
   return (
-    <div className="create_event_form scrollContainer">
+    <div className="create_event_form modalScrollContainer">
       <div className="drag_indicator bgcolor-accent"></div>
       <div className="container">
         <div className="left">

@@ -2,7 +2,7 @@ import { useEffect, useState } from "react"
 import "./styles/week_picker.css"
 import axios from "axios"
 
-const WeekPicker = ({ setModalState, week, setWeek, setEventModalId }) => {
+const WeekPicker = ({ week, setEventModalId }) => {
 
 
   const resetSchedule = async () => {
@@ -112,7 +112,7 @@ const WeekPicker = ({ setModalState, week, setWeek, setEventModalId }) => {
       }
     })()
     document.getElementById("week_picker_wrapper").scrollTo({ behavior: "instant", left: 360})
-    resetSchedule()
+    // resetSchedule()
     
   }, [week])
 

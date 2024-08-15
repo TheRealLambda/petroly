@@ -2,9 +2,11 @@ import { useEffect, useState } from "react"
 import "./styles/edit_event_form.css"
 import axios from "axios"
 
-const EditEventForm = ({ setModalState, eventModalId, setEventModalId }) => {
+const EditEventForm = ({ setState, setModalState, eventObject, saveEvent, position, setPosition, prevPosition, editMode }) => {
 
-  const [event, setEvent] = useState({title: "Loading"})
+  const [event, setEvent] = useState(eventObject ? eventObject : {title: "Loading"})
+  const [title, setTitle] = useState(eventObject ? eventObject.title : "loading")
+  const [time, setTime] = useState({start: new Date(), end: new Date()})
   const [showActivityForm, setShowActivityForm] = useState(false)
   const [activityTitle, setActivityTitle] = useState("")
   const [activityDescription, setActivityDescription] = useState("")
@@ -12,15 +14,46 @@ const EditEventForm = ({ setModalState, eventModalId, setEventModalId }) => {
   const [taskTitle, setTaskTitle] = useState("")
   const [taskDescription, setTaskDescription] = useState("")
 
+  const save = (e) => {
+    const body = {
+      title,
+      start_time: time.start,
+      end_time: time.end,
+      type: "event"
+    }
+    saveEvent(body)
+  }
+
+  // useEffect(() => {
+  //   async function loadEvent() {
+  //     const result = await axios.get("http://localhost:3001/api/events/"+eventModalId.id)
+  //     setEvent(result.data)
+  //   }
+  //   loadEvent()
+  // }, [eventModalId])
 
   useEffect(() => {
-    async function loadEvent() {
-      const result = await axios.get("http://localhost:3001/api/events/"+eventModalId.id)
-      setEvent(result.data)
-    }
-    loadEvent()
-  }, [eventModalId])
-  console.log("event.course_activities.length:", event.course_activities && event.course_activities.concat({title:"a",description:"b"}).map(a=>console.log("HAHAHAHHAHAHAHAH")));
+    const container = document.getElementById("clickContainer")
+    const height = container.offsetHeight
+    const rowHeight = height / 24 / 6
+    const rowIndex = Math.round(position.top/rowHeight)
+    const hour = Math.floor(rowIndex/6)
+    const minute = (rowIndex % 6)*10
+    const width = container.offsetWidth
+    const columnWidth = width / 7
+    const columnIndex = Math.floor(position.left/columnWidth)
+    const date = document.getElementById("active").firstElementChild.children[columnIndex].getAttribute("data-date")
+    const startDate = new Date(date)
+    startDate.setHours(hour, minute)
+
+    const rowIndexEnd = Math.round((position.top+position.height)/rowHeight)
+    const hourEnd = Math.floor(rowIndexEnd/6)
+    const minuteEnd = (rowIndexEnd % 6)*10
+    const endDate = new Date(date)
+    endDate.setHours(hourEnd, minuteEnd)
+
+    setTime({start: startDate, end: endDate})
+  }, [position])
 
   const handleActivityForm = async (e) => {
     const body = {
@@ -48,7 +81,19 @@ const EditEventForm = ({ setModalState, eventModalId, setEventModalId }) => {
   }
 
   const closeModal = (e) => {
-    setModalState("closed")
+    if(title !== event.title || position.top !== prevPosition.top || position.left !== prevPosition.left || position.height !== prevPosition.height) {
+      if(confirm("Cancel changes?")) {
+        editMode.current = false
+        setState("view")
+        setModalState("closed")
+        setPosition(prevPosition)
+      }
+    } else {
+      editMode.current = false
+      setState("view")
+      setModalState("closed")
+      setPosition(prevPosition)
+    }
   }
 
   return (
@@ -61,7 +106,7 @@ const EditEventForm = ({ setModalState, eventModalId, setEventModalId }) => {
           </div>
           <div className="middle modalDragArea"></div>
           <div className="right">
-            <div className="save_button text-14-medium bgcolor-primary color-white">Save</div>
+            <div onClick={save} className="save_button text-14-medium bgcolor-primary color-white">Save</div>
           </div>
         </div>
         <div className="container title">
