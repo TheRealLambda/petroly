@@ -9,6 +9,7 @@ const TimeTable = ({ setEventModalId, week, setWeek, setStartDate, setEndDate })
 
   const [calendarEvents, setCalendarEvents] = useState([])
   const editMode = useRef(false)
+  const editing = useRef(false)
 
 
   const updateSchedule = () => {
@@ -16,7 +17,7 @@ const TimeTable = ({ setEventModalId, week, setWeek, setStartDate, setEndDate })
       const result = await axios.get("http://localhost:3001/api/events?week="+week)
 
       const modifiedResult = result.data.map(event => {
-
+        console.log(event);
         const container = document.getElementById("clickContainer")
         const width = container.offsetWidth
         const height = container.offsetHeight
@@ -30,8 +31,8 @@ const TimeTable = ({ setEventModalId, week, setWeek, setStartDate, setEndDate })
         return newEvent
       })
 
-      // console.log(modifiedResult);
-
+      console.log(modifiedResult);
+      editMode.current = false
       setCalendarEvents(modifiedResult)
     }
     loadEvents()
@@ -131,10 +132,12 @@ const TimeTable = ({ setEventModalId, week, setWeek, setStartDate, setEndDate })
 
       const posLeft = periodWidth * columnIndex
       const posTop = periodHeight * halfRowIndex
-      if(calendarEvents.length > 0 && !calendarEvents[calendarEvents.length-1].eventObject && !editMode.current) {
+      if(calendarEvents.length > 0 && !calendarEvents[calendarEvents.length-1].eventObject) {
         setCalendarEvents(calendarEvents => calendarEvents.slice(0, -1))
+        editing.current = false
       } else {
         setCalendarEvents(calendarEvents => calendarEvents.concat({initialPosition: {left: posLeft, top: posTop, height: 75}, week: "current", eventObject: null}))
+        editing.current = true
       }
 
     } 
@@ -555,7 +558,7 @@ const TimeTable = ({ setEventModalId, week, setWeek, setStartDate, setEndDate })
               <div></div>
               <div></div>
             </div>
-            {calendarEvents.map((event) => event.week === "previous" ? <CalendarEvent setCalendarEvents={setCalendarEvents} eventObject={event.eventObject} initialPosition={event.initialPosition} editMode={editMode}/> : false)}
+            {calendarEvents.map((event) => event.week === "previous" ? <CalendarEvent key={event.eventObject._id} week={event.week} setCalendarEvents={setCalendarEvents} eventObject={event.eventObject} initialPosition={event.initialPosition} editMode={editMode}/> : false)}
           </div>
           <div id="clickContainer" className="div2">
             <div className="horizontal_lines">
@@ -593,7 +596,7 @@ const TimeTable = ({ setEventModalId, week, setWeek, setStartDate, setEndDate })
               <div></div>
               <div></div>
             </div>
-            {calendarEvents.map((event) => event.week === "current" ? <CalendarEvent updateSchedule={updateSchedule} setCalendarEvents={setCalendarEvents} eventObject={event.eventObject} initialPosition={event.initialPosition} editMode={editMode}/> : false)}
+            {calendarEvents.map((event) => event.week === "current" ? <CalendarEvent key={event.eventObject ? event.eventObject._id : false} week={event.week} editing={editing} updateSchedule={updateSchedule} setCalendarEvents={setCalendarEvents} eventObject={event.eventObject} initialPosition={event.initialPosition} editMode={editMode}/> : false)}
           </div>
           <div className="div2">
             <div className="horizontal_lines">
@@ -631,7 +634,7 @@ const TimeTable = ({ setEventModalId, week, setWeek, setStartDate, setEndDate })
               <div></div>
               <div></div>
             </div>
-            {calendarEvents.map((event) => event.week === "next" ? <CalendarEvent setCalendarEvents={setCalendarEvents} eventObject={event.eventObject} initialPosition={event.initialPosition} editMode={editMode}/> : false)}
+            {calendarEvents.map((event) => event.week === "next" ? <CalendarEvent key={event.eventObject._id} week={event.week} setCalendarEvents={setCalendarEvents} eventObject={event.eventObject} initialPosition={event.initialPosition} editMode={editMode}/> : false)}
           </div>
         </div>
       </div>

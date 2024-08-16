@@ -86,7 +86,7 @@ const SchedulePage = () => {
       <div onClick={hideSideMenu} id="menu_cover"></div>
 
       <NavBar />
-      <MenuBar />
+      <MenuBar setWeek={setWeek} />
       <TimeTable week={week} setWeek={setWeek} setEventModalId={setEventModalId} setStartDate={setStartDate} setEndDate={setEndDate} />
     </div>
   )

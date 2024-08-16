@@ -11,9 +11,6 @@ import { Link } from "react-router-dom"
   const [term, setTerm] = useState("")
   const [department, setDepartment] = useState("")
 
-  console.log(term);
-  console.log(department);
-  console.log(activeTerm);
 
   const openSearchModal = (e) => {
     const modalContainer = document.getElementById("searchModalContainer")
@@ -25,11 +22,11 @@ import { Link } from "react-router-dom"
 
     async function loadActiveCourses() {
       const result = await axios.get("http://localhost:3001/api/active-courses")
-      console.log(result.data.map(temp => {
-        const a = temp.course_id
-        a.id = temp._id
-        return a
-      }));
+      // console.log(result.data.map(temp => {
+      //   const a = temp.course_id
+      //   a.id = temp._id
+      //   return a
+      // }));
       setActiveCourses(result.data.map(temp => {
         const a = temp.course_id
         a.id = temp._id
@@ -50,13 +47,16 @@ import { Link } from "react-router-dom"
   }, [])
 
   const addCourse = async (course) => {
-    console.log("CCCCCCCCCCCCCCCCCCCCC:", course);
+    console.log("Adding course:", course);
     const body = {
-      course_id: course._id
+      course_id: course._id,
+      term
     }
     const result = await axios.post("http://localhost:3001/api/active-courses", body)
     console.log(result.data);
-    setActiveCourses(activeCourses.concat(result.data._id))
+    const activeCourse = result.data.course_id
+    activeCourse.id = result.data._id
+    setActiveCourses(activeCourses.concat(activeCourse))
   }
 
   const handleTermsSlider = (e) => {
@@ -126,19 +126,14 @@ import { Link } from "react-router-dom"
           <div className="separator bgcolor-accent"></div>
           <div className="list">
             {courses.map(course => {
-              console.log(activeCourses.length > 0);
+              const found = activeCourses.some(activeCourse => activeCourse._id === course._id)
+              
               return (
                 <div className="bgcolor-white">
                   <p>{course.course_name} {course.course_type}</p>
                   <p>{course.course_term} {course.course_department}</p>
-                  {activeCourses.length > 0 ? (activeCourses.map(temp => {
-                    console.log("HERE:", temp._id, course._id, temp.course_id === course._id);
-                    if(temp._id === course._id) {
-                      return <button onClick={() => window.alert("This course is already added")}>Active</button>
-                    } else {
-                      return <button onClick={() => addCourse(course)}>Add</button>
-                    }
-                  })) : (<button onClick={() => addCourse(course)}>Add</button>)}
+                  {found ? <button onClick={() => window.alert("This course is already added")}>Active</button>
+                         : <button onClick={() => addCourse(course)}>Add</button>}
                 </div>
               )
             })}

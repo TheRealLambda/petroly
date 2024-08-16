@@ -164,6 +164,16 @@ h6 {
     "slnt" 0;
   user-select: none;
 }
+.text-14-bold {
+  font-size: 14px;
+  font-family: "Inter", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 700;
+  font-style: normal;
+  font-variation-settings:
+    "slnt" 0;
+  user-select: none;
+}
 .text-13-semibold {
   font-size: 13px;
   font-family: "Inter", sans-serif;
@@ -214,6 +224,16 @@ h6 {
     "slnt" 0;
   user-select: none;
 }
+.text-10-bold {
+  font-size: 10px;
+  font-family: "Inter", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 700;
+  font-style: normal;
+  font-variation-settings:
+    "slnt" 0;
+  user-select: none;
+}
 .text-10-semibold {
   font-size: 10px;
   font-family: "Inter", sans-serif;
@@ -234,6 +254,7 @@ h6 {
     "slnt" 0;
   user-select: none;
 }
+
 
 
 .color-primary {

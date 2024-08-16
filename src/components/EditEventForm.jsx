@@ -2,9 +2,10 @@ import { useEffect, useState } from "react"
 import "./styles/edit_event_form.css"
 import axios from "axios"
 
-const EditEventForm = ({ setState, setModalState, eventObject, saveEvent, position, setPosition, prevPosition, editMode }) => {
+const EditEventForm = ({ setState, setModalState, eventObject, updateEvent, position, setPosition, prevPosition, editMode }) => {
 
   const [event, setEvent] = useState(eventObject ? eventObject : {title: "Loading"})
+  const [color, setColor] = useState(null)
   const [title, setTitle] = useState(eventObject ? eventObject.title : "loading")
   const [time, setTime] = useState({start: new Date(), end: new Date()})
   const [showActivityForm, setShowActivityForm] = useState(false)
@@ -15,13 +16,15 @@ const EditEventForm = ({ setState, setModalState, eventObject, saveEvent, positi
   const [taskDescription, setTaskDescription] = useState("")
 
   const save = (e) => {
+    console.log("UPDATEEVENT::>><<\n", color, event.color);
     const body = {
+      color: color || event.color,
       title,
       start_time: time.start,
       end_time: time.end,
       type: "event"
     }
-    saveEvent(body)
+    updateEvent(body)
   }
 
   // useEffect(() => {
@@ -113,7 +116,7 @@ const EditEventForm = ({ setState, setModalState, eventObject, saveEvent, positi
         <div className="block">
           <div className="container no_margin title">
             <div className="left">
-              <div className="color_picker"></div>
+              <input onChange={(e)=>setColor(e.target.value)} type="color" className="color_picker" defaultValue={event.color}/>
             </div>
             <div className="middle">
               {event.type === "class" ? (

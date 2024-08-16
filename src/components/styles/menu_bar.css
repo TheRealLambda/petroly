@@ -82,3 +82,19 @@
 .menu_bar .div2 .search_icon {
   margin-right: 10px;
 }
+.menu_bar .div2 .current_day {
+  width: 24px;
+  height: 24px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.menu_bar .div2 .current_day div {
+  width: 20px;
+  height: 20px;
+  border: 3px solid #f0f6fb;
+  border-radius: 2px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}

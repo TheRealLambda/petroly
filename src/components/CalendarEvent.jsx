@@ -6,7 +6,7 @@ import EditEventForm from "./EditEventForm"
 import CreateEventForm from "./CreateEventForm"
 import axios from "axios"
 
-const CalendarEvent = ({ updateSchedule, setCalendarEvents, eventObject, initialPosition, editMode }) => {
+const CalendarEvent = ({ week, editing, updateSchedule, setCalendarEvents, eventObject, initialPosition, editMode }) => {
 
   const [state, setState] = useState(editMode.current ? "edit" : "view")
   const [position, setPosition] = useState(initialPosition || {left: 0, top: 0, height: 75})
@@ -43,17 +43,23 @@ const CalendarEvent = ({ updateSchedule, setCalendarEvents, eventObject, initial
     
     selectTime = document.getElementById("selectTime")
     container = document.getElementById("clickContainer")
-    container.addEventListener("pointerdown", pointerDown)
-    container.addEventListener("pointermove", pointerMove)
-    container.addEventListener("pointerup", pointerUp)
+    if(week === "current") {
+      container.addEventListener("pointerdown", pointerDown)
+      container.addEventListener("pointermove", pointerMove)
+      container.addEventListener("pointerup", pointerUp)
+    }
 
     if(state === "view") {
+      if(event) {
+        divRef.current.style.backgroundColor = event.color
+      }
       setPrevPosition(position)
       setModalState("closed")
       setAskForConfirmation(false)
       divRef.current.classList.remove("edit")
       divRef.current.classList.add("view")
     } else if(state === "edit") {
+      divRef.current.style.backgroundColor = ""
       if(modalState === "closed") {
         setModalState("partial")
       }
@@ -61,9 +67,11 @@ const CalendarEvent = ({ updateSchedule, setCalendarEvents, eventObject, initial
       divRef.current.classList.add("edit")
     }
     return () => {
-      container.removeEventListener("pointerdown", pointerDown)
-      container.removeEventListener("pointermove", pointerMove)
-      container.removeEventListener("pointerup", pointerUp)
+      if(week === "current") {
+        container.removeEventListener("pointerdown", pointerDown)
+        container.removeEventListener("pointermove", pointerMove)
+        container.removeEventListener("pointerup", pointerUp)
+      }
     }
   }, [state])
 
@@ -75,12 +83,19 @@ const CalendarEvent = ({ updateSchedule, setCalendarEvents, eventObject, initial
 
   const saveEvent = async (body) => {
     const result = await axios.post("http://localhost:3001/api/events", body)
-
-    updateSchedule()
+    editing.current = false
     editMode.current = false
     setState("view")
     setModalState("closed")
-    setEvent(body)
+    updateSchedule()
+  }
+  const updateEvent = async (body) => {
+    const result = await axios.patch("http://localhost:3001/api/events/"+event._id, body)
+    editing.current = false
+    editMode.current = false
+    setState("view")
+    setModalState("closed")
+    setEvent(result.data)
   }
  
 
@@ -220,20 +235,13 @@ const CalendarEvent = ({ updateSchedule, setCalendarEvents, eventObject, initial
 
   const pointerMove = (e) => {
     if(pointerAction === "move") {
-      if(!editMode.current) {
         editMode.current = true
-        setAskForConfirmation(true)
-      }
       move(e)
     } else if(pointerAction === "slideUp") {
-      if(!editMode.current) {
         editMode.current = true
-      }
       slideUp(e)
     } else if(pointerAction === "slideDown") {
-      if(!editMode.current) {
         editMode.current = true
-      }
       slideDown(e)
     }
 
@@ -241,6 +249,7 @@ const CalendarEvent = ({ updateSchedule, setCalendarEvents, eventObject, initial
 
   const pointerUp = (e) => {
   
+    console.log(state, editMode.current);
     pointerAction = null
     
     const finalMouseX = e.clientX
@@ -252,23 +261,32 @@ const CalendarEvent = ({ updateSchedule, setCalendarEvents, eventObject, initial
       reposition(e)
     } else if(state === "view" && clicked && finalMouseX < initialMouseX+10 && finalMouseX > initialMouseX-10
     && finalMouseY < initialMouseY+10 && finalMouseY > initialMouseY-10 && !editMode.current
-              && (e.target === divRef.current||e.target.parentNode === divRef.current)) {
+          && !editing.current && (e.target === divRef.current||e.target.parentNode === divRef.current)) {
       setModalState("open")
     }
 
     selectTime.style.display = "none"
   }
 
+  const color = () => {
+    const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(event.color);
+    const rgb = {
+      r: parseInt(result[1], 16),
+      g: parseInt(result[2], 16),
+      b: parseInt(result[3], 16)
+    }
+    const brightness = 0.2126*rgb.r + 0.7152*rgb.g + 0.0722*rgb.b
 
-
+    return brightness > 150 ? "color-accent" : "color-white"
+  }
   return (
     <div ref={divRef} className="calendar_event">
-      {state === "view" && <p>{event && event.title}</p>}
+      {state === "view" && event && <p className={"text-14-regular "+color()}>{event && event.title}</p>}
       <Modal state={modalState} setState={setModalState} options={{swipeDownToClose:false,DragDownToClose:false,clickAwayToClose:false}}>
         {
           state === "edit"&&!event ? <CreateEventForm saveEvent={saveEvent} setState={setState} setCalendarEvents={setCalendarEvents} editMode={editMode} setModalState={setModalState} position={position} /> :
           state === "view" ? <ShowEventForm setModalState={setModalState} setState={setState} eventObject={event} /> : 
-          state === "edit" ? <EditEventForm setState={setState} setModalState={setModalState} eventObject={event} saveEvent={saveEvent} position={position} setPosition={setPosition} prevPosition={prevPosition} editMode={editMode}/> :
+          state === "edit" ? <EditEventForm setState={setState} setModalState={setModalState} eventObject={event} updateEvent={updateEvent} position={position} setPosition={setPosition} prevPosition={prevPosition} editMode={editMode}/> :
           0
         }
       </Modal>

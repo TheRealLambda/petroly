@@ -34,29 +34,18 @@
   position: absolute;
   width: 42px;
   height: 75px;
-  /* border-top: 2px solid #FFFFFF; */
+  border-top: 5px solid #0230477f;
   background-color: #00A36C;
   border-radius: 5px;
 }
+.calendar_event.view p {
+  overflow-wrap: break-word;
+  padding: 2px;
+}
 .calendar_event.view .top_slider {
   display: none;
-  /* user-select: none;
-  position: absolute;
-  top: -6px;
-  left: 60%;
-  width: 11px;
-  height: 11px;
-  background-color: #00A36C;
-  border-radius: 10px; */
+
 }
 .calendar_event.view .bottom_slider {
   display: none;
-  /* user-select: none;
-  position: absolute;
-  bottom: -6px;
-  left: 10%;
-  width: 11px;
-  height: 11px;
-  background-color: #00A36C;
-  border-radius: 10px; */
 }

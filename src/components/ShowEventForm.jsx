@@ -34,6 +34,40 @@ const ShowEventForm = ({ setModalState, setState, eventObject }) => {
     // setModalState("closed")
   }
 
+  const displayDate = () => {
+    let text = ""
+    const dayInMilliseconds = 1*24*60*60*1000
+    const date = new Date(event.start_time)
+    date.setHours(0, 0, 0, 0)
+    const now = new Date()
+    now.setHours(0, 0, 0, 0)
+    if(date.getTime() - now.getTime() < 0 && date.getTime() - now.getTime() >= -dayInMilliseconds) {
+      text += "Yesterday"
+    } else if(date.getTime() - now.getTime() === 0) {
+      text += "Today"
+    } else if(date.getTime() - now.getTime() > 0 && date.getTime() - now.getTime() <= dayInMilliseconds) {
+      text += "Tomorrow"
+    } else {
+      text += ["Sunday", "Monday", "Tuesday", "wednesday", "Thursday", "Friday", "Saturday"][date.getDay()]
+    }
+
+    text += ", "+date.getDate()+" "
+    text += ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sept", "Oct", "Nov", "Dec"][date.getMonth()]
+    text += " • "
+
+    const hour = String(new Date(event.start_time).getHours())
+    const minute = String(new Date(event.start_time).getMinutes())
+    text += (hour.length < 2 ? "0"+hour : hour) + ":" + (minute.length < 2 ? "0"+minute : minute)
+    
+    text += "-"
+
+    const hourEnd = String(new Date(event.end_time).getHours())
+    const minuteEnd = String(new Date(event.end_time).getMinutes())
+    text += (hourEnd.length < 2 ? "0"+hourEnd : hourEnd) + ":" + (minuteEnd.length < 2 ? "0"+minuteEnd : minuteEnd)
+    
+    return text
+  }
+
   return (
     <div className="edit_event_form">
       <div className="drag_indicator bgcolor-accent"></div>
@@ -53,7 +87,7 @@ const ShowEventForm = ({ setModalState, setState, eventObject }) => {
         <div className="block">
           <div className="container no_margin">
             <div className="left">
-              <div className="color_picker"></div>
+              <div className="color_picker" style={{backgroundColor: event.color}}></div>
             </div>
             <div className="middle">
               <p className="text-24-regular color-accent opaque_1">{event.title}</p>
@@ -64,7 +98,7 @@ const ShowEventForm = ({ setModalState, setState, eventObject }) => {
             <div className="left">
             </div>
             <div className="middle full_width">
-              <p className="text-16-regular color-accent opaque_1">tomorrow, 17 Jul • 16:00-17:00</p>
+              <p className="text-16-regular color-accent opaque_1">{displayDate()}</p>
             </div>
           </div>
         </div>

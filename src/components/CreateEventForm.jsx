@@ -4,7 +4,7 @@ import axios from "axios"
 
 const CreateEventForm = ({ saveEvent, setState, setCalendarEvents, editMode, setModalState, position }) => {
 
-  const [color, setColor] = useState("#0000000")
+  const [color, setColor] = useState("#00a36c")
   const [title, setTitle] = useState("")
   const [time, setTime] = useState({start: new Date(), end: new Date()})
   const [repeat, setRepeat] = useState(false)
@@ -14,6 +14,7 @@ const CreateEventForm = ({ saveEvent, setState, setCalendarEvents, editMode, set
 
   const postEvent = async (e) => {
     const body = {
+      color, 
       title,
       start_time: time.start,
       end_time: time.end,
@@ -23,7 +24,7 @@ const CreateEventForm = ({ saveEvent, setState, setCalendarEvents, editMode, set
   }
 
   const closeModal = (e) => {
-    if(color !== "#0000000" || title !== "" || repeat !== false || reminders == true || description !== "" || attachments == true) {
+    if(color !== "#00a36c" || title !== "" || repeat !== false || reminders == true || description !== "" || attachments == true) {
       if(confirm("Cancel this event?")) {
         setModalState("closed")
         setCalendarEvents(events => events.slice(0,-1))
@@ -37,7 +38,7 @@ const CreateEventForm = ({ saveEvent, setState, setCalendarEvents, editMode, set
   }
 
   useEffect(() => {
-    if(color !== "#0000000" || title !== "" || repeat !== false || reminders == true || description !== "" || attachments == true) {
+    if(color !== "#00a36c" || title !== "" || repeat !== false || reminders == true || description !== "" || attachments == true) {
       editMode.current = true
     }
   })
@@ -71,7 +72,7 @@ const CreateEventForm = ({ saveEvent, setState, setCalendarEvents, editMode, set
       <div className="container">
         <div className="left">
           <svg onClick={closeModal} className="fillcolor-accent close_button" xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#5f6368"><path d="M480-424 284-228q-11 11-28 11t-28-11q-11-11-11-28t11-28l196-196-196-196q-11-11-11-28t11-28q11-11 28-11t28 11l196 196 196-196q11-11 28-11t28 11q11 11 11 28t-11 28L536-480l196 196q11 11 11 28t-11 28q-11 11-28 11t-28-11L480-424Z"/></svg>
-          <input onChange={(e)=>setColor(e.target.value)} type="color" className="color_picker"></input>
+          <input onChange={(e)=>setColor(e.target.value)} type="color" className="color_picker" defaultValue="#00a36c" />
         </div>
         <div className="middle modalDragArea">
           <input onChange={(e)=>setTitle(e.target.value)} type="text" className="title text-24-regular color-accent" placeholder="Add title" />
