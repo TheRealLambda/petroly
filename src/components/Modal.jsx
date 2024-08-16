@@ -3,7 +3,6 @@ import "./styles/modal.css"
 
 
 const Modal = ({ state, setState, options, children }) => {
-  console.log();
   options = options || {}
   
   let dragging = false
@@ -34,7 +33,6 @@ const Modal = ({ state, setState, options, children }) => {
   */
   const open = () => {
     container.style = ""
-    console.log("ZZZZZZZZZZZZ::", container);
     container.classList.add("transition")
     setTimeout(()=>{
       container.classList.remove("transition")
@@ -78,7 +76,7 @@ const Modal = ({ state, setState, options, children }) => {
     and pointerup. 
   */
   const pointerDown = (e) => {
-    
+    // console.log(e.target);
     initialMouseY = e.clientY
     initialOffset = e.clientY - container.getBoundingClientRect().top
     mouseDown = true
@@ -140,6 +138,7 @@ const Modal = ({ state, setState, options, children }) => {
         //special cases when dragging outside drag_area
         
         if(state === "open") {
+
           if(mouseY < initialMouseY && top <= 0) {
             lockDragging = true
             locked = true
@@ -212,6 +211,8 @@ const Modal = ({ state, setState, options, children }) => {
           }
           if(!lockDragging && scrollContainer.scrollTop === 0 && mouseY > initialMouseY && (mouseY-initialOffset) < partialThresold) {
             //drag down only when content has not been scrolled
+            console.log("Here:", scrollContainer, scrollContainer.scrollTop);
+
             container.style.top = (mouseY-initialOffset)+"px"
           } else if(mouseY <= initialMouseY) {
             //modal exceeds top boundry
@@ -286,7 +287,7 @@ const Modal = ({ state, setState, options, children }) => {
     // modal = document.getElementById("modal")
     
     container = modal.current.firstElementChild
-    scrollContainer = document.getElementsByClassName("modalScrollContainer")[0] || null
+    scrollContainer = modal.current.firstElementChild.firstElementChild.children[2] || null
 
     modal.current.addEventListener("pointerdown", pointerDown)
     modal.current.addEventListener("pointermove", pointerMove)

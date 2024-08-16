@@ -30,7 +30,7 @@ const TimeTable = ({ setEventModalId, week, setWeek, setStartDate, setEndDate })
         return newEvent
       })
 
-      console.log(modifiedResult);
+      // console.log(modifiedResult);
 
       setCalendarEvents(modifiedResult)
     }
@@ -471,9 +471,9 @@ const TimeTable = ({ setEventModalId, week, setWeek, setStartDate, setEndDate })
     }
 
     return () => {
-      document.getElementById("div2_wrapper").removeEventListener("pointerdown", pointerDown)
-      document.getElementById("div2_wrapper").removeEventListener("pointermove", pointerMove)
-      document.getElementById("div2_wrapper").removeEventListener("pointerup", pointerUp)
+      weekPicker.removeEventListener("pointerdown", pointerDown)
+      weekPicker.removeEventListener("pointermove", pointerMove)
+      weekPicker.removeEventListener("pointerup", pointerUp)
     }
   }, [state, calendarEvents])
 

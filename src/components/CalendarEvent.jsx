@@ -250,8 +250,9 @@ const CalendarEvent = ({ updateSchedule, setCalendarEvents, eventObject, initial
        && clicked && finalMouseX < initialMouseX+10 && finalMouseX > initialMouseX-10
        && finalMouseY < initialMouseY+10 && finalMouseY > initialMouseY-10) {
       reposition(e)
-    } else if(state === "view" && !editMode.current
-              && e.target == divRef.current) {
+    } else if(state === "view" && clicked && finalMouseX < initialMouseX+10 && finalMouseX > initialMouseX-10
+    && finalMouseY < initialMouseY+10 && finalMouseY > initialMouseY-10 && !editMode.current
+              && (e.target === divRef.current||e.target.parentNode === divRef.current)) {
       setModalState("open")
     }
 
