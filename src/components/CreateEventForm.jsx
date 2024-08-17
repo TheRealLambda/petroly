@@ -2,7 +2,7 @@ import { useEffect, useState } from "react"
 import "./styles/create_event_form.css"
 import axios from "axios"
 
-const CreateEventForm = ({ saveEvent, setState, setCalendarEvents, editMode, setModalState, position }) => {
+const CreateEventForm = ({ editing, saveEvent, setState, setCalendarEvents, editMode, setModalState, position }) => {
 
   const [color, setColor] = useState("#00a36c")
   const [title, setTitle] = useState("")
@@ -29,11 +29,13 @@ const CreateEventForm = ({ saveEvent, setState, setCalendarEvents, editMode, set
         setModalState("closed")
         setCalendarEvents(events => events.slice(0,-1))
         editMode.current = false
+        editing.current = false
       }
     } else {
       setModalState("closed")
       setCalendarEvents(events => events.slice(0,-1))
       editMode.current = false
+      editing.current = false
     }
   }
 

@@ -57,7 +57,6 @@ const Modal = ({ state, setState, options, children }) => {
     scrollContainer ? scrollContainer.classList.add("no_scroll") : 0 //prevent content to be scrolled
   }
   const closed = () => {
-    console.log("closed");
     container.style = ""
     container.classList.add("transition")
     setTimeout(()=>{
@@ -76,7 +75,6 @@ const Modal = ({ state, setState, options, children }) => {
     and pointerup. 
   */
   const pointerDown = (e) => {
-    // console.log(e.target);
     initialMouseY = e.clientY
     initialOffset = e.clientY - container.getBoundingClientRect().top
     mouseDown = true
@@ -211,7 +209,6 @@ const Modal = ({ state, setState, options, children }) => {
           }
           if(!lockDragging && scrollContainer.scrollTop === 0 && mouseY > initialMouseY && (mouseY-initialOffset) < partialThresold) {
             //drag down only when content has not been scrolled
-            console.log("Here:", scrollContainer, scrollContainer.scrollTop);
 
             container.style.top = (mouseY-initialOffset)+"px"
           } else if(mouseY <= initialMouseY) {

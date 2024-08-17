@@ -2,99 +2,7 @@ import { useEffect, useState } from "react"
 import "./styles/week_picker.css"
 import axios from "axios"
 
-const WeekPicker = ({ week, setEventModalId }) => {
-
-
-  const resetSchedule = async () => {
-    setModalState("closed")
-    // document.getElementById("eventCreateModel").scrollTo({top: 0, behavior: "smooth"})
-    // document.getElementById("eventCreate").style.display = "none"
-    // console.log("Schedule reset...");
-    Array.from(document.querySelectorAll(".event_create.testingHAHA")).forEach((div => div.remove()))
-    const events = await axios.get("http://localhost:3001/api/events")
-    console.log("events=", events);
-    Array.from(document.getElementById("week_picker_wrapper").firstElementChild.children).forEach((week, i) => {
-      Array.from(week.firstElementChild.children).forEach((day, j) => {
-        // console.log(i, j, (day.offsetLeft-66)%360);
-        // console.log(day);
-        events.data.forEach(event => {
-          const eventDate = new Date(event.start_time)
-          const endDate = new Date(event.end_time)
-          const temp = new Date(event.start_time)
-          temp.setHours(0, 0, 0, 0)
-
-          // console.log("eventDate=", eventDate);
-          const dayDateAttrib = day.getAttribute("data-date").split("-")
-          const dayDate = new Date(Number(dayDateAttrib[0]), Number(dayDateAttrib[1]), Number(dayDateAttrib[2]))
-          // console.log("dayDateAttrib=", dayDateAttrib);
-          // console.log(dayDate);
-          // console.log(day);
-          if(temp.getTime() === dayDate.getTime()) {
-            // console.log("DAY FOUND!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-            const newDiv = document.createElement("div")
-            newDiv.innerText = event.title
-            // newDiv.setAttribute("data-id", event._id)
-            newDiv.classList.add("event_create")
-            newDiv.classList.add("testingHAHA")
-            newDiv.style.top = (eventDate.getHours()+eventDate.getMinutes()/60)*75+"px"
-            // console.log("top=", (eventDate.getHours()+eventDate.getMinutes()/60)*75);
-
-            newDiv.style.left = ((day.offsetLeft-66)%360)+"px"
-            // console.log("left=", day.offsetLeft);
-
-            const height = (endDate.getHours()+endDate.getMinutes()/60)*75 - (eventDate.getHours()+eventDate.getMinutes()/60)*75
-            newDiv.style.height = height+"px"
-            newDiv.style.display = "block"
-            // console.log(document.querySelectorAll("#div2_wrapper .div2")[1]);
-            newDiv.addEventListener("click", (e) => {
-              setEventModalId({id: event._id, edit: false})
-              setModalState("open")
-              // document.getElementById("eventCreateModel").scrollTo({top: 640, behavior: "smooth"})
-              // document.getElementById("eventCreate").style.display = "none"
-            })
-            document.querySelectorAll("#div2_wrapper .div2")[i].appendChild(newDiv)
-          }
-        })
-      })
-    })
-    let timeout = null
-    const test = (e) => {
-      const modal = document.getElementById("eventCreateModel")
-      if(timeout !== null) {
-        clearTimeout(timeout)
-      }
-      timeout = setTimeout(()=>{
-        console.log("SCROLLING");
-        modal.removeEventListener("scroll", test)
-        if(modal.firstElementChild.getBoundingClientRect().top > 300 && modal.firstElementChild.getBoundingClientRect().top < 600) {  
-          modal.scrollTo({top: 100, behavior: "smooth"})
-        } else if (modal.firstElementChild.getBoundingClientRect().top < 400 && modal.firstElementChild.getBoundingClientRect().top > 0) {
-          modal.scrollTo({top: 640, behavior: "smooth"})
-        } else if (modal.firstElementChild.getBoundingClientRect().top > 600) {
-          console.log("REMOVE MODAL");
-          modal.scrollTo({top: 0, behavior: "instant"})
-          // tempEvent.style.display = "none"
-        }
-        modal.addEventListener("scroll", test)
-      }, 100)
-    }
-    const tempEventClickFunc = (e) => {
-            // e.currentTarget.style.backgroundColor = "red"
-            // const modal = document.getElementById("eventCreateModel")
-            // modal.style.display = "block"
-            // modal.scrollTo({top: 640, behavior: "smooth"})
-            
-            // modal.removeEventListener("Scroll", test)
-            // modal.addEventListener("scroll", test)
-            setModalState("partial")
-    }
-    Array.from(document.getElementsByClassName("event_create")).forEach(div => {
-      // console.log(div);
-      div.removeEventListener("click", tempEventClickFunc)
-      div.addEventListener("click", tempEventClickFunc)
-    })
-  }
-
+const WeekPicker = ({ dotsObject, week }) => {
 
   useEffect(() => {
 
@@ -115,6 +23,14 @@ const WeekPicker = ({ week, setEventModalId }) => {
     // resetSchedule()
     
   }, [week])
+
+  const renderDots = (n) => {
+    const array = []
+    for (let i = 0; i < n; i++) {
+      array.push(<div key={i}></div>)
+    }
+    return array
+  }
 
   let todayPrev
   let todayCurrent
@@ -165,7 +81,6 @@ const WeekPicker = ({ week, setEventModalId }) => {
     todayNext = now.getTime()===sunday.getTime()?0:now.getTime()===monday.getTime()?1:now.getTime()===tuesday.getTime()?2:now.getTime()===wednesday.getTime()?3:now.getTime()===thursday.getTime()?4:now.getTime()===friday.getTime()?5:now.getTime()===saturday.getTime()?6:null 
   }
   prevWeekDays2();activeWeekDays2();nextWeekDays2()
-  console.log("ZZZZZZZZZZZZZZZZZZZZZZZZ::\n", "a"+(todayCurrent===5?" today":""));
   const prevWeekDays = () => {
     const now = new Date()
     now.setHours(0, 0, 0, 0)
@@ -282,6 +197,9 @@ const WeekPicker = ({ week, setEventModalId }) => {
               <div className="day_number">
                 <p className="text-14-medium color-accent">{activeWeekDays()[0].getDate()}</p>
               </div>
+              <div className="dots">
+                {dotsObject.current && renderDots(dotsObject.current[0])}
+              </div>
             </div>
             <div className={"week_day"+(todayCurrent===1?" today":"")} data-date={activeWeekDays()[1].getFullYear()+"-"+(activeWeekDays()[1].getMonth()+1)+"-"+activeWeekDays()[1].getDate()}>
               <div className="day_name">  
@@ -289,6 +207,9 @@ const WeekPicker = ({ week, setEventModalId }) => {
               </div>
               <div className="day_number">
                 <p className="text-14-medium color-accent">{activeWeekDays()[1].getDate()}</p>
+              </div>
+              <div className="dots">
+                {dotsObject.current && renderDots(dotsObject.current[1])}
               </div>
             </div>
             <div className={"week_day"+(todayCurrent===2?" today":"")} data-date={activeWeekDays()[2].getFullYear()+"-"+(activeWeekDays()[2].getMonth()+1)+"-"+activeWeekDays()[2].getDate()}>
@@ -298,6 +219,9 @@ const WeekPicker = ({ week, setEventModalId }) => {
               <div className="day_number">
                 <p className="text-14-medium color-accent">{activeWeekDays()[2].getDate()}</p>
               </div>
+              <div className="dots">
+                {dotsObject.current && renderDots(dotsObject.current[2])}
+              </div>
             </div>
             <div className={"week_day"+(todayCurrent===3?" today":"")} data-date={activeWeekDays()[3].getFullYear()+"-"+(activeWeekDays()[3].getMonth()+1)+"-"+activeWeekDays()[3].getDate()}>
               <div className="day_name">  
@@ -305,6 +229,9 @@ const WeekPicker = ({ week, setEventModalId }) => {
               </div>
               <div className="day_number">
                 <p className="text-14-medium color-accent">{activeWeekDays()[3].getDate()}</p>
+              </div>
+              <div className="dots">
+                {dotsObject.current && renderDots(dotsObject.current[3])}
               </div>
             </div>
             <div className={"week_day"+(todayCurrent===4?" today":"")} data-date={activeWeekDays()[4].getFullYear()+"-"+(activeWeekDays()[4].getMonth()+1)+"-"+activeWeekDays()[4].getDate()}>
@@ -314,6 +241,9 @@ const WeekPicker = ({ week, setEventModalId }) => {
               <div className="day_number">
                 <p className="text-14-medium color-accent">{activeWeekDays()[4].getDate()}</p>
               </div>
+              <div className="dots">
+                {dotsObject.current && renderDots(dotsObject.current[4])}
+              </div>
             </div>
             <div className={"week_day"+(todayCurrent===5?" today":"")} data-date={activeWeekDays()[5].getFullYear()+"-"+(activeWeekDays()[5].getMonth()+1)+"-"+activeWeekDays()[5].getDate()}>
               <div className="day_name">  
@@ -322,6 +252,9 @@ const WeekPicker = ({ week, setEventModalId }) => {
               <div className="day_number">
                 <p className="text-14-medium color-accent">{activeWeekDays()[5].getDate()}</p>
               </div>
+              <div className="dots">
+                {dotsObject.current && renderDots(dotsObject.current[5])}
+              </div>
             </div>
             <div className={"week_day"+(todayCurrent===6?" today":"")} data-date={activeWeekDays()[6].getFullYear()+"-"+(activeWeekDays()[6].getMonth()+1)+"-"+activeWeekDays()[6].getDate()}>
               <div className="day_name">  
@@ -329,6 +262,9 @@ const WeekPicker = ({ week, setEventModalId }) => {
               </div>
               <div className="day_number">
                 <p className="text-14-medium color-accent">{activeWeekDays()[6].getDate()}</p>
+              </div>
+              <div className="dots">
+                {dotsObject.current && renderDots(dotsObject.current[6])}
               </div>
             </div>
           </div>

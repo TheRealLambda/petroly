@@ -53,6 +53,18 @@
   opacity: 0.5;
   height: 20px;
 }
+.week_picker_wrapper .week_picker .flex_container .week_day .dots {
+  height: 4px;
+  margin-top: 1px;
+  display: flex;
+  gap: 2px;
+}
+.week_picker_wrapper .week_picker .flex_container .week_day .dots div {
+  width: 4px;
+  height: 4px;
+  border-radius: 5px;
+  background: #00A36C;
+}
 .week_picker_wrapper .week_picker .flex_container .week_day.today div.day_number {
   background-color: #00A36C;
   border-radius: 15px;
@@ -60,18 +72,7 @@
 .week_picker_wrapper .week_picker .flex_container .week_day.today div.day_number p {
   color: #F0F6FB;
 }
-/* .week_picker_wrapper .week_picker .flex_container .week_day.today {
-  position: relative;
-}
-.week_picker_wrapper .week_picker .flex_container .week_day.today::after {
-  position: absolute;
-  bottom: 0px;
-  content: "";
-  width: 10px;
-  height: 3px;
-  background-color: #00A36C;
-  border-radius: 3px;
-} */
+
 .week_picker_wrapper .week_picker .icon {
   margin: auto;
   height: 28px;

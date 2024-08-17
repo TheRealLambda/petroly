@@ -10,14 +10,48 @@ const TimeTable = ({ setEventModalId, week, setWeek, setStartDate, setEndDate })
   const [calendarEvents, setCalendarEvents] = useState([])
   const editMode = useRef(false)
   const editing = useRef(false)
+  const dotsObject = useRef(null)
 
 
   const updateSchedule = () => {
     async function loadEvents() {
       const result = await axios.get("http://localhost:3001/api/events?week="+week)
 
+      dotsObject.current = [0,0,0,0,0,0,0]
+      const now = new Date()
+      now.setHours(0, 0, 0, 0)
+      const firstDayOfYear = new Date(now.getFullYear(), 0, 1)
+      const day = firstDayOfYear.getDay()
+      const toFirstSundayOfYear = day === 0 ? 0 : 7 - day
+      const sunday = new Date(now.getFullYear(), 0, 1+toFirstSundayOfYear+(week)*7)
+      const monday = new Date(now.getFullYear(), 0, 1+toFirstSundayOfYear+(week)*7+1)
+      const tuesday = new Date(now.getFullYear(), 0, 1+toFirstSundayOfYear+(week)*7+2)
+      const wednesday = new Date(now.getFullYear(), 0, 1+toFirstSundayOfYear+(week)*7+3)
+      const thursday = new Date(now.getFullYear(), 0, 1+toFirstSundayOfYear+(week)*7+4)
+      const friday = new Date(now.getFullYear(), 0, 1+toFirstSundayOfYear+(week)*7+5)
+      const saturday = new Date(now.getFullYear(), 0, 1+toFirstSundayOfYear+(week)*7+6)
+
       const modifiedResult = result.data.map(event => {
-        console.log(event);
+        if(event.week === "current") {
+          const date = new Date(event.eventObject.start_time)
+          date.setHours(0, 0, 0, 0)
+          if(date.getTime() === sunday.getTime()) {
+            dotsObject.current[0] += 1
+          } else if(date.getTime() === monday.getTime()) {
+            dotsObject.current[1] += 1
+          } else if(date.getTime() === tuesday.getTime()) {
+            dotsObject.current[2] += 1
+          } else if(date.getTime() === wednesday.getTime()) {
+            dotsObject.current[3] += 1
+          } else if(date.getTime() === thursday.getTime()) {
+            dotsObject.current[4] += 1
+          } else if(date.getTime() === friday.getTime()) {
+            dotsObject.current[5] += 1
+          } else if(date.getTime() === saturday.getTime()) {
+            dotsObject.current[6] += 1
+          }
+        }
+
         const container = document.getElementById("clickContainer")
         const width = container.offsetWidth
         const height = container.offsetHeight
@@ -30,8 +64,6 @@ const TimeTable = ({ setEventModalId, week, setWeek, setStartDate, setEndDate })
         const newEvent = {...event, initialPosition: {left: columnIndex*columnWidth, top: rowIndex*rowHeight, height: divHeight}}
         return newEvent
       })
-
-      console.log(modifiedResult);
       editMode.current = false
       setCalendarEvents(modifiedResult)
     }
@@ -135,7 +167,7 @@ const TimeTable = ({ setEventModalId, week, setWeek, setStartDate, setEndDate })
       if(calendarEvents.length > 0 && !calendarEvents[calendarEvents.length-1].eventObject) {
         setCalendarEvents(calendarEvents => calendarEvents.slice(0, -1))
         editing.current = false
-      } else {
+      } else if(!editing.current) {
         setCalendarEvents(calendarEvents => calendarEvents.concat({initialPosition: {left: posLeft, top: posTop, height: 75}, week: "current", eventObject: null}))
         editing.current = true
       }
@@ -519,8 +551,7 @@ const TimeTable = ({ setEventModalId, week, setWeek, setStartDate, setEndDate })
         <p id="currentTime" className="text-12-semibold color-accent"></p>
       </div>
       <div id="div2_wrapper" className="div2_wrapper">
-  
-        <WeekPicker week={week} setWeek={setWeek} setEventModalId={setEventModalId} />
+        <WeekPicker dotsObject={dotsObject} week={week} setWeek={setWeek} setEventModalId={setEventModalId} />
         <div id="div2_wrapperContainer" className="container">
           <div className="div2">
             <div className="horizontal_lines">

@@ -8,16 +8,17 @@ import axios from "axios"
 
 const CalendarEvent = ({ week, editing, updateSchedule, setCalendarEvents, eventObject, initialPosition, editMode }) => {
 
-  const [state, setState] = useState(editMode.current ? "edit" : "view")
+  const [state, setState] = useState(eventObject ? "view" : "edit")
   const [position, setPosition] = useState(initialPosition || {left: 0, top: 0, height: 75})
   const [prevPosition, setPrevPosition] = useState(initialPosition || {left: 0, top: 0, height: 75})
   const [event, setEvent] = useState(eventObject ? eventObject : null)
-  const [modalState, setModalState] = useState(null)
-  const [AskForConfirmation, setAskForConfirmation] = useState(false)
+  const [modalState, setModalState] = useState(eventObject ? "closed" : "partial")
+  
   const divRef = useRef(null)
+  const lockPosition = useRef(false)
 
-  let container
-  let selectTime
+  const container = useRef(document.getElementById("clickContainer"))
+  const selectTime = useRef(document.getElementById("selectTime"))
   let pointerAction = null
   let timeout
   let clicked
@@ -26,60 +27,63 @@ const CalendarEvent = ({ week, editing, updateSchedule, setCalendarEvents, event
   let initialOffsetY
   let initialHeight
 
-  useEffect(() => {
-    if(event) {
-      setModalState("closed")
-      setState("view")
-      setAskForConfirmation(false)
-    } else {
-      setModalState("partial")
-      setState("edit")
-      setAskForConfirmation(false)
-    }
-    
-  }, [])
+
 
   useEffect(() => {
     
-    selectTime = document.getElementById("selectTime")
-    container = document.getElementById("clickContainer")
     if(week === "current") {
-      container.addEventListener("pointerdown", pointerDown)
-      container.addEventListener("pointermove", pointerMove)
-      container.addEventListener("pointerup", pointerUp)
+      container.current.addEventListener("pointerdown", pointerDown)
+      container.current.addEventListener("pointermove", pointerMove)
+      container.current.addEventListener("pointerup", pointerUp)
     }
 
     if(state === "view") {
+      console.log("editing:", editing);
+      if(editing) {
+        editing.current = false
+      }
       if(event) {
         divRef.current.style.backgroundColor = event.color
       }
       setPrevPosition(position)
       setModalState("closed")
-      setAskForConfirmation(false)
       divRef.current.classList.remove("edit")
       divRef.current.classList.add("view")
+      divRef.current.style.opacity = ""
+
     } else if(state === "edit") {
-      divRef.current.style.backgroundColor = ""
+
+      editing.current = true
       if(modalState === "closed") {
         setModalState("partial")
       }
-      divRef.current.classList.remove("view")
-      divRef.current.classList.add("edit")
+      if(event && event.type === "class") {
+        lockPosition.current = true
+        divRef.current.style.opacity = "0.5"
+      } else {
+        divRef.current.classList.remove("view")
+        divRef.current.classList.add("edit")
+      }
+
     }
     return () => {
       if(week === "current") {
-        container.removeEventListener("pointerdown", pointerDown)
-        container.removeEventListener("pointermove", pointerMove)
-        container.removeEventListener("pointerup", pointerUp)
+        container.current.removeEventListener("pointerdown", pointerDown)
+        container.current.removeEventListener("pointermove", pointerMove)
+        container.current.removeEventListener("pointerup", pointerUp)
       }
     }
   }, [state])
-
+  
   useEffect(() => {
-    divRef.current.style.top = position.top+"px" 
-    divRef.current.style.left = position.left+"px"
-    divRef.current.style.height = position.height+"px"
+    if(!lockPosition.current) {  
+      divRef.current.style.top = position.top+"px" 
+      divRef.current.style.left = position.left+"px"
+      divRef.current.style.height = position.height+"px"
+    }
   }, [position])
+
+
 
   const saveEvent = async (body) => {
     const result = await axios.post("http://localhost:3001/api/events", body)
@@ -89,6 +93,7 @@ const CalendarEvent = ({ week, editing, updateSchedule, setCalendarEvents, event
     setModalState("closed")
     updateSchedule()
   }
+
   const updateEvent = async (body) => {
     const result = await axios.patch("http://localhost:3001/api/events/"+event._id, body)
     editing.current = false
@@ -97,26 +102,34 @@ const CalendarEvent = ({ week, editing, updateSchedule, setCalendarEvents, event
     setModalState("closed")
     setEvent(result.data)
   }
+  
+  const remove = async () => {
+    editing.current = false
+    editMode.current = false
+    const result = await axios.delete("http://localhost:3001/api/events/"+event._id)
+    updateSchedule()
+  }
  
+
 
   const updateSelectTime = (rowIndex, rowHeight) => {
 
     const hour = String(Math.floor(rowIndex/6))
     const minute = String((rowIndex % 6)*10)
     const text = (hour.length < 2 ? "0"+hour : hour) + ":" + (minute.length < 2 ? "0"+minute : minute)
-    selectTime.style.display = "block"
-    selectTime.style.top = Math.floor(rowIndex*rowHeight)+"px"
-    selectTime.innerText = text
+    selectTime.current.style.display = "block"
+    selectTime.current.style.top = Math.floor(rowIndex*rowHeight)+"px"
+    selectTime.current.innerText = text
   }
   
   const reposition = (e) => {
 
-    const mouseX = e.clientX - container.getBoundingClientRect().left    
-    const mouseY = e.clientY - container.getBoundingClientRect().top
-    const top = divRef.current.getBoundingClientRect().top - container.getBoundingClientRect().top
-    const bottom = divRef.current.getBoundingClientRect().top+divRef.current.offsetHeight - container.getBoundingClientRect().top
-    const width = container.offsetWidth
-    const height = container.offsetHeight
+    const mouseX = e.clientX - container.current.getBoundingClientRect().left    
+    const mouseY = e.clientY - container.current.getBoundingClientRect().top
+    const top = divRef.current.getBoundingClientRect().top - container.current.getBoundingClientRect().top
+    const bottom = divRef.current.getBoundingClientRect().top+divRef.current.offsetHeight - container.current.getBoundingClientRect().top
+    const width = container.current.offsetWidth
+    const height = container.current.offsetHeight
     const columnWidth = width / 7
     const rowHeight = height / 24 / 6
     const columnIndex = Math.floor(mouseX/columnWidth)
@@ -142,14 +155,16 @@ const CalendarEvent = ({ week, editing, updateSchedule, setCalendarEvents, event
 
   }
 
+
+
   const move = (e) => {
 
-    const mouseX = e.clientX - container.getBoundingClientRect().left    
-    const mouseY = e.clientY - container.getBoundingClientRect().top - initialOffsetY
-    const top = divRef.current.getBoundingClientRect().top - container.getBoundingClientRect().top
-    const bottom = divRef.current.getBoundingClientRect().top+divRef.current.offsetHeight - container.getBoundingClientRect().top
-    const width = container.offsetWidth
-    const height = container.offsetHeight
+    const mouseX = e.clientX - container.current.getBoundingClientRect().left    
+    const mouseY = e.clientY - container.current.getBoundingClientRect().top - initialOffsetY
+    const top = divRef.current.getBoundingClientRect().top - container.current.getBoundingClientRect().top
+    const bottom = divRef.current.getBoundingClientRect().top+divRef.current.offsetHeight - container.current.getBoundingClientRect().top
+    const width = container.current.offsetWidth
+    const height = container.current.offsetHeight
     const columnWidth = width / 7
     const rowHeight = height / 24 / 6
     const columnIndex = Math.floor(mouseX/columnWidth)
@@ -174,10 +189,10 @@ const CalendarEvent = ({ week, editing, updateSchedule, setCalendarEvents, event
   }
   
   const slideUp = (e) => {
-    const mouseY = e.clientY - container.getBoundingClientRect().top - initialOffsetY
-    const height = container.offsetHeight
+    const mouseY = e.clientY - container.current.getBoundingClientRect().top - initialOffsetY
+    const height = container.current.offsetHeight
     const divHeight = divRef.current.getBoundingClientRect().height
-    const bottom = divRef.current.getBoundingClientRect().top+divHeight - container.getBoundingClientRect().top
+    const bottom = divRef.current.getBoundingClientRect().top+divHeight - container.current.getBoundingClientRect().top
     const rowHeight = height / 24 / 6
     const rowIndex = Math.floor(mouseY/rowHeight)
     const bottomRowIndex = Math.round(bottom/rowHeight)
@@ -193,9 +208,9 @@ const CalendarEvent = ({ week, editing, updateSchedule, setCalendarEvents, event
   }
 
   const slideDown = (e) => {
-    const mouseY = e.clientY - container.getBoundingClientRect().top - initialOffsetY + initialHeight
-    const height = container.offsetHeight
-    const top = divRef.current.getBoundingClientRect().top - container.getBoundingClientRect().top
+    const mouseY = e.clientY - container.current.getBoundingClientRect().top - initialOffsetY + initialHeight
+    const height = container.current.offsetHeight
+    const top = divRef.current.getBoundingClientRect().top - container.current.getBoundingClientRect().top
     const rowHeight = height / 24 / 6
     const rowIndex = Math.floor(mouseY/rowHeight)
     const topRowIndex = Math.round(top/rowHeight)
@@ -209,6 +224,7 @@ const CalendarEvent = ({ week, editing, updateSchedule, setCalendarEvents, event
     }
 
   }
+
 
 
   const pointerDown = (e) => {
@@ -249,7 +265,6 @@ const CalendarEvent = ({ week, editing, updateSchedule, setCalendarEvents, event
 
   const pointerUp = (e) => {
   
-    console.log(state, editMode.current);
     pointerAction = null
     
     const finalMouseX = e.clientX
@@ -265,8 +280,10 @@ const CalendarEvent = ({ week, editing, updateSchedule, setCalendarEvents, event
       setModalState("open")
     }
 
-    selectTime.style.display = "none"
+    selectTime.current.style.display = "none"
   }
+
+
 
   const color = () => {
     const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(event.color);
@@ -279,13 +296,14 @@ const CalendarEvent = ({ week, editing, updateSchedule, setCalendarEvents, event
 
     return brightness > 150 ? "color-accent" : "color-white"
   }
+
   return (
     <div ref={divRef} className="calendar_event">
-      {state === "view" && event && <p className={"text-14-regular "+color()}>{event && event.title}</p>}
+      {state === "view" && event && <p className={"text-14-regular "+color()}>{event.title}</p>}
       <Modal state={modalState} setState={setModalState} options={{swipeDownToClose:false,DragDownToClose:false,clickAwayToClose:false}}>
         {
-          state === "edit"&&!event ? <CreateEventForm saveEvent={saveEvent} setState={setState} setCalendarEvents={setCalendarEvents} editMode={editMode} setModalState={setModalState} position={position} /> :
-          state === "view" ? <ShowEventForm setModalState={setModalState} setState={setState} eventObject={event} /> : 
+          state === "edit"&&!event ? <CreateEventForm editing={editing} saveEvent={saveEvent} setState={setState} setCalendarEvents={setCalendarEvents} editMode={editMode} setModalState={setModalState} position={position} /> :
+          state === "view" ? <ShowEventForm remove={remove} setModalState={setModalState} setState={setState} eventObject={event} /> : 
           state === "edit" ? <EditEventForm setState={setState} setModalState={setModalState} eventObject={event} updateEvent={updateEvent} position={position} setPosition={setPosition} prevPosition={prevPosition} editMode={editMode}/> :
           0
         }
