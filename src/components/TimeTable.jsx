@@ -8,10 +8,9 @@ import axios from "axios"
 const TimeTable = ({ setEventModalId, week, setWeek, setStartDate, setEndDate }) => {
 
   const [calendarEvents, setCalendarEvents] = useState([])
-  const editMode = useRef(false)
-  const editing = useRef(false)
+  const [mode, setMode] = useState({type: "view", commit: false})
   const dotsObject = useRef(null)
-
+  console.log(calendarEvents);
 
   const updateSchedule = () => {
     async function loadEvents() {
@@ -31,7 +30,8 @@ const TimeTable = ({ setEventModalId, week, setWeek, setStartDate, setEndDate })
       const friday = new Date(now.getFullYear(), 0, 1+toFirstSundayOfYear+(week)*7+5)
       const saturday = new Date(now.getFullYear(), 0, 1+toFirstSundayOfYear+(week)*7+6)
 
-      const modifiedResult = result.data.map(event => {
+      // const modifiedResult = 
+      result.data.forEach(event => {
         if(event.week === "current") {
           const date = new Date(event.eventObject.start_time)
           date.setHours(0, 0, 0, 0)
@@ -52,22 +52,27 @@ const TimeTable = ({ setEventModalId, week, setWeek, setStartDate, setEndDate })
           }
         }
 
-        const container = document.getElementById("clickContainer")
-        const width = container.offsetWidth
-        const height = container.offsetHeight
-        const columnWidth = width / 7
-        const rowHeight = height / 24 / 6
-        const columnIndex = new Date(event.eventObject.start_time).getDay()
-        const rowIndex = Math.floor((new Date(event.eventObject.start_time).getHours()*60 + new Date(event.eventObject.start_time).getMinutes()) / 10)
-        const rowIndexEnd = Math.floor((new Date(event.eventObject.end_time).getHours()*60 + new Date(event.eventObject.end_time).getMinutes()) / 10)
-        const divHeight = (rowIndexEnd-rowIndex)*rowHeight
-        const newEvent = {...event, initialPosition: {left: columnIndex*columnWidth, top: rowIndex*rowHeight, height: divHeight}}
-        return newEvent
+        // const container = document.getElementById("clickContainer")
+        // const width = container.offsetWidth
+        // const height = container.offsetHeight
+        // const columnWidth = width / 7
+        // const rowHeight = height / 24 / 6
+        // const columnIndex = new Date(event.eventObject.start_time).getDay()
+        // const rowIndex = Math.floor((new Date(event.eventObject.start_time).getHours()*60 + new Date(event.eventObject.start_time).getMinutes()) / 10)
+        // const rowIndexEnd = Math.floor((new Date(event.eventObject.end_time).getHours()*60 + new Date(event.eventObject.end_time).getMinutes()) / 10)
+        // const divHeight = (rowIndexEnd-rowIndex)*rowHeight
+        // const newEvent = {...event, initialPosition: {left: columnIndex*columnWidth, top: rowIndex*rowHeight, height: divHeight}}
+        // return newEvent
       })
-      editMode.current = false
-      setCalendarEvents(modifiedResult)
+      setMode({type: "view", commit: false})
+      setCalendarEvents(result.data)
     }
     loadEvents()
+  }
+
+  const cancelCreation = () => {
+    setCalendarEvents(events => events.slice(0,-1))
+    setMode({type: "view", commit: false})
   }
 
   const createEventDiv = (div, grid) => {
@@ -134,45 +139,48 @@ const TimeTable = ({ setEventModalId, week, setWeek, setStartDate, setEndDate })
   const funcOne = (e) => {
     
 
-    /*
-      Initializing variables
-    */
-    const container = document.getElementById("clickContainer")
-    const width = container.offsetWidth
-    const height = container.offsetHeight
-    const mouseX = e.clientX - container.getBoundingClientRect().left
-    const mouseY = e.clientY - container.getBoundingClientRect().top
-    //period: number of days shown at once, i.e. 7, 5, 3 or 1
-    const period = 7
-    //periodWidth: width of a single day in pixels
-    const periodWidth = width / period
-    //periodHeight: height of 30mins in pixels
-    const periodHeight = (height / 24) / 2
-    /*
-      End of variable initializing
-    */
-   
-   if(!editMode.current && e.target.matches(".vertical_lines")) {
+    if(e.target.matches(".vertical_lines")) {
       //only consider clicks on empty area
+      if(mode.type === "create" && !mode.commit) {
+        cancelCreation()
+        return
+      } else if(mode.type === "view") {
+        const container = document.getElementById("clickContainer")
+        const mouseX = e.clientX - container.getBoundingClientRect().left
+        const mouseY = e.clientY - container.getBoundingClientRect().top
+        const height = container.offsetHeight
+        const rowHeight = height / 24 / 6
+        const rowIndex = Math.round(mouseY/rowHeight)
+        const hour = Math.floor(rowIndex/6)
+        const minute = (rowIndex % 6)*10
+        const width = container.offsetWidth
+        const columnWidth = width / 7
+        const columnIndex = Math.floor(mouseX/columnWidth)
+        const date = document.getElementById("active").firstElementChild.children[columnIndex].getAttribute("data-date")
+        const startDate = new Date(date)
+        startDate.setHours(hour, minute)
 
-      const columnIndex = Math.floor(mouseX / periodWidth) //0-indexed
-      const halfRowIndex =  Math.floor(mouseY / periodHeight) //0-indexed
-      
-      const weekDay = document.getElementById("active").firstElementChild.children[columnIndex]
-      const date = new Date(weekDay.getAttribute("data-date"))
-      date.setMinutes(30*halfRowIndex)
+        const rowIndexEnd = Math.round((mouseY+75)/rowHeight)
+        const hourEnd = Math.floor(rowIndexEnd/6)
+        const minuteEnd = (rowIndexEnd % 6)*10
+        const endDate = new Date(date)
+        endDate.setHours(hourEnd, minuteEnd)
 
-      const posLeft = periodWidth * columnIndex
-      const posTop = periodHeight * halfRowIndex
-      if(calendarEvents.length > 0 && !calendarEvents[calendarEvents.length-1].eventObject) {
-        setCalendarEvents(calendarEvents => calendarEvents.slice(0, -1))
-        editing.current = false
-      } else if(!editing.current) {
-        setCalendarEvents(calendarEvents => calendarEvents.concat({initialPosition: {left: posLeft, top: posTop, height: 75}, week: "current", eventObject: null}))
-        editing.current = true
+
+        const eventObject = {
+          _id: "0",
+          color: "#00a36c",
+          start_time: startDate.toISOString(),
+          end_time: endDate.toISOString(),
+          type: "event"
+        }
+        setCalendarEvents(calendarEvents => calendarEvents.concat({week: "current", eventObject}))
+        setMode({type: "create", commit: false})
       }
 
-    } 
+    }
+
+     
   }
 
 
@@ -510,7 +518,7 @@ const TimeTable = ({ setEventModalId, week, setWeek, setStartDate, setEndDate })
       weekPicker.removeEventListener("pointermove", pointerMove)
       weekPicker.removeEventListener("pointerup", pointerUp)
     }
-  }, [state, calendarEvents])
+  }, [state, calendarEvents, mode])
 
 
 
@@ -589,7 +597,7 @@ const TimeTable = ({ setEventModalId, week, setWeek, setStartDate, setEndDate })
               <div></div>
               <div></div>
             </div>
-            {calendarEvents.map((event) => event.week === "previous" ? <CalendarEvent key={event.eventObject._id} week={event.week} setCalendarEvents={setCalendarEvents} eventObject={event.eventObject} initialPosition={event.initialPosition} editMode={editMode}/> : false)}
+            {calendarEvents.map((event) => event.week === "previous" ? <CalendarEvent key={event.eventObject._id} week={event.week} eventObject={event.eventObject} mode={mode} setMode={setMode} /> : false)}
           </div>
           <div id="clickContainer" className="div2">
             <div className="horizontal_lines">
@@ -627,7 +635,7 @@ const TimeTable = ({ setEventModalId, week, setWeek, setStartDate, setEndDate })
               <div></div>
               <div></div>
             </div>
-            {calendarEvents.map((event) => event.week === "current" ? <CalendarEvent key={event.eventObject ? event.eventObject._id : false} week={event.week} editing={editing} updateSchedule={updateSchedule} setCalendarEvents={setCalendarEvents} eventObject={event.eventObject} initialPosition={event.initialPosition} editMode={editMode}/> : false)}
+            {calendarEvents.map((event) => event.week === "current" ? <CalendarEvent key={event.eventObject._id} week={event.week} updateSchedule={updateSchedule} cancelCreation={cancelCreation} eventObject={event.eventObject} initialPosition={event.initialPosition} mode={mode} setMode={setMode} /> : false)}
           </div>
           <div className="div2">
             <div className="horizontal_lines">
@@ -665,7 +673,7 @@ const TimeTable = ({ setEventModalId, week, setWeek, setStartDate, setEndDate })
               <div></div>
               <div></div>
             </div>
-            {calendarEvents.map((event) => event.week === "next" ? <CalendarEvent key={event.eventObject._id} week={event.week} setCalendarEvents={setCalendarEvents} eventObject={event.eventObject} initialPosition={event.initialPosition} editMode={editMode}/> : false)}
+            {calendarEvents.map((event) => event.week === "next" ? <CalendarEvent key={event.eventObject._id} week={event.week} eventObject={event.eventObject} mode={mode} setMode={setMode} /> : false)}
           </div>
         </div>
       </div>

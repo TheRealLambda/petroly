@@ -281,11 +281,10 @@ const Modal = ({ state, setState, options, children }) => {
 
 
   useEffect(() => {
-    // modal = document.getElementById("modal")
     
     container = modal.current.firstElementChild
     scrollContainer = modal.current.firstElementChild.firstElementChild.children[2] || null
-
+    
     modal.current.addEventListener("pointerdown", pointerDown)
     modal.current.addEventListener("pointermove", pointerMove)
     modal.current.addEventListener("pointerup", pointerUp)

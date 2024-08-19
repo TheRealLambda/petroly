@@ -36,24 +36,44 @@ const MenuBar = ({ setWeek }) => {
     setWeek(week)
   }
 
+  const dayView = () => {
+    const divs = document.getElementsByClassName("div2")
+    Array.from(divs).forEach(div => div.style.width = "500px")
+    // setWeek(a=>a)
+  }
+  const threeDaysView = () => {
+    const divs = document.getElementsByClassName("div2")
+    Array.from(divs).forEach(div => div.style.width = "450px")
+    // setWeek(a=>a)
+  }
+  const fiveDaysView = () => {
+    const divs = document.getElementsByClassName("div2")
+    Array.from(divs).forEach(div => div.style.width = "400px")
+    // setWeek(a=>a)
+  }
+  const weekView = () => {
+    const divs = document.getElementsByClassName("div2")
+    Array.from(divs).forEach(div => div.style.width = "300px")
+    // setWeek(a=>a)
+  }
   return (
     <div className="menu_bar bgcolor-primary">
       <div id="sideMenu" className="side_menu">
         <div onClick={closeSideMenu} className="wrapper bgcolor-accent">
           <div className="menu bgcolor-primary">
-            <div>
+            <div onClick={dayView}>
               <svg className="fillcolor-white" xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#5f6368"><path d="M200-280q-33 0-56.5-23.5T120-360v-240q0-33 23.5-56.5T200-680h560q33 0 56.5 23.5T840-600v240q0 33-23.5 56.5T760-280H200Zm-41-480q-17 0-28-11.5T120-800q0-17 11.5-28.5T160-840h641q17 0 28 11.5t11 28.5q0 17-11.5 28.5T800-760H159Zm0 640q-17 0-28-11.5T120-160q0-17 11.5-28.5T160-200h641q17 0 28 11.5t11 28.5q0 17-11.5 28.5T800-120H159Z"/></svg>
               <p className="text-14-semibold color-white">Day</p>
             </div>
-            <div>
+            <div onClick={threeDaysView}>
               <svg className="fillcolor-white" xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#5f6368"><path d="M600-120q-33 0-56.5-23.5T520-200v-560q0-33 23.5-56.5T600-840h160q33 0 56.5 23.5T840-760v560q0 33-23.5 56.5T760-120H600Zm-400 0q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h160q33 0 56.5 23.5T440-760v560q0 33-23.5 56.5T360-120H200Z"/></svg>
               <p className="text-14-semibold color-white">3 days</p>
             </div>
-            <div>
+            <div onClick={fiveDaysView}>
               <svg className="fillcolor-white" xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#5f6368"><path d="M160-160q-33 0-56.5-23.5T80-240v-480q0-33 23.5-56.5T160-800h53q33 0 56.5 23.5T293-720v480q0 33-23.5 56.5T213-160h-53Zm294 0q-33 0-56.5-23.5T374-240v-480q0-33 23.5-56.5T454-800h53q33 0 56.5 23.5T587-720v480q0 33-23.5 56.5T507-160h-53Zm293 0q-33 0-56.5-23.5T667-240v-480q0-33 23.5-56.5T747-800h53q33 0 56.5 23.5T880-720v480q0 33-23.5 56.5T800-160h-53Z"/></svg>
               <p className="text-14-semibold color-white">5 days</p>
             </div>
-            <div>
+            <div onClick={weekView}>
               <svg className="fillcolor-white" xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#5f6368"><path d="M550-200q-17 0-28.5-11.5T510-240v-480q0-17 11.5-28.5T550-760h55q17 0 28.5 11.5T645-720v480q0 17-11.5 28.5T605-200h-55Zm-195 0q-17 0-28.5-11.5T315-240v-480q0-17 11.5-28.5T355-760h55q17 0 28.5 11.5T450-720v480q0 17-11.5 28.5T410-200h-55Zm-195 0q-17 0-28.5-11.5T120-240v-480q0-17 11.5-28.5T160-760h55q17 0 28.5 11.5T255-720v480q0 17-11.5 28.5T215-200h-55Zm585 0q-17 0-28.5-11.5T705-240v-480q0-17 11.5-28.5T745-760h55q17 0 28.5 11.5T840-720v480q0 17-11.5 28.5T800-200h-55Z"/></svg>
               <p className="text-14-semibold color-white">Week</p>
             </div>

@@ -2,7 +2,7 @@ import { useEffect, useState } from "react"
 import "./styles/edit_event_form.css"
 import axios from "axios"
 
-const EditEventForm = ({ setState, setModalState, eventObject, updateEvent, position, setPosition, prevPosition, editMode }) => {
+const EditEventForm = ({ setState, setModalState, eventObject, updateEvent, style, setStyle, setMode }) => {
 
   const [event, setEvent] = useState(eventObject ? eventObject : {title: "Loading"})
   const [color, setColor] = useState(null)
@@ -21,7 +21,7 @@ const EditEventForm = ({ setState, setModalState, eventObject, updateEvent, posi
       title,
       start_time: time.start,
       end_time: time.end,
-      type: "event"
+      type: event.type
     }
     updateEvent(body)
   }
@@ -38,24 +38,24 @@ const EditEventForm = ({ setState, setModalState, eventObject, updateEvent, posi
     const container = document.getElementById("clickContainer")
     const height = container.offsetHeight
     const rowHeight = height / 24 / 6
-    const rowIndex = Math.round(position.top/rowHeight)
+    const rowIndex = Math.round(style.current.top/rowHeight)
     const hour = Math.floor(rowIndex/6)
     const minute = (rowIndex % 6)*10
     const width = container.offsetWidth
     const columnWidth = width / 7
-    const columnIndex = Math.floor(position.left/columnWidth)
+    const columnIndex = Math.floor(style.current.left/columnWidth)
     const date = document.getElementById("active").firstElementChild.children[columnIndex].getAttribute("data-date")
     const startDate = new Date(date)
     startDate.setHours(hour, minute)
 
-    const rowIndexEnd = Math.round((position.top+position.height)/rowHeight)
+    const rowIndexEnd = Math.round((style.current.top+style.current.height)/rowHeight)
     const hourEnd = Math.floor(rowIndexEnd/6)
     const minuteEnd = (rowIndexEnd % 6)*10
     const endDate = new Date(date)
     endDate.setHours(hourEnd, minuteEnd)
 
     setTime({start: startDate, end: endDate})
-  }, [position])
+  }, [style])
 
   const handleActivityForm = async (e) => {
     const body = {
@@ -81,18 +81,20 @@ const EditEventForm = ({ setState, setModalState, eventObject, updateEvent, posi
   }
 
   const closeModal = (e) => {
-    if(title !== event.title || position.top !== prevPosition.top || position.left !== prevPosition.left || position.height !== prevPosition.height) {
+    console.log("CLOSING MODAL");
+    if(title !== event.title || style.current.top !== style.prev.top 
+       || style.current.left !== style.prev.left || style.current.height !== style.prev.height) {
       if(confirm("Cancel changes?")) {
-        editMode.current = false
+        setMode({type: "view", commit: false})
         setState("view")
         setModalState("closed")
-        setPosition(prevPosition)
+        setStyle({current: style.prev, prev: style.prev})
       }
     } else {
-      editMode.current = false
+      setMode({type: "view", commit: false})
       setState("view")
       setModalState("closed")
-      setPosition(prevPosition)
+      setStyle({current: style.prev, prev: style.prev})
     }
   }
 

@@ -2,7 +2,7 @@ import { useEffect, useState } from "react"
 import "./styles/edit_event_form.css"
 import axios from "axios"
 
-const ShowEventForm = ({ remove, setModalState, setState, eventObject }) => {
+const ShowEventForm = ({ remove, setModalState, setState, eventObject, setMode }) => {
 
   const [event, setEvent] = useState(eventObject ? eventObject : {title: "loading"})
   const [showTaskForm, setShowTaskForm] = useState(false)
@@ -11,6 +11,7 @@ const ShowEventForm = ({ remove, setModalState, setState, eventObject }) => {
 
   const changeToEdit = (e) => {
     setState("edit")
+    setMode({type: "edit", commit: true})
   }
 
   const deleteEvent = async (e) => {
