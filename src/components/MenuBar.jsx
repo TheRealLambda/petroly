@@ -1,23 +1,10 @@
 import { Link } from "react-router-dom"
 import "./styles/menu_bar.css"
 
-const MenuBar = ({ setWeek }) => {
+const MenuBar = ({ resetWeek, setPeriod }) => {
 
   const currentDay = new Date().getDate() 
-  const week = (() => {
-    const firstDayOfYear = new Date(2024, 1-1, 1)
-    const daysUntilFirstSunday = firstDayOfYear.getDay() === 0 ? 0 : 7-firstDayOfYear.getDay()
-    
-    //get first sunday after first day of year. Calculations will use this as the first day of the year
-    const firstSundayOfYear = new Date(firstDayOfYear)
-    firstSundayOfYear.setDate(firstSundayOfYear.getDate() + daysUntilFirstSunday)
-    
-    const currentDate = new Date()
-    const numberOfDays = (currentDate - firstSundayOfYear) / (1*24*60*60*1000)
   
-    const numberOfWeeks = Math.floor(numberOfDays / 7)
-    return numberOfWeeks
-  })()
 
   const openSideMenu = (e) => {
     const sideMenu = document.getElementById("sideMenu")
@@ -33,28 +20,20 @@ const MenuBar = ({ setWeek }) => {
   }
 
   const handleDivClick = (e) => {
-    setWeek(week)
+    resetWeek()
   }
 
   const dayView = () => {
-    const divs = document.getElementsByClassName("div2")
-    Array.from(divs).forEach(div => div.style.width = "500px")
-    // setWeek(a=>a)
+    setPeriod(1)
   }
   const threeDaysView = () => {
-    const divs = document.getElementsByClassName("div2")
-    Array.from(divs).forEach(div => div.style.width = "450px")
-    // setWeek(a=>a)
+    setPeriod(3)
   }
   const fiveDaysView = () => {
-    const divs = document.getElementsByClassName("div2")
-    Array.from(divs).forEach(div => div.style.width = "400px")
-    // setWeek(a=>a)
+    setPeriod(5)
   }
   const weekView = () => {
-    const divs = document.getElementsByClassName("div2")
-    Array.from(divs).forEach(div => div.style.width = "300px")
-    // setWeek(a=>a)
+    setPeriod(7)
   }
   return (
     <div className="menu_bar bgcolor-primary">
