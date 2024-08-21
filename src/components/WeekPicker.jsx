@@ -3,6 +3,7 @@ import "./styles/week_picker.css"
 import axios from "axios"
 
 const WeekPicker = ({ dotsObject, parentState }) => {
+  
   useEffect(() => {
 
     document.getElementById("monthText").innerText = (() => {
@@ -10,7 +11,7 @@ const WeekPicker = ({ dotsObject, parentState }) => {
       const firstDayOfYear = new Date(now.getFullYear(), 0, 1)
       const day = firstDayOfYear.getDay()
       const toFirstSundayOfYear = day === 0 ? 0 : 7 - day
-      const day1 = new Date(now.getFullYear(), 0, 1+toFirstSundayOfYear+(parentState.week)*parentState.period)
+      const day1 = new Date(now.getFullYear(), 0, 1+toFirstSundayOfYear+(parentState.week)*(parentState.period===5?7:parentState.period))
       const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
       if(parentState.week > -1) { 
         return months[day1.getMonth()]
@@ -19,7 +20,6 @@ const WeekPicker = ({ dotsObject, parentState }) => {
       }
     })()
     document.getElementById("week_picker_wrapper").scrollTo({ behavior: "instant", left: 360})
-    // resetSchedule()
     
   }, [parentState])
 
@@ -46,15 +46,14 @@ const WeekPicker = ({ dotsObject, parentState }) => {
     const day = firstDayOfYear.getDay()
     const toFirstSundayOfYear = day === 0 ? 0 : 7 - day
     
-    for (let i = 0; i < (parentState.period===5?7:parentState.period); i++) {
+    for (let i = 0; i < parentState.period; i++) {
       const element = new Date(now.getFullYear(), 0, 1+toFirstSundayOfYear+(parentState.week-1)*(parentState.period===5?7:parentState.period)+i)
       daysPrev.push(element)
       if(now.getTime() === element.getTime()) {
         todayPrev = i
       }
     }
-    daysPrev.pop()
-    daysPrev.pop()
+
   }
   prevWeekDays()
 
@@ -66,15 +65,14 @@ const WeekPicker = ({ dotsObject, parentState }) => {
     const day = firstDayOfYear.getDay()
     const toFirstSundayOfYear = day === 0 ? 0 : 7 - day
     
-    for (let i = 0; i < (parentState.period===5?7:parentState.period); i++) {
+    for (let i = 0; i < parentState.period; i++) {
       const element = new Date(now.getFullYear(), 0, 1+toFirstSundayOfYear+(parentState.week)*(parentState.period===5?7:parentState.period)+i)
       daysCurrent.push(element)
       if(now.getTime() === element.getTime()) {
         todayCurrent = i
       }
     }
-    daysCurrent.pop()
-    daysCurrent.pop()
+
   }
   currentWeekDays()
 
@@ -86,15 +84,14 @@ const WeekPicker = ({ dotsObject, parentState }) => {
     const day = firstDayOfYear.getDay()
     const toFirstSundayOfYear = day === 0 ? 0 : 7 - day
     
-    for (let i = 0; i < (parentState.period===5?7:parentState.period); i++) {
+    for (let i = 0; i < parentState.period; i++) {
       const element = new Date(now.getFullYear(), 0, 1+toFirstSundayOfYear+(parentState.week+1)*(parentState.period===5?7:parentState.period)+i)
       daysNext.push(element)
       if(now.getTime() === element.getTime()) {
         todayNext = i
       }
     }
-    daysNext.pop()
-    daysNext.pop()
+
   }
   nextWeekDays()
 

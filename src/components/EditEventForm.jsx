@@ -2,12 +2,11 @@ import { useEffect, useState } from "react"
 import "./styles/edit_event_form.css"
 import axios from "axios"
 
-const EditEventForm = ({ setState, setModalState, eventObject, updateEvent, style, setStyle, setMode }) => {
+const EditEventForm = ({ event, setStyle, state, action, setAction, updateEvent, closeModal }) => {
 
-  const [event, setEvent] = useState(eventObject ? eventObject : {title: "Loading"})
-  const [color, setColor] = useState(null)
-  const [title, setTitle] = useState(eventObject ? eventObject.title : "loading")
-  const [time, setTime] = useState({start: new Date(), end: new Date()})
+  const [color, setColor] = useState(event.color)
+  const [title, setTitle] = useState(event.title)
+  const [time, setTime] = useState({start: new Date(event.start_time), end: new Date(event.end_time)})
   const [showActivityForm, setShowActivityForm] = useState(false)
   const [activityTitle, setActivityTitle] = useState("")
   const [activityDescription, setActivityDescription] = useState("")
@@ -15,47 +14,55 @@ const EditEventForm = ({ setState, setModalState, eventObject, updateEvent, styl
   const [taskTitle, setTaskTitle] = useState("")
   const [taskDescription, setTaskDescription] = useState("")
 
+  useEffect(() => {
+    const container = document.getElementById("clickContainer")
+                const width = container.offsetWidth
+                const height = container.offsetHeight
+                const columnWidth = width / state.period
+                const rowHeight = height / 24 / 6
+                
+                const newDate = (() => {
+                    
+                    const now = new Date()
+                    now.setHours(0, 0, 0, 0)
+                    
+                    const firstDayOfYear = new Date(now.getFullYear(), 0, 1)
+                    const temp = firstDayOfYear.getDay()
+                    const toFirstSundayOfYear = temp === 0 ? 0 : 7 - temp
+                    
+                    const daysArray = []
+
+                    for (let i = 0; i < state.period; i++) {
+                    const element = new Date(now.getFullYear(), 0, 1+toFirstSundayOfYear+state.week*(state.period === 5 ? 7 : state.period)+i)
+                    daysArray.push(element)
+                    }
+
+                    const index = Math.floor(event.style.curr.left/columnWidth)
+                    return daysArray[index]
+                    
+                })()
+
+                const rowIndex = Math.floor(event.style.curr.top / rowHeight)
+                const rowIndexEnd = Math.floor((event.style.curr.top+event.style.curr.height) / rowHeight)
+
+                const a = new Date(newDate)
+                a.setHours(0, rowIndex*10)
+                const b = new Date(newDate)
+                b.setHours(0, rowIndexEnd*10)
+                setTime({start: a, end: b})
+  }, [event.style.curr])
+
+
   const save = (e) => {
     const body = {
-      color: color || event.color,
+      color,
       title,
       start_time: time.start,
       end_time: time.end,
       type: event.type
     }
-    updateEvent(body)
+    updateEvent(event._id, body.color, body.title, body.start_time, body.end_time)
   }
-
-  // useEffect(() => {
-  //   async function loadEvent() {
-  //     const result = await axios.get("http://localhost:3001/api/events/"+eventModalId.id)
-  //     setEvent(result.data)
-  //   }
-  //   loadEvent()
-  // }, [eventModalId])
-
-  useEffect(() => {
-    const container = document.getElementById("clickContainer")
-    const height = container.offsetHeight
-    const rowHeight = height / 24 / 6
-    const rowIndex = Math.round(style.current.top/rowHeight)
-    const hour = Math.floor(rowIndex/6)
-    const minute = (rowIndex % 6)*10
-    const width = container.offsetWidth
-    const columnWidth = width / 7
-    const columnIndex = Math.floor(style.current.left/columnWidth)
-    const date = document.getElementById("active").firstElementChild.children[columnIndex].getAttribute("data-date")
-    const startDate = new Date(date)
-    startDate.setHours(hour, minute)
-
-    const rowIndexEnd = Math.round((style.current.top+style.current.height)/rowHeight)
-    const hourEnd = Math.floor(rowIndexEnd/6)
-    const minuteEnd = (rowIndexEnd % 6)*10
-    const endDate = new Date(date)
-    endDate.setHours(hourEnd, minuteEnd)
-
-    setTime({start: startDate, end: endDate})
-  }, [style])
 
   const handleActivityForm = async (e) => {
     const body = {
@@ -80,24 +87,178 @@ const EditEventForm = ({ setState, setModalState, eventObject, updateEvent, styl
     setShowTaskForm(false)
   }
 
-  const closeModal = (e) => {
-    console.log("CLOSING MODAL");
-    if(title !== event.title || style.current.top !== style.prev.top 
-       || style.current.left !== style.prev.left || style.current.height !== style.prev.height) {
-      if(confirm("Cancel changes?")) {
-        setMode({type: "view", commit: false})
-        setState("view")
-        setModalState("closed")
-        setStyle({current: style.prev, prev: style.prev})
-      }
-    } else {
-      setMode({type: "view", commit: false})
-      setState("view")
-      setModalState("closed")
-      setStyle({current: style.prev, prev: style.prev})
-    }
+  const handleTime1 = (e) => {
+   
+  const string = e.target.value.split(":")
+    const hour = Number(string[0])
+    const minute = Number(string[1])
+    const date = new Date(time.start)
+    date.setHours(hour, minute)
+    const container = document.getElementById("clickContainer")
+      const width = container.offsetWidth
+      const height = container.offsetHeight
+      const columnWidth = width / state.period
+      const rowHeight = height / 24 / 6
+      
+      const columnIndex = (() => {
+        
+        const now = new Date()
+        now.setHours(0, 0, 0, 0)
+        
+        const firstDayOfYear = new Date(now.getFullYear(), 0, 1)
+        const temp = firstDayOfYear.getDay()
+        const toFirstSundayOfYear = temp === 0 ? 0 : 7 - temp
+        
+        const daysArray = []
+
+        for (let i = 0; i < state.period; i++) {
+          const element = new Date(now.getFullYear(), 0, 1+toFirstSundayOfYear+state.week*(state.period === 5 ? 7 : state.period)+i)
+          daysArray.push(element)
+        }
+
+        let index
+        daysArray.forEach((day, i) => {
+          const date2 = new Date(date)
+          date2.setHours(0, 0, 0, 0)
+          if(day.getTime() === date2.getTime()) {
+            index = i
+          }
+        })      
+        return index
+      })()
+
+      const rowIndex = Math.floor((date.getHours()*60 + date.getMinutes()) / 10)
+      const rowIndexEnd = Math.floor((time.end.getHours()*60 + time.end.getMinutes()) / 10)
+      const divHeight = (rowIndexEnd-rowIndex)*rowHeight
+      const style = {left: columnIndex*columnWidth, top: rowIndex*rowHeight, height: divHeight, width: columnWidth}
+
+      setStyle(event._id, style.left, style.top, style.height, style.width)
+  }
+  const handleTime2 = (e) => {
+    const string = e.target.value.split(":")
+    const hour = Number(string[0])
+    const minute = Number(string[1])
+    const date = new Date(time.start)
+    date.setHours(hour, minute)
+
+    const container = document.getElementById("clickContainer")
+      const width = container.offsetWidth
+      const height = container.offsetHeight
+      const columnWidth = width / state.period
+      const rowHeight = height / 24 / 6
+      
+      const columnIndex = (() => {
+        
+        const now = new Date()
+        now.setHours(0, 0, 0, 0)
+        
+        const firstDayOfYear = new Date(now.getFullYear(), 0, 1)
+        const temp = firstDayOfYear.getDay()
+        const toFirstSundayOfYear = temp === 0 ? 0 : 7 - temp
+        
+        const daysArray = []
+
+        for (let i = 0; i < state.period; i++) {
+          const element = new Date(now.getFullYear(), 0, 1+toFirstSundayOfYear+state.week*(state.period === 5 ? 7 : state.period)+i)
+          daysArray.push(element)
+        }
+
+        let index
+        daysArray.forEach((day, i) => {
+          const date2 = new Date(time.start)
+          date2.setHours(0, 0, 0, 0)
+          if(day.getTime() === date2.getTime()) {
+            index = i
+          }
+        })      
+        return index
+      })()
+
+      const rowIndex = Math.floor((time.start.getHours()*60 + time.start.getMinutes()) / 10)
+      const rowIndexEnd = Math.floor((date.getHours()*60 + date.getMinutes()) / 10)
+      const divHeight = (rowIndexEnd-rowIndex)*rowHeight
+      const style = {left: columnIndex*columnWidth, top: rowIndex*rowHeight, height: divHeight, width: columnWidth}
+
+      setStyle(event._id, style.left, style.top, style.height, style.width)
   }
 
+  const handleDate1 = (e) => {
+    const string = e.target.value.split("-")
+    const year = Number(string[0])
+    const month = Number(string[1])
+    const day = Number(string[2])
+    const date = new Date(time.start)
+    date.setFullYear(year, month-1, day)
+    const dateEnd = new Date(time.end)
+    dateEnd.setFullYear(year, month-1, day) 
+
+    console.log(string);
+    const container = document.getElementById("clickContainer")
+      const width = container.offsetWidth
+      const height = container.offsetHeight
+      const columnWidth = width / state.period
+      const rowHeight = height / 24 / 6
+      
+      const columnIndex = (() => {
+        
+        const now = new Date()
+        now.setHours(0, 0, 0, 0)
+        
+        const firstDayOfYear = new Date(now.getFullYear(), 0, 1)
+        const temp = firstDayOfYear.getDay()
+        const toFirstSundayOfYear = temp === 0 ? 0 : 7 - temp
+        
+        const daysArray = []
+
+        for (let i = 0; i < state.period; i++) {
+          const element = new Date(now.getFullYear(), 0, 1+toFirstSundayOfYear+state.week*(state.period === 5 ? 7 : state.period)+i)
+          daysArray.push(element)
+        }
+
+        let index
+        daysArray.forEach((day, i) => {
+          const date2 = new Date(date)
+          date2.setHours(0, 0, 0, 0)
+          console.log(date2);
+          if(day.getTime() === date2.getTime()) {
+            console.log("HERE");
+            index = i
+          }
+        })      
+        return index
+      })()
+      console.log(columnIndex);
+      const rowIndex = Math.floor((time.start.getHours()*60 + time.start.getMinutes()) / 10)
+      const rowIndexEnd = Math.floor((time.end.getHours()*60 + time.end.getMinutes()) / 10)
+      const divHeight = (rowIndexEnd-rowIndex)*rowHeight
+      const style = {left: columnIndex*columnWidth, top: rowIndex*rowHeight, height: divHeight, width: columnWidth}
+      if(columnIndex) {
+        setStyle(event._id, style.left, style.top, style.height, style.width)
+      }
+  }
+
+  const time1 = (time.start.getHours()<10?"0"+time.start.getHours():""+time.start.getHours())+":"+(time.start.getMinutes()<10?"0"+time.start.getMinutes():""+time.start.getMinutes())
+  const time2 = (time.end.getHours()<10?"0"+time.end.getHours():""+time.end.getHours())+":"+(time.end.getMinutes()<10?"0"+time.end.getMinutes():""+time.end.getMinutes())
+  const date1 = time.start.getFullYear()+"-"+((time.start.getMonth()+1)<10?"0"+(time.start.getMonth()+1):""+(time.start.getMonth()+1))+"-"+(time.start.getDate()<10?"0"+time.start.getDate():""+time.start.getDate())
+  const min = (() => {
+    const now = new Date()
+        now.setHours(0, 0, 0, 0)
+        
+        const firstDayOfYear = new Date(now.getFullYear(), 0, 1)
+        const temp = firstDayOfYear.getDay()
+        const toFirstSundayOfYear = temp === 0 ? 0 : 7 - temp
+        
+        const daysArray = []
+
+        for (let i = 0; i < state.period; i++) {
+          const element = new Date(now.getFullYear(), 0, 1+toFirstSundayOfYear+state.week*(state.period === 5 ? 7 : state.period)+i)
+          daysArray.push(element)
+        }
+        const min = daysArray[0].getFullYear()+"-"+((daysArray[0].getMonth()+1)<10?"0"+(daysArray[0].getMonth()+1):""+(daysArray[0].getMonth()+1))+"-"+(daysArray[0].getDate()<10?"0"+daysArray[0].getDate():""+daysArray[0].getDate())
+        const max = daysArray[daysArray.length-1].getFullYear()+"-"+((daysArray[daysArray.length-1].getMonth()+1)<10?"0"+(daysArray[daysArray.length-1].getMonth()+1):""+(daysArray[daysArray.length-1].getMonth()+1))+"-"+(daysArray[daysArray.length-1].getDate()<10?"0"+daysArray[daysArray.length-1].getDate():""+daysArray[daysArray.length-1].getDate())
+        return {min, max}
+  })()
+  
   return (
     <div className="edit_event_form">
       <div className="drag_indicator bgcolor-accent"></div>
@@ -115,14 +276,14 @@ const EditEventForm = ({ setState, setModalState, eventObject, updateEvent, styl
         <div className="block">
           <div className="container no_margin title">
             <div className="left">
-              <input onChange={(e)=>setColor(e.target.value)} type="color" className="color_picker" defaultValue={event.color}/>
+              <input onChange={(e)=>{setColor(e.target.value);setAction({...action, commit: true})}} type="color" className="color_picker" defaultValue={event.color}/>
             </div>
             <div className="middle">
               {event.type === "class" ? (
                 <input className="text-24-regular color-accent opaque_2" type="text" value={event.title} disabled/>
 
               ) : (
-                <input onChange={(e)=>setTitle(e.target.value)} className="text-24-regular color-accent" type="text" defaultValue={event.title}/>
+                <input onChange={(e)=>{setTitle(e.target.value);setAction({...action, commit: true})}} className="text-24-regular color-accent" type="text" defaultValue={event.title}/>
               )}
             </div>
             <div className="right"></div>
@@ -130,7 +291,7 @@ const EditEventForm = ({ setState, setModalState, eventObject, updateEvent, styl
           <div className="container">
             <div className="left"></div>
             <div className="middle">
-              <div className="event_type text-14-medium">Class</div>
+              <div className="event_type text-14-medium">{event.type}</div>
             </div>
             <div className="right"></div>
           </div>
@@ -168,44 +329,86 @@ const EditEventForm = ({ setState, setModalState, eventObject, updateEvent, styl
           </div>
           <div className="separator bgcolor-accent"></div>
         </>}
-        <div className="block">
-          <div className="container no_margin">
-            <div className="left">
-              <svg className="fillcolor-accent opaque_2" xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#5f6368"><path d="M200-200q-17 0-28.5-11.5T160-240q0-17 11.5-28.5T200-280h40v-280q0-83 50-147.5T420-792v-28q0-25 17.5-42.5T480-880q25 0 42.5 17.5T540-820v28q80 20 130 84.5T720-560v280h40q17 0 28.5 11.5T800-240q0 17-11.5 28.5T760-200H200Zm280-300Zm0 420q-33 0-56.5-23.5T400-160h160q0 33-23.5 56.5T480-80ZM320-280h320v-280q0-66-47-113t-113-47q-66 0-113 47t-47 113v280Z"/></svg>
+        {event.type === "class" && <>
+          <div className="block">
+            <div className="container no_margin">
+              <div className="left">
+                <svg className="fillcolor-accent opaque_2" xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#5f6368"><path d="M200-200q-17 0-28.5-11.5T160-240q0-17 11.5-28.5T200-280h40v-280q0-83 50-147.5T420-792v-28q0-25 17.5-42.5T480-880q25 0 42.5 17.5T540-820v28q80 20 130 84.5T720-560v280h40q17 0 28.5 11.5T800-240q0 17-11.5 28.5T760-200H200Zm280-300Zm0 420q-33 0-56.5-23.5T400-160h160q0 33-23.5 56.5T480-80ZM320-280h320v-280q0-66-47-113t-113-47q-66 0-113 47t-47 113v280Z"/></svg>
+              </div>
+              <div className="middle">
+                <p className="text-16-regular color-accent opaque_2">Time</p>
+              </div>
+              <div className="right"></div>
             </div>
-            <div className="middle">
-              <p className="text-16-regular color-accent opaque_2">Time</p>
+            <div className="container">
+              <div className="left"></div>
+              <div className="middle">
+                <p className="text-16-regular color-accent opaque_2">{time.start.toDateString()}</p>
+              </div>
+              <div className="right">
+                <p className="text-16-regular color-accent opaque_2">{time.start.getHours()}:{time.start.getMinutes()}</p>
+              </div>
             </div>
-            <div className="right"></div>
+            <div className="container">
+              <div className="left"></div>
+              <div className="middle">
+                <p className="text-16-regular color-accent opaque_2">{time.end.toDateString()}</p>
+              </div>
+              <div className="right">
+                <p className="text-16-regular color-accent opaque_2">{time.end.getHours()}:{time.end.getMinutes()}</p>
+              </div>
+            </div>
+            <div className="container">
+              <div className="left">
+                <svg className="fillcolor-accent opaque_2" xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#5f6368"><path d="M480-80q-75 0-140.5-28.5t-114-77q-48.5-48.5-77-114T120-440q0-17 11.5-28.5T160-480q17 0 28.5 11.5T200-440q0 117 81.5 198.5T480-160q117 0 198.5-81.5T760-440q0-117-81.5-198.5T480-720h-6l34 34q12 12 11.5 28T508-630q-12 12-28.5 12.5T451-629L348-732q-12-12-12-28t12-28l103-103q12-12 28.5-11.5T508-890q11 12 11.5 28T508-834l-34 34h6q75 0 140.5 28.5t114 77q48.5 48.5 77 114T840-440q0 75-28.5 140.5t-77 114q-48.5 48.5-114 77T480-80Z"/></svg>
+              </div>
+              <div className="middle">
+                <p className="text-16-regular color-accent opaque_2">Does not repeat</p>
+              </div>
+              <div className="right"></div>
+            </div>
           </div>
-          <div className="container">
-            <div className="left"></div>
-            <div className="middle">
-              <p className="text-16-regular color-accent opaque_2">Mon, 12 Jul 2024</p>
+        </>}
+        {event.type === "event" && <>
+          <div className="block">
+            <div className="container no_margin">
+              <div className="left">
+                <svg className="fillcolor-accent opaque_1" xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#5f6368"><path d="M200-200q-17 0-28.5-11.5T160-240q0-17 11.5-28.5T200-280h40v-280q0-83 50-147.5T420-792v-28q0-25 17.5-42.5T480-880q25 0 42.5 17.5T540-820v28q80 20 130 84.5T720-560v280h40q17 0 28.5 11.5T800-240q0 17-11.5 28.5T760-200H200Zm280-300Zm0 420q-33 0-56.5-23.5T400-160h160q0 33-23.5 56.5T480-80ZM320-280h320v-280q0-66-47-113t-113-47q-66 0-113 47t-47 113v280Z"/></svg>
+              </div>
+              <div className="middle">
+                <p className="text-16-regular color-accent opaque_1">Time</p>
+              </div>
+              <div className="right"></div>
             </div>
-            <div className="right">
-              <p className="text-16-regular color-accent opaque_2">16:00</p>
+            <div className="container">
+              <div className="left"></div>
+              <div className="middle">
+                <input onChange={handleDate1} type="date" className="text-16-regular color-accent opaque_1" value={date1} min={min.min} max={min.max}/>
+              </div>
+              <div className="right">
+                <input onChange={handleTime1} type="time" className="text-16-regular color-accent opaque_1" value={time1} />
+              </div>
+            </div>
+            <div className="container">
+              <div className="left"></div>
+              <div className="middle">
+                <input onChange={handleDate1} type="date" className="text-16-regular color-accent opaque_1" value={date1} min={min.min} max={min.max} />
+              </div>
+              <div className="right">
+                <input onChange={handleTime2} type="time" className="text-16-regular color-accent opaque_1" value={time2} />
+              </div>
+            </div>
+            <div className="container">
+              <div className="left">
+                <svg className="fillcolor-accent opaque_1" xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#5f6368"><path d="M480-80q-75 0-140.5-28.5t-114-77q-48.5-48.5-77-114T120-440q0-17 11.5-28.5T160-480q17 0 28.5 11.5T200-440q0 117 81.5 198.5T480-160q117 0 198.5-81.5T760-440q0-117-81.5-198.5T480-720h-6l34 34q12 12 11.5 28T508-630q-12 12-28.5 12.5T451-629L348-732q-12-12-12-28t12-28l103-103q12-12 28.5-11.5T508-890q11 12 11.5 28T508-834l-34 34h6q75 0 140.5 28.5t114 77q48.5 48.5 77 114T840-440q0 75-28.5 140.5t-77 114q-48.5 48.5-114 77T480-80Z"/></svg>
+              </div>
+              <div className="middle">
+                <p className="text-16-regular color-accent opaque_1">Does not repeat</p>
+              </div>
+              <div className="right"></div>
             </div>
           </div>
-          <div className="container">
-            <div className="left"></div>
-            <div className="middle">
-              <p className="text-16-regular color-accent opaque_2">Mon, 12 Jul 2024</p>
-            </div>
-            <div className="right">
-              <p className="text-16-regular color-accent opaque_2">17:00</p>
-            </div>
-          </div>
-          <div className="container">
-            <div className="left">
-              <svg className="fillcolor-accent opaque_2" xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#5f6368"><path d="M480-80q-75 0-140.5-28.5t-114-77q-48.5-48.5-77-114T120-440q0-17 11.5-28.5T160-480q17 0 28.5 11.5T200-440q0 117 81.5 198.5T480-160q117 0 198.5-81.5T760-440q0-117-81.5-198.5T480-720h-6l34 34q12 12 11.5 28T508-630q-12 12-28.5 12.5T451-629L348-732q-12-12-12-28t12-28l103-103q12-12 28.5-11.5T508-890q11 12 11.5 28T508-834l-34 34h6q75 0 140.5 28.5t114 77q48.5 48.5 77 114T840-440q0 75-28.5 140.5t-77 114q-48.5 48.5-114 77T480-80Z"/></svg>
-            </div>
-            <div className="middle">
-              <p className="text-16-regular color-accent opaque_2">Does not repeat</p>
-            </div>
-            <div className="right"></div>
-          </div>
-        </div>
+        </>}
         <div className="separator bgcolor-accent"></div>
         <div className="block">
           {event.course_activities ? (

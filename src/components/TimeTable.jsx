@@ -5,10 +5,8 @@ import CalendarEvent from "./CalendarEvent"
 import Modal from "./Modal"
 import axios from "axios"
 
-const TimeTable = ({ dotsObject, setWeek, parentState, setParentState, modalState, setModalState, action, setAction }) => {
+const TimeTable = ({ dotsObject, setWeek, parentState, setParentState, modalState, setModalState, action, setAction, setStyle }) => {
 
-
-  
 
   
 
@@ -125,7 +123,7 @@ const TimeTable = ({ dotsObject, setWeek, parentState, setParentState, modalStat
               <div></div>
               {renderVerticalLines()}
             </div>
-            {parentState.events.map((event) => event.week === "curr" ? <CalendarEvent key={event._id} event={event} /> : false)}
+            {parentState.events.map((event) => event.week === "curr" ? <CalendarEvent key={event._id} period={parentState.period} event={event} action={action} setAction={setAction} setStyle={setStyle} /> : false)}
           </div>
           <div className="div2">
             <div className="horizontal_lines">

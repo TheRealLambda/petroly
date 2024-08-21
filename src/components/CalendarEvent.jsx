@@ -1,15 +1,9 @@
-import { useEffect, useRef, useState } from "react"
+import { useEffect, useRef } from "react"
 import "./styles/calendar_event.css"
-import Modal from "./Modal"
-import ShowEventForm from "./ShowEventForm"
-import EditEventForm from "./EditEventForm"
-import CreateEventForm from "./CreateEventForm"
-import axios from "axios"
 
-const CalendarEvent = ({ event }) => {
+const CalendarEvent = ({ event, period, setStyle, action, setAction }) => {
   
   const divRef = useRef(null)
-  const lockPosition = useRef(false)
 
   const container = useRef(document.getElementById("clickContainer"))
   const selectTime = useRef(document.getElementById("selectTime"))
@@ -22,15 +16,17 @@ const CalendarEvent = ({ event }) => {
   let initialHeight
 
   useEffect(() => {
-    
-    divRef.current.classList.add(event.state)
-    divRef.current.style.backgroundColor = event.color 
+    if(event.state === "view" ) {
+      divRef.current.style.backgroundColor = event.color 
+    } else {
+      divRef.current.style.backgroundColor = "" 
+    }
     divRef.current.style.top = event.style.curr.top+"px" 
     divRef.current.style.left = event.style.curr.left+"px"
     divRef.current.style.height = event.style.curr.height+"px"
     divRef.current.style.width = event.style.curr.width+"px"
 
-    if(event.week === "curr") {
+    if(event.week === "curr" && event.state !== "view") {
       container.current.addEventListener("pointerdown", pointerDown)
       container.current.addEventListener("pointermove", pointerMove)
       container.current.addEventListener("pointerup", pointerUp)
@@ -38,33 +34,22 @@ const CalendarEvent = ({ event }) => {
     
 
     return () => {
-      if(event.week === "curr") {
+      if(event.week === "curr" && event.state !== "view") {
         container.current.removeEventListener("pointerdown", pointerDown)
         container.current.removeEventListener("pointermove", pointerMove)
         container.current.removeEventListener("pointerup", pointerUp)
       }
     }
-  }, [event])
+  }, [event.state, action])
+
+  useEffect(() => {
+    divRef.current.style.top = event.style.curr.top+"px" 
+    divRef.current.style.left = event.style.curr.left+"px"
+    divRef.current.style.height = event.style.curr.height+"px"
+    divRef.current.style.width = event.style.curr.width+"px"
+  }, [event.style.curr, event.style.prev])
 
 
-
-  const saveEvent = async (body) => {
-    const result = await axios.post("http://localhost:3001/api/events", body)
-    updateSchedule()
-  }
-
-  const updateEvent = async (body) => {
-    const result = await axios.patch("http://localhost:3001/api/events/"+event._id, body)
-    setMode({type: "view", commit: false})
-    setState("view")
-    setModalState("closed")
-    setEvent(result.data)
-  }
-  
-  const remove = async () => {
-    const result = await axios.delete("http://localhost:3001/api/events/"+event._id)
-    updateSchedule()
-  }
  
 
 
@@ -86,7 +71,7 @@ const CalendarEvent = ({ event }) => {
     const bottom = divRef.current.getBoundingClientRect().top+divRef.current.offsetHeight - container.current.getBoundingClientRect().top
     const width = container.current.offsetWidth
     const height = container.current.offsetHeight
-    const columnWidth = width / 7
+    const columnWidth = width / period
     const rowHeight = height / 24 / 6
     const columnIndex = Math.floor(mouseX/columnWidth)
     const rowIndex = Math.floor(mouseY/rowHeight)
@@ -95,33 +80,31 @@ const CalendarEvent = ({ event }) => {
     
     const maxRow = Math.floor(height/rowHeight)
     if(columnIndex >= 0 && columnIndex <= 6) {
-      setStyle(pos => {
-        return {current: {left: columnIndex*columnWidth, top: pos.current.top, height: pos.current.height}, prev: pos.prev}
-      })
+      setStyle(event._id, columnIndex*columnWidth, event.style.curr.top, event.style.curr.height, event.style.curr.width)
     }
     if(rowIndex >= 0 && rowIndex+(bottomRowIndex-topRowIndex) <= maxRow) {
-      setStyle(pos => {
-        return {current: {left: pos.current.left, top: Math.floor(rowIndex*rowHeight), height: pos.current.height}, prev: pos.prev}
-      })
+      setStyle(event._id, event.style.curr.left, Math.floor(rowIndex*rowHeight), event.style.curr.height, event.style.curr.width)
     } else if(rowIndex+(bottomRowIndex-topRowIndex) > maxRow) {
-      setStyle(pos => {
-        return {current: {left: pos.current.left, top: Math.floor((maxRow-(bottomRowIndex-topRowIndex))*rowHeight), height: pos.current.height}, prev: pos.prev}
-      })
+      setStyle(event._id, event.style.curr.left, floor((maxRow-(bottomRowIndex-topRowIndex))*rowHeight), event.style.curr.height, event.style.curr.width)
+    }
+
+    if(!action.commit) {
+      setAction({...action, commit: true})
     }
 
   }
 
 
-
+  let prevRowIndex 
+  let prevColumnIndex 
   const move = (e) => {
-
     const mouseX = e.clientX - container.current.getBoundingClientRect().left    
     const mouseY = e.clientY - container.current.getBoundingClientRect().top - initialOffsetY
     const top = divRef.current.getBoundingClientRect().top - container.current.getBoundingClientRect().top
     const bottom = divRef.current.getBoundingClientRect().top+divRef.current.offsetHeight - container.current.getBoundingClientRect().top
     const width = container.current.offsetWidth
     const height = container.current.offsetHeight
-    const columnWidth = width / 7
+    const columnWidth = width / period
     const rowHeight = height / 24 / 6
     const columnIndex = Math.floor(mouseX/columnWidth)
     const rowIndex = Math.floor(mouseY/rowHeight)
@@ -129,18 +112,16 @@ const CalendarEvent = ({ event }) => {
     const bottomRowIndex = Math.round(bottom/rowHeight)
     
     const maxRow = Math.floor(height/rowHeight)
-    if(columnIndex >= 0 && columnIndex <= 6) {
+    if(prevColumnIndex !== columnIndex && columnIndex >= 0 && columnIndex <= 6) {
       updateSelectTime(topRowIndex, rowHeight)
-      setStyle(pos => {
-        return {current: {left: columnIndex*columnWidth, top: pos.current.top, height: pos.current.height}, prev: pos.prev}
-      })
+      setStyle(event._id, columnIndex*columnWidth, event.style.curr.top, event.style.curr.height, event.style.curr.width)
     }
-    if(rowIndex >= 0 && rowIndex+(bottomRowIndex-topRowIndex) <= maxRow) {
+    if(prevRowIndex !== rowIndex && rowIndex >= 0 && rowIndex+(bottomRowIndex-topRowIndex) <= maxRow) {
       updateSelectTime(topRowIndex, rowHeight)
-      setStyle(pos => {
-        return {current: {left: pos.current.left, top: Math.floor(rowIndex*rowHeight), height: pos.current.height}, prev: pos.prev}
-      })
+      setStyle(event._id, event.style.curr.left, Math.floor(rowIndex*rowHeight), event.style.curr.height, event.style.curr.width)
     }
+    prevRowIndex = rowIndex
+    prevColumnIndex = columnIndex
 
   }
   
@@ -156,9 +137,7 @@ const CalendarEvent = ({ event }) => {
     const maxRow = Math.floor(height/rowHeight)
     if((bottomRowIndex-rowIndex) >= 1 && rowIndex >= 0 && bottomRowIndex <= maxRow) {
       updateSelectTime(rowIndex, rowHeight)
-      setStyle(pos => {
-        return {current: {left: pos.current.left, top: rowIndex*rowHeight, height: (bottomRowIndex-rowIndex)*rowHeight}, prev: pos.prev}
-      })
+      setStyle(event._id, event.style.curr.left, rowIndex*rowHeight, (bottomRowIndex-rowIndex)*rowHeight, event.style.curr.width)
     }
         
   }
@@ -174,9 +153,7 @@ const CalendarEvent = ({ event }) => {
     const maxRow = Math.floor(height/rowHeight)
     if((rowIndex-topRowIndex) >= 1 && rowIndex >= 0 && rowIndex <= maxRow) {
       updateSelectTime(rowIndex, rowHeight)
-      setStyle(pos => {
-        return {current: {left: pos.current.left, top: top, height: (rowIndex-topRowIndex)*rowHeight}, prev: pos.prev}
-      })
+      setStyle(event._id, event.style.curr.left, top, (rowIndex-topRowIndex)*rowHeight, event.style.curr.width)
     }
 
   }
@@ -194,12 +171,11 @@ const CalendarEvent = ({ event }) => {
     timeout = setTimeout(() => {
       clicked = false
     }, 500)
-    // console.log("compare:",e.target, divRef.current, e.target === divRef.current);
-    if(event.state !== "view" && e.target.matches(".calendar_event.edit")) {
+    if(event.state !== "view" && e.target.matches(".calendar_event")) {
       pointerAction = "move"
-    } else if(event.state !== "view" && e.target.matches(".calendar_event.edit .top_slider")) {
+    } else if(event.state !== "view" && e.target.matches(".calendar_event .top_slider")) {
       pointerAction = "slideUp"
-    } else if(event.state !== "view" && e.target.matches(".calendar_event.edit .bottom_slider")) {
+    } else if(event.state !== "view" && e.target.matches(".calendar_event .bottom_slider")) {
       pointerAction = "slideDown"
     } 
 
@@ -221,14 +197,14 @@ const CalendarEvent = ({ event }) => {
 
   const pointerUp = (e) => {
   
-    // console.log("HERE::", mode);
-    // if(!mode.commit && pointerAction) {
-    //   setMode({type: mode.type, commit: true})
-    // }
+    if(!action.commit && pointerAction) {
+      console.log("asd");
+      setAction({...action, commit: true})
+    }
 
     const finalMouseX = e.clientX
     const finalMouseY = e.clientY
-    if(event.state !== "view" && mode.commit 
+    if((event.state === "create" && action.commit || event.state === "edit")
        && e.target.matches(".vertical_lines")
        && clicked && finalMouseX < initialMouseX+10 && finalMouseX > initialMouseX-10
        && finalMouseY < initialMouseY+10 && finalMouseY > initialMouseY-10) {
@@ -252,12 +228,12 @@ const CalendarEvent = ({ event }) => {
 
     return brightness > 150 ? "color-accent" : "color-white"
   }
-
   return (
-    <div ref={divRef} className="calendar_event">
+    <div ref={divRef} className={"calendar_event "+(event.state==="view"?"view":"edit")} data-id={event._id} >
       {event.state === "view" && <p className={"text-14-regular "+color()}>{event.title}</p>}
       <div className="top_slider"></div>
       <div className="bottom_slider"></div>
+      <div className="wrapper"></div>
     </div>
   )
 }

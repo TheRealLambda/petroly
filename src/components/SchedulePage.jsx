@@ -10,62 +10,205 @@ import ShowEventForm from "./ShowEventForm"
 import EditEventForm from "./EditEventForm"
 import Modal from "./Modal"
 
+
+
 const SchedulePage = () => {
 
   const [state, setState] = useState({week: 0, period: 7, events: []})
   const [modalState, setModalState] = useState("closed")
-  const [action, setAction] = useState({type: "view", commit: false, event: null, options: {}})
+  const [action, setAction] = useState({type: "view", commit: false, event: {_id:"",title:"loading",color:"#00a36c"}, options: {}})
   const dotsObject = useRef({prev: [0,0,0,0,0,0,0], curr: [0,0,0,0,0,0,0], next: [0,0,0,0,0,0,0]})
   
 
+    const updateEvent = async (id, color, title, start_time, end_time) => {
+        console.log("updateEVent(");
+        
+        if(action.type === "edit") {
+            const result = await axios.patch("http://localhost:3001/api/events/"+id, {color, title, start_time, end_time})
 
+            const events = state.events.map(event => {
+                const newEvent = {...event}
+                if(newEvent._id === id) {
 
+                    newEvent.state = "view"
+                    newEvent.color = color
+                    newEvent.title = title
+                    newEvent.start_time = start_time
+                    newEvent.end_time = end_time
+                }
+                return newEvent
+            })
+            setState({...state, events})
+            setModalState("closed")
+            setAction({type: "view", commit: false, event: {_id:"",title:"loading",color:"#00a36c"}, options: {}})
+        } else if(action.type === "create") {
+            const result = await axios.post("http://localhost:3001/api/events/", {color, title, start_time, end_time})
 
+            const events = state.events.map(event => {
+                const newEvent = {...event}
+                if(newEvent._id === id) {
+                    newEvent.state = "view"
+                    newEvent._id = result.data._id
+                    newEvent.state = "view"
+                    newEvent.color = color
+                    newEvent.title = title
+                    newEvent.start_time = start_time
+                    newEvent.end_time = end_time
+                }
+                return newEvent
+            })
+            setState({...state, events})
+            setModalState("closed")
+            setAction({type: "view", commit: false, event: {_id:"",title:"loading",color:"#00a36c"}, options: {}})
+        }
+    }
 
+  const setStyle = (id, left, top, height, width) => {
+    console.log(id, left, top, height, width);
+      const events = state.events.map(event => {
+          const newEvent = {...event}
+          if(newEvent._id === id) {
+            newEvent.style.curr = {left, top, height, width}
+        }
+        return newEvent
+    })
+    const newState = {...state, events}
+    setState(newState)
+  }
+
+  const changeToEdit = (id) => {
+    const events = state.events.map(event => {
+        const newEvent = {...event}
+        if(newEvent._id === id) {
+            newEvent.state = "edit"
+        }
+        return newEvent 
+    })
+    const newState = {...state, events}
+    setState(newState)
+    setAction({type: "edit", commit: false, event: action.event, options: action.options})
+    setModalState("open")
+  }
+
+  const closeModal = () => {
+    if(action.type === "create") {
+        if(action.commit) {
+            if(confirm("dismiss event?")) {
+                const events = state.events.filter(event => event._id !== "0")
+                const newState = {...state, events}
+                setState(newState)
+                setAction({type: "view", commit: false, event: action.event, options: {}})
+                setModalState("closed")
+            }
+        } else {
+            const events = state.events.filter(event => event._id !== "0")
+            const newState = {...state, events}
+            setState(newState)
+            setAction({type: "view", commit: false, event: action.event, options: {}})
+            setModalState("closed")
+        }
+        
+    } else {
+      if(action.commit) {
+          if(confirm("Dismiss changes?")) {
+              const events = state.events.map(event => {
+                  const newEvent = {...event}
+                  if(newEvent._id === action.event._id) {
+                      newEvent.style.curr = newEvent.style.prev
+                      newEvent.state = "view"
+                  }
+                  return newEvent
+              })
+              setState({...state, events})
+              setModalState("closed")
+              setAction({type: "view", commit: false, event: {_id:"",title:"loading",color:"#00a36c"}, options: {}})
+          }
+      } else {
+          const events = state.events.map(event => {
+              const newEvent = {...event}
+              if(newEvent._id === action.event._id) {
+                  newEvent.state = "view"
+              }
+              return newEvent
+          })
+          setState({...state, events})
+          setModalState("closed")
+          setAction({type: "view", commit: false, event: {_id:"",title:"loading",color:"#00a36c"}, options: {}})
+          setModalState("closed")
+      }
+    }
+  }
+
+  const deleteEvent = (id) => {
+    const events = state.events.filter(event => event._id !== id)
+    const newState = {...state, events}
+    setState(newState)
+    setModalState("closed")
+  }
 
 
   const funcOne = (e) => {
     
 
-    if(e.target.matches(".vertical_lines")) {
-      //only consider clicks on empty area
-      if(mode.type === "create" && !mode.commit) {
-        cancelCreation()
-        return
-      } else if(mode.type === "view") {
-        const container = document.getElementById("clickContainer")
-        const mouseX = e.clientX - container.getBoundingClientRect().left
-        const mouseY = e.clientY - container.getBoundingClientRect().top
-        const height = container.offsetHeight
-        const rowHeight = height / 24 / 6
-        const rowIndex = Math.round(mouseY/rowHeight)
-        const hour = Math.floor(rowIndex/6)
-        const minute = (rowIndex % 6)*10
-        const width = container.offsetWidth
-        const columnWidth = width / 7
-        const columnIndex = Math.floor(mouseX/columnWidth)
-        const date = document.getElementById("active").firstElementChild.children[columnIndex].getAttribute("data-date")
-        const startDate = new Date(date)
-        startDate.setHours(hour, minute)
-
-        const rowIndexEnd = Math.round((mouseY+75)/rowHeight)
-        const hourEnd = Math.floor(rowIndexEnd/6)
-        const minuteEnd = (rowIndexEnd % 6)*10
-        const endDate = new Date(date)
-        endDate.setHours(hourEnd, minuteEnd)
-
-
-        const eventObject = {
-          _id: "0",
-          color: "#00a36c",
-          start_time: startDate.toISOString(),
-          end_time: endDate.toISOString(),
-          type: "event"
+    if(action.type === "create" && !action.commit && e.target.matches(".vertical_lines")) {
+        const events = state.events.filter(event => event._id !== "0")
+        const newState = {...state, events}
+        setState(newState)
+        setAction({type: "view", commit: false, event: action.event, options: {}})
+        setModalState("closed")
+    } else if(action.type === "view" && e.target.matches(".vertical_lines")) {
+        const now = new Date(   )
+      const container = document.getElementById("clickContainer")
+      const mouseX = e.clientX - container.getBoundingClientRect().left
+      const mouseY = e.clientY - container.getBoundingClientRect().top
+      const height = container.offsetHeight
+      const rowHeight = height / 24 / 6
+      const rowIndex = Math.round(mouseY/rowHeight)
+      const hour = Math.floor(rowIndex/6)
+      const minute = (rowIndex % 6)*10
+      const width = container.offsetWidth
+      const columnWidth = width / state.period
+      const columnIndex = Math.floor(mouseX/columnWidth)
+      const daysArray = []
+      const firstDayOfYear = new Date(now.getFullYear(), 0, 1)
+      const temp = firstDayOfYear.getDay()
+      const toFirstSundayOfYear = temp === 0 ? 0 : 7 - temp
+        for (let i = 0; i < state.period; i++) {
+          const element = new Date(now.getFullYear(), 0, 1+toFirstSundayOfYear+(state.week)*(state.period === 5 ? 7 : state.period)+i)
+          daysArray.push(element)
         }
-        setCalendarEvents(calendarEvents => calendarEvents.concat({week: "current", eventObject}))
-        setMode({type: "create", commit: false})
+        const date = daysArray[columnIndex]
+      const startDate = new Date(date)
+      startDate.setHours(hour, minute)
+      console.log("startDate", date);
+      const rowIndexEnd = Math.round((mouseY+75)/rowHeight)
+      const hourEnd = Math.floor(rowIndexEnd/6)
+      const minuteEnd = (rowIndexEnd % 6)*10
+      const endDate = new Date(date)
+      endDate.setHours(hourEnd, minuteEnd)
+      const event = {
+        _id: "0",
+        color: "#00a36c",
+        title: "(no title)",
+        start_time: startDate.toISOString(),
+        end_time: endDate.toISOString(),
+        type: "event",
+        state: "create",
+        week: "curr",
+        style: {curr: {left: columnIndex*columnWidth, top: rowIndex*rowHeight, height: 75, width: columnWidth}, prev: {left: columnIndex*columnWidth, top: rowIndex*rowHeight, height: 75, width: columnWidth}}
       }
-
+      const events = state.events.concat(event)
+      const newState = {...state, events}
+      console.log(event);
+      setState(newState)
+      setAction({type: "create", commit: false, event})
+      setModalState("partial")
+    } else if(action.type === "view" && e.target.matches(".calendar_event.view .wrapper")) {
+        //clicked on an event
+        const clickedEventId = e.target.parentNode.getAttribute("data-id")
+        const event = state.events.find(event => event._id === clickedEventId)
+        setAction({type: "view", commit: false, event})
+        setModalState("partial")
     }
 
      
@@ -99,7 +242,6 @@ const SchedulePage = () => {
       container.classList.remove("transition")
       timetable.classList.remove("transition")
       setWeek(-1)
-      // stateMiddle()
     }, 200) // same time as transition duration
     container.classList.remove("middle")
     container.classList.remove("right")
@@ -108,9 +250,18 @@ const SchedulePage = () => {
     timetable.classList.remove("right")
     timetable.classList.add("left")
   }
-  const stateMiddle = () => {
+  const stateMiddle = (trans) => {
     container.style = ""
     timetable.style = ""
+    if(trans) {
+      container.classList.add("transition")
+      timetable.classList.add("transition")
+      clearTimeout(timeout2)
+      timeout2 = setTimeout(() => {
+        container.classList.remove("transition")
+        timetable.classList.remove("transition")
+      }, 200) // same time as transition duration
+    }
     container.classList.remove("left")
     container.classList.remove("right")
     container.classList.add("middle")
@@ -129,7 +280,6 @@ const SchedulePage = () => {
       container.classList.remove("transition")
       timetable.classList.remove("transition")
       setWeek(1)
-      // stateMiddle()
     }, 200) // same time as transition duration
     container.classList.remove("left")
     container.classList.remove("middle")
@@ -147,7 +297,7 @@ const SchedulePage = () => {
     initialOffsetX = e.clientX - container.getBoundingClientRect().left
                      + weekPicker.getBoundingClientRect().left
     initialOffsetY = document.getElementsByClassName("time_table")[0].scrollTop
-    if(!lockScrolling && e.target.matches(".vertical_lines, .calendar_event.view, p")) {
+    if(!lockScrolling && action.type === "view" && e.target.matches(".vertical_lines, .calendar_event .wrapper")) {
       mouseDown = true
     }
     clicked = true
@@ -210,7 +360,7 @@ const SchedulePage = () => {
       stateRight()
     } else if(boolian && !lockHorizontalScrolling) {
       //drag to middle
-      stateMiddle()
+      stateMiddle(true)
     }
 
     mouseDown = false
@@ -233,8 +383,7 @@ const SchedulePage = () => {
       weekPicker.removeEventListener("pointermove", pointerMove)
       weekPicker.removeEventListener("pointerup", pointerUp)
     }
-  }, [state.week])
-
+  }, [state])
 
 
 
@@ -247,10 +396,9 @@ const SchedulePage = () => {
     const dots = {prev: [0,0,0,0,0,0,0], curr: [0,0,0,0,0,0,0], next: [0,0,0,0,0,0,0]}
 
     const result = await axios.get("http://localhost:3001/api/events?week="+week+"&period="+(period === 5 ? 7 : period))
+
     const modifiedResult = result.data.map(event => {
-      
       if(period === 5 && (new Date(event.start_time).getDay() === 5 || new Date(event.start_time).getDay() === 6)) {
-        console.log(":ADADASd");
         return null
       }
       const container = document.getElementById("clickContainer")
@@ -295,7 +443,7 @@ const SchedulePage = () => {
     }).filter(a => a !== null)
     
     dotsObject.current = dots
-    console.log(modifiedResult);
+    // console.log(JSON.stringify(modifiedResult));
     return modifiedResult
 
   }
@@ -308,7 +456,7 @@ const SchedulePage = () => {
     const firstSundayOfYear = new Date(firstDayOfYear)
     firstSundayOfYear.setDate(firstSundayOfYear.getDate() + daysUntilFirstSunday)
     
-    const selectedDate = new Date(firstSundayOfYear.getFullYear(), 1-1, 1+daysUntilFirstSunday+(state.week)*state.period)
+    const selectedDate = new Date(firstSundayOfYear.getFullYear(), 1-1, 1+daysUntilFirstSunday+(state.week)*(state.period===5?7:state.period))
     const numberOfDays = (selectedDate.getTime() - firstSundayOfYear.getTime()) / (1*24*60*60*1000)
   
     const week = Math.floor(numberOfDays / period)
@@ -316,9 +464,11 @@ const SchedulePage = () => {
   }
 
   const setWeek = async (n) => {
-    console.log(state.week, state.period);
+
     const events = await getEvents(state.week+n, state.period)
-    setState({week: state.week+n, period: state.period, events})
+    const newState = {week: state.week+n, period: state.period, events}
+    console.log(newState);
+    setState(newState)
   }
 
   const resetWeek = () => {
@@ -332,17 +482,18 @@ const SchedulePage = () => {
     const currentDate = new Date()
     const numberOfDays = (currentDate - firstSundayOfYear) / (1*24*60*60*1000)
   
-    const week = Math.floor(numberOfDays / period.current)
-    const events = getEvents(week, prev.period)
+    const week = Math.floor(numberOfDays / period)
+    const events = getEvents(week, period)
 
-    setState({week, period: state.period, events})
+    const newState = {week, period: state.period, events}
+    setState(newState)
   }
 
   const setPeriod = async (period) => {
     const week = calculateWeek(period===5?7:period)
     const events = await getEvents(week, period)
-    console.log(period);
-    setState({week, period, events})
+    const newState = {week, period, events}
+    setState(newState)
   }
 
   // useEffect(() => {
@@ -403,14 +554,14 @@ const SchedulePage = () => {
       <NavBar />
       <Modal state={modalState} setState={setModalState} options={action.options}>
         {
-          action.type === "create" ? <CreateEventForm /> :
-          action.type === "view" ? <ShowEventForm /> :
-          action.type === "edit" ? <EditEventForm /> :
+          action.type === "create" ? <EditEventForm state={state} event={action.event} setStyle={setStyle} action={action} setAction={setAction} updateEvent={updateEvent} closeModal={closeModal} /> :
+          action.type === "view" ? <ShowEventForm event={action.event} changeToEdit={changeToEdit} closeModal={closeModal} deleteEvent={deleteEvent} /> :
+          action.type === "edit" ? <EditEventForm state={state} event={action.event} action={action} setAction={setAction} updateEvent={updateEvent} closeModal={closeModal} /> :
           <div>No suitable form were found</div>
         }
       </Modal>
       <MenuBar setWeek={setWeek} restWeek={resetWeek} setPeriod={setPeriod} />
-      <TimeTable dotsObject={dotsObject} setWeek={setWeek} parentState={state} setParentState={setState} modalState={modalState} setModalState={setModalState} action={action} setAction={setAction} />
+      <TimeTable dotsObject={dotsObject} setWeek={setWeek} parentState={state} setParentState={setState} modalState={modalState} setModalState={setModalState} action={action} setAction={setAction} setStyle={setStyle} />
     </div>
   )
 }
