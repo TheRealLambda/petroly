@@ -20,21 +20,24 @@ const SchedulePage = () => {
   const dotsObject = useRef({prev: [0,0,0,0,0,0,0], curr: [0,0,0,0,0,0,0], next: [0,0,0,0,0,0,0]})
   
 
-    const updateEvent = async (id, color, title, start_time, end_time) => {
+    const updateEvent = async (id, body) => {
         console.log("updateEVent(");
         
         if(action.type === "edit") {
-            const result = await axios.patch("http://localhost:3001/api/events/"+id, {color, title, start_time, end_time})
+            const result = await axios.patch("http://localhost:3001/api/events/"+id, body)
 
             const events = state.events.map(event => {
                 const newEvent = {...event}
                 if(newEvent._id === id) {
 
                     newEvent.state = "view"
-                    newEvent.color = color
-                    newEvent.title = title
-                    newEvent.start_time = start_time
-                    newEvent.end_time = end_time
+                    newEvent.color = body.color
+                    newEvent.title = body.title
+                    newEvent.reminder = body.reminder
+                    newEvent.description = body.description
+                    newEvent.start_time = body.start_time
+                    newEvent.end_time = body.end_time
+                    console.log("here1010");
                 }
                 return newEvent
             })
@@ -42,18 +45,21 @@ const SchedulePage = () => {
             setModalState("closed")
             setAction({type: "view", commit: false, event: {_id:"",title:"loading",color:"#00a36c"}, options: {}})
         } else if(action.type === "create") {
-            const result = await axios.post("http://localhost:3001/api/events/", {color, title, start_time, end_time})
+            const result = await axios.post("http://localhost:3001/api/events/", body)
 
             const events = state.events.map(event => {
                 const newEvent = {...event}
                 if(newEvent._id === id) {
-                    newEvent.state = "view"
                     newEvent._id = result.data._id
                     newEvent.state = "view"
-                    newEvent.color = color
-                    newEvent.title = title
-                    newEvent.start_time = start_time
-                    newEvent.end_time = end_time
+                    newEvent.color = body.color
+                    newEvent.title = body.title
+                    newEvent.reminder = body.reminder
+                    newEvent.description = body.description
+                    newEvent.start_time = body.start_time
+                    newEvent.end_time = body.end_time
+                    console.log("here2002");
+                    newEvent.type = "event"
                 }
                 return newEvent
             })
@@ -139,7 +145,9 @@ const SchedulePage = () => {
     }
   }
 
-  const deleteEvent = (id) => {
+  const deleteEvent = async (id) => {
+
+    const result = await axios.delete("http://localhost:3001/api/events/"+id)
     const events = state.events.filter(event => event._id !== id)
     const newState = {...state, events}
     setState(newState)
@@ -297,7 +305,7 @@ const SchedulePage = () => {
     initialOffsetX = e.clientX - container.getBoundingClientRect().left
                      + weekPicker.getBoundingClientRect().left
     initialOffsetY = document.getElementsByClassName("time_table")[0].scrollTop
-    if(!lockScrolling && action.type === "view" && e.target.matches(".vertical_lines, .calendar_event .wrapper")) {
+    if(!lockScrolling && e.target.matches(".vertical_lines, .calendar_event .wrapper")) {
       mouseDown = true
     }
     clicked = true
@@ -322,7 +330,7 @@ const SchedulePage = () => {
       lockHorizontalScrolling = false
       boolian = true
     }
-    if(mouseDown && !lockHorizontalScrolling && boolian) {
+    if(mouseDown && action.type === "view" && !lockHorizontalScrolling && boolian) {
       if(left <= 0 && left >= -600) {
         timetable.style.left = left+"px"
         container.style.left = left+"px"
@@ -343,19 +351,19 @@ const SchedulePage = () => {
     document.getElementsByClassName("time_table")[0].style = ""
     const finalMouseX = e.clientX
     const left = finalMouseX-initialOffsetX
-    if(clicked && boolian && !lockHorizontalScrolling && finalMouseX > initialMouseX) {
+    if(clicked && action.type === "view" && boolian && !lockHorizontalScrolling && finalMouseX > initialMouseX) {
       //swipe left
       stateLeft()
-    } else if(clicked && boolian && !lockHorizontalScrolling && finalMouseX < initialMouseX) {
+    } else if(clicked && action.type === "view" && boolian && !lockHorizontalScrolling && finalMouseX < initialMouseX) {
       //swipe right
       stateRight()
     } else if(clicked && !boolian) {
       //click
       funcOne(e)
-    } else if(boolian && !lockHorizontalScrolling && left > -150) {
+    } else if(boolian && action.type === "view" && !lockHorizontalScrolling && left > -150) {
       //drag to left
       stateLeft()
-    } else if(boolian && !lockHorizontalScrolling && left < -450) {
+    } else if(boolian && action.type === "view" && !lockHorizontalScrolling && left < -450) {
       //drag to right
       stateRight()
     } else if(boolian && !lockHorizontalScrolling) {
@@ -368,6 +376,7 @@ const SchedulePage = () => {
     boolian = false
   }
   
+  let interval
   useEffect(() => {
     weekPicker = document.getElementById("div2_wrapper")
     container = document.getElementById("week_picker_wrapper").firstElementChild
@@ -377,6 +386,10 @@ const SchedulePage = () => {
     weekPicker.addEventListener("pointerup", pointerUp)
 
     stateMiddle()
+    if(action.type === "view") {
+      setModalState("closed")
+    }
+
 
     return () => {
       weekPicker.removeEventListener("pointerdown", pointerDown)
@@ -471,7 +484,7 @@ const SchedulePage = () => {
     setState(newState)
   }
 
-  const resetWeek = () => {
+  const resetWeek = async () => {
     const firstDayOfYear = new Date(2024, 1-1, 1)
     const daysUntilFirstSunday = firstDayOfYear.getDay() === 0 ? 0 : 7-firstDayOfYear.getDay()
     
@@ -482,8 +495,8 @@ const SchedulePage = () => {
     const currentDate = new Date()
     const numberOfDays = (currentDate - firstSundayOfYear) / (1*24*60*60*1000)
   
-    const week = Math.floor(numberOfDays / period)
-    const events = getEvents(week, period)
+    const week = Math.floor(numberOfDays / (state.period===5?7:state.period))
+    const events = await getEvents(week, state.period)
 
     const newState = {week, period: state.period, events}
     setState(newState)
@@ -543,6 +556,42 @@ const SchedulePage = () => {
       setState({week, period, events})
     }
     initializeEvents()
+
+    async function setupReminders() {
+      if(Notification.permission === "granted") {
+        const allEvents = await axios.get("http://localhost:3001/api/events/all")
+        setInterval(() => {
+          console.log("==================================================");
+          const now = new Date()
+          allEvents.data.forEach(event => {
+            console.log(event.reminder);
+            if(event.reminder) {
+
+              const reminderDate = new Date(event.reminder)
+              const eventDate = new Date(event.start_time)
+              if(now.getTime() > reminderDate.getTime() && false) {
+                const time = (eventDate.getHours()<10?"0"+eventDate.getHours():""+eventDate.getHours())+":"+(eventDate.getMinutes()<10?"0"+eventDate.getMinutes():""+eventDate.getMinutes())
+                new Notification(event.title, {
+                  body: "Your event will start at "+time,
+                  tag: event._id})
+              }
+            } 
+          })
+          console.log("==================================================");
+        }, 1000*10)
+      } else {
+        Notification.requestPermission().then(permission => {
+          if(permission === "default") {
+            console.log("[Notification] Permission is Default")
+          } else if(permission === "granted") {
+            console.log("[Notification] Permission Granted");
+          } else if(permission === "denied") {
+            console.log("[Notification] Permission Denied");
+          }
+        })
+      }
+    }
+    setupReminders()
   }, [])
 
 
@@ -556,11 +605,11 @@ const SchedulePage = () => {
         {
           action.type === "create" ? <EditEventForm state={state} event={action.event} setStyle={setStyle} action={action} setAction={setAction} updateEvent={updateEvent} closeModal={closeModal} /> :
           action.type === "view" ? <ShowEventForm event={action.event} changeToEdit={changeToEdit} closeModal={closeModal} deleteEvent={deleteEvent} /> :
-          action.type === "edit" ? <EditEventForm state={state} event={action.event} action={action} setAction={setAction} updateEvent={updateEvent} closeModal={closeModal} /> :
+          action.type === "edit" ? <EditEventForm state={state} event={action.event} setStyle={setStyle} action={action} setAction={setAction} updateEvent={updateEvent} closeModal={closeModal} /> :
           <div>No suitable form were found</div>
         }
       </Modal>
-      <MenuBar setWeek={setWeek} restWeek={resetWeek} setPeriod={setPeriod} />
+      <MenuBar resetWeek={resetWeek} setPeriod={setPeriod} />
       <TimeTable dotsObject={dotsObject} setWeek={setWeek} parentState={state} setParentState={setState} modalState={modalState} setModalState={setModalState} action={action} setAction={setAction} setStyle={setStyle} />
     </div>
   )

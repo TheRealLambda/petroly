@@ -3,10 +3,13 @@ import "./styles/edit_event_form.css"
 import axios from "axios"
 
 const EditEventForm = ({ event, setStyle, state, action, setAction, updateEvent, closeModal }) => {
-
+  console.log(event.description, !!event.description);
   const [color, setColor] = useState(event.color)
   const [title, setTitle] = useState(event.title)
   const [time, setTime] = useState({start: new Date(event.start_time), end: new Date(event.end_time)})
+  const [reminder, setReminder] = useState(event.reminder?new Date(event.reminder):null)
+  const [description, setDescription] = useState(event.description?event.description:"")
+  console.log(description);
   const [showActivityForm, setShowActivityForm] = useState(false)
   const [activityTitle, setActivityTitle] = useState("")
   const [activityDescription, setActivityDescription] = useState("")
@@ -57,11 +60,13 @@ const EditEventForm = ({ event, setStyle, state, action, setAction, updateEvent,
     const body = {
       color,
       title,
+      reminder,
+      description,
       start_time: time.start,
       end_time: time.end,
       type: event.type
     }
-    updateEvent(event._id, body.color, body.title, body.start_time, body.end_time)
+    updateEvent(event._id, body)
   }
 
   const handleActivityForm = async (e) => {
@@ -192,7 +197,6 @@ const EditEventForm = ({ event, setStyle, state, action, setAction, updateEvent,
     const dateEnd = new Date(time.end)
     dateEnd.setFullYear(year, month-1, day) 
 
-    console.log(string);
     const container = document.getElementById("clickContainer")
       const width = container.offsetWidth
       const height = container.offsetHeight
@@ -219,20 +223,19 @@ const EditEventForm = ({ event, setStyle, state, action, setAction, updateEvent,
         daysArray.forEach((day, i) => {
           const date2 = new Date(date)
           date2.setHours(0, 0, 0, 0)
-          console.log(date2);
           if(day.getTime() === date2.getTime()) {
-            console.log("HERE");
             index = i
           }
         })      
         return index
       })()
-      console.log(columnIndex);
       const rowIndex = Math.floor((time.start.getHours()*60 + time.start.getMinutes()) / 10)
       const rowIndexEnd = Math.floor((time.end.getHours()*60 + time.end.getMinutes()) / 10)
       const divHeight = (rowIndexEnd-rowIndex)*rowHeight
       const style = {left: columnIndex*columnWidth, top: rowIndex*rowHeight, height: divHeight, width: columnWidth}
-      if(columnIndex) {
+      console.log(columnIndex);
+      if(columnIndex !== undefined) {
+        console.log("TRUE");
         setStyle(event._id, style.left, style.top, style.height, style.width)
       }
   }
@@ -258,6 +261,30 @@ const EditEventForm = ({ event, setStyle, state, action, setAction, updateEvent,
         const max = daysArray[daysArray.length-1].getFullYear()+"-"+((daysArray[daysArray.length-1].getMonth()+1)<10?"0"+(daysArray[daysArray.length-1].getMonth()+1):""+(daysArray[daysArray.length-1].getMonth()+1))+"-"+(daysArray[daysArray.length-1].getDate()<10?"0"+daysArray[daysArray.length-1].getDate():""+daysArray[daysArray.length-1].getDate())
         return {min, max}
   })()
+
+
+
+
+
+  const handleReminder = (e) => {
+    console.log(e.target.value);
+    const reminderDate = new Date(e.target.value)
+    setReminder(reminderDate)
+  }
+
+  const localISO = () => {
+    if(reminder) {
+      const time = (reminder.getHours()<10?"0"+reminder.getHours():""+reminder.getHours())+":"+(reminder.getMinutes()<10?"0"+reminder.getMinutes():""+reminder.getMinutes())
+      const date = reminder.getFullYear()+"-"+((reminder.getMonth()+1)<10?"0"+(reminder.getMonth()+1):""+(reminder.getMonth()+1))+"-"+(reminder.getDate()<10?"0"+reminder.getDate():""+reminder.getDate())
+      return date+"T"+time
+    } else {
+      return ""
+    }
+  }
+
+  const handleDescription = (e) => {
+    setDescription(e.target.value)
+  }
   
   return (
     <div className="edit_event_form">
@@ -301,7 +328,7 @@ const EditEventForm = ({ event, setStyle, state, action, setAction, updateEvent,
           <div className="block">
             <div className="container no_margin">
               <div className="left">
-                <p className="text-16-semibold color-accent opaque_2">TYPE</p>
+                <p className="text-12-semibold color-accent opaque_2">TYPE</p>
               </div>
               <div className="middle">
                 <p className="text-16-regular color-accent opaque_2">LEC</p>
@@ -333,7 +360,7 @@ const EditEventForm = ({ event, setStyle, state, action, setAction, updateEvent,
           <div className="block">
             <div className="container no_margin">
               <div className="left">
-                <svg className="fillcolor-accent opaque_2" xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#5f6368"><path d="M200-200q-17 0-28.5-11.5T160-240q0-17 11.5-28.5T200-280h40v-280q0-83 50-147.5T420-792v-28q0-25 17.5-42.5T480-880q25 0 42.5 17.5T540-820v28q80 20 130 84.5T720-560v280h40q17 0 28.5 11.5T800-240q0 17-11.5 28.5T760-200H200Zm280-300Zm0 420q-33 0-56.5-23.5T400-160h160q0 33-23.5 56.5T480-80ZM320-280h320v-280q0-66-47-113t-113-47q-66 0-113 47t-47 113v280Z"/></svg>
+                <svg className="fillcolor-accent opaque_2" xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#5f6368"><path d="M520-496v-144q0-17-11.5-28.5T480-680q-17 0-28.5 11.5T440-640v159q0 8 3 15.5t9 13.5l132 132q11 11 28 11t28-11q11-11 11-28t-11-28L520-496ZM480-80q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Zm0-400Zm0 320q133 0 226.5-93.5T800-480q0-133-93.5-226.5T480-800q-133 0-226.5 93.5T160-480q0 133 93.5 226.5T480-160Z"/></svg>
               </div>
               <div className="middle">
                 <p className="text-16-regular color-accent opaque_2">Time</p>
@@ -373,7 +400,7 @@ const EditEventForm = ({ event, setStyle, state, action, setAction, updateEvent,
           <div className="block">
             <div className="container no_margin">
               <div className="left">
-                <svg className="fillcolor-accent opaque_1" xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#5f6368"><path d="M200-200q-17 0-28.5-11.5T160-240q0-17 11.5-28.5T200-280h40v-280q0-83 50-147.5T420-792v-28q0-25 17.5-42.5T480-880q25 0 42.5 17.5T540-820v28q80 20 130 84.5T720-560v280h40q17 0 28.5 11.5T800-240q0 17-11.5 28.5T760-200H200Zm280-300Zm0 420q-33 0-56.5-23.5T400-160h160q0 33-23.5 56.5T480-80ZM320-280h320v-280q0-66-47-113t-113-47q-66 0-113 47t-47 113v280Z"/></svg>
+                <svg className="fillcolor-accent opaque_1" xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#5f6368"><path d="M520-496v-144q0-17-11.5-28.5T480-680q-17 0-28.5 11.5T440-640v159q0 8 3 15.5t9 13.5l132 132q11 11 28 11t28-11q11-11 11-28t-11-28L520-496ZM480-80q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Zm0-400Zm0 320q133 0 226.5-93.5T800-480q0-133-93.5-226.5T480-800q-133 0-226.5 93.5T160-480q0 133 93.5 226.5T480-160Z"/></svg>
               </div>
               <div className="middle">
                 <p className="text-16-regular color-accent opaque_1">Time</p>
@@ -588,36 +615,24 @@ const EditEventForm = ({ event, setStyle, state, action, setAction, updateEvent,
         </div>
         <div className="separator bgcolor-accent"></div>
         <div className="block">
-          <div className="container">
+          <div className="container no_margin">
             <div className="left">
               <svg className="fillcolor-accent opaque_1" xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#5f6368"><path d="M200-200q-17 0-28.5-11.5T160-240q0-17 11.5-28.5T200-280h40v-280q0-83 50-147.5T420-792v-28q0-25 17.5-42.5T480-880q25 0 42.5 17.5T540-820v28q80 20 130 84.5T720-560v280h40q17 0 28.5 11.5T800-240q0 17-11.5 28.5T760-200H200Zm280-300Zm0 420q-33 0-56.5-23.5T400-160h160q0 33-23.5 56.5T480-80ZM320-280h320v-280q0-66-47-113t-113-47q-66 0-113 47t-47 113v280Z"/></svg>
             </div>
             <div className="middle">
-              <p className="text-16-regular color-accent opaque_1">Add reminder</p>
+              <input onChange={handleReminder} type="datetime-local" className="text-16-regular color-accent opaque_1" value={localISO()}/>
             </div>
             <div className="right"></div>
           </div>
         </div>
         <div className="separator bgcolor-accent"></div>
         <div className="block">
-          <div className="container">
+          <div className="container no_margin">
             <div className="left">
               <svg className="fillcolor-accent opaque_1" xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#5f6368"><path d="M160-240q-17 0-28.5-11.5T120-280q0-17 11.5-28.5T160-320h400q17 0 28.5 11.5T600-280q0 17-11.5 28.5T560-240H160Zm0-200q-17 0-28.5-11.5T120-480q0-17 11.5-28.5T160-520h640q17 0 28.5 11.5T840-480q0 17-11.5 28.5T800-440H160Zm0-200q-17 0-28.5-11.5T120-680q0-17 11.5-28.5T160-720h640q17 0 28.5 11.5T840-680q0 17-11.5 28.5T800-640H160Z"/></svg>
             </div>
             <div className="middle">
-              <p className="text-16-regular color-accent opaque_1">Add description</p>
-            </div>
-            <div className="right"></div>
-          </div>
-        </div>
-        <div className="separator bgcolor-accent"></div>
-        <div className="block">
-          <div className="container">
-            <div className="left">
-              <svg className="fillcolor-accent opaque_1" xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#5f6368"><path d="M720-330q0 104-73 177T470-80q-104 0-177-73t-73-177v-370q0-75 52.5-127.5T400-880q75 0 127.5 52.5T580-700v350q0 46-32 78t-78 32q-46 0-78-32t-32-78v-330q0-17 11.5-28.5T400-720q17 0 28.5 11.5T440-680v330q0 13 8.5 21.5T470-320q13 0 21.5-8.5T500-350v-350q-1-42-29.5-71T400-800q-42 0-71 29t-29 71v370q-1 71 49 120.5T470-160q70 0 119-49.5T640-330v-350q0-17 11.5-28.5T680-720q17 0 28.5 11.5T720-680v350Z"/></svg>
-            </div>
-            <div className="middle">
-              <p className="text-16-regular color-accent opaque_1">Add attachment</p>
+              <textarea onChange={handleDescription} className="text-16-regular color-accent opaque_1" placeholder="Add description" value={description}></textarea>
             </div>
             <div className="right"></div>
           </div>

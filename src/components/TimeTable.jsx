@@ -5,16 +5,26 @@ import CalendarEvent from "./CalendarEvent"
 import Modal from "./Modal"
 import axios from "axios"
 
-const TimeTable = ({ dotsObject, setWeek, parentState, setParentState, modalState, setModalState, action, setAction, setStyle }) => {
+const TimeTable = ({ dotsObject, setWeek, parentState, action, setAction, setStyle }) => {
 
 
-  
-
-  
-
+  console.log(parentState);
 
   
 
+
+  let realWeek
+    const firstDayOfYear = new Date(2024, 1-1, 1)
+    const daysUntilFirstSunday = firstDayOfYear.getDay() === 0 ? 0 : 7-firstDayOfYear.getDay()
+    
+    //get first sunday after first day of year. Calculations will use this as the first day of the year
+    const firstSundayOfYear = new Date(firstDayOfYear)
+    firstSundayOfYear.setDate(firstSundayOfYear.getDate() + daysUntilFirstSunday)
+    
+    const day1 = new Date(firstSundayOfYear.getFullYear(), 0, firstSundayOfYear.getDate()+(parentState.week)*(parentState.period===5?7:parentState.period))
+    const numberOfDays = (day1 - firstSundayOfYear) / (1*24*60*60*1000)
+    realWeek = Math.floor(numberOfDays / 7)
+    console.log("LLLLLLLLLLL:", realWeek);
 
 
 
@@ -25,12 +35,11 @@ const TimeTable = ({ dotsObject, setWeek, parentState, setParentState, modalStat
     }
     return array
   }
-  
   return (
     <div className="time_table bgcolor-white">
     
       <div className="div1">
-        <div className="bgcolor-BG"></div>
+        <div className="bgcolor-BG text-12-medium">week: {realWeek}</div>
         <p className="text-12-semibold color-accent"></p>
         <p className="text-12-semibold color-accent">01:00</p>
         <p className="text-12-semibold color-accent">02:00</p>

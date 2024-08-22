@@ -28,6 +28,11 @@
   height: 70px;
   width: 60px;
   top: 60px;
+  display: flex;
+  justify-content: center;
+  align-items: end;
+  padding-bottom: 5px;
+  color: #0230477f;
 }
 .time_table .div1 p {
   opacity: 0.5;
