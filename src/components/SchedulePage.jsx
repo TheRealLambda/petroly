@@ -16,16 +16,16 @@ const SchedulePage = () => {
 
   const [state, setState] = useState({week: 0, period: 7, events: []})
   const [modalState, setModalState] = useState("closed")
-  const [action, setAction] = useState({type: "view", commit: false, event: {_id:"",title:"loading",color:"#00a36c"}, options: {}})
+  const [action, setAction] = useState({type: "view", commit: false, event: null, options: {}})
   const dotsObject = useRef({prev: [0,0,0,0,0,0,0], curr: [0,0,0,0,0,0,0], next: [0,0,0,0,0,0,0]})
   
 
-    const updateEvent = async (id, body) => {
-        console.log("updateEVent(");
+  const updateEvent = async (id, body) => {
+        console.log("updateEVent():", body);
         
-        if(action.type === "edit") {
+        if(action.type === "edit" || action.type === "view") {
             const result = await axios.patch("http://localhost:3001/api/events/"+id, body)
-
+            let abcEvent
             const events = state.events.map(event => {
                 const newEvent = {...event}
                 if(newEvent._id === id) {
@@ -35,18 +35,23 @@ const SchedulePage = () => {
                     newEvent.title = body.title
                     newEvent.reminder = body.reminder
                     newEvent.description = body.description
+                    newEvent.activities = result.data.activities
+                    newEvent.tasks = result.data.tasks
                     newEvent.start_time = body.start_time
                     newEvent.end_time = body.end_time
                     console.log("here1010");
+                    abcEvent = {...newEvent}
                 }
                 return newEvent
             })
-            setState({...state, events})
-            setModalState("closed")
-            setAction({type: "view", commit: false, event: {_id:"",title:"loading",color:"#00a36c"}, options: {}})
+
+            const newState = {...state, events}
+            setState(newState)
+            if(action.type === "edit") setModalState("closed")
+            setAction({type: "view", commit: false, event: abcEvent, options: {}})
         } else if(action.type === "create") {
             const result = await axios.post("http://localhost:3001/api/events/", body)
-
+            let abcEvent
             const events = state.events.map(event => {
                 const newEvent = {...event}
                 if(newEvent._id === id) {
@@ -55,19 +60,23 @@ const SchedulePage = () => {
                     newEvent.color = body.color
                     newEvent.title = body.title
                     newEvent.reminder = body.reminder
+                    newEvent.activities = body.activities
+                    newEvent.tasks = body.tasks
                     newEvent.description = body.description
                     newEvent.start_time = body.start_time
                     newEvent.end_time = body.end_time
                     console.log("here2002");
                     newEvent.type = "event"
+                    abcEvent = {...newEvent}
                 }
                 return newEvent
             })
-            setState({...state, events})
+            const newState = {...state, events}
+            setState(newState)
             setModalState("closed")
-            setAction({type: "view", commit: false, event: {_id:"",title:"loading",color:"#00a36c"}, options: {}})
+            setAction({type: "view", commit: false, event: abcEvent, options: {}})
         }
-    }
+  }
 
   const setStyle = (id, left, top, height, width) => {
     console.log(id, left, top, height, width);
@@ -127,7 +136,7 @@ const SchedulePage = () => {
               })
               setState({...state, events})
               setModalState("closed")
-              setAction({type: "view", commit: false, event: {_id:"",title:"loading",color:"#00a36c"}, options: {}})
+              setAction({type: "view", commit: false, event: action.event, options: {}})
           }
       } else {
           const events = state.events.map(event => {
@@ -139,7 +148,7 @@ const SchedulePage = () => {
           })
           setState({...state, events})
           setModalState("closed")
-          setAction({type: "view", commit: false, event: {_id:"",title:"loading",color:"#00a36c"}, options: {}})
+          setAction({type: "view", commit: false, event: action.event, options: {}})
           setModalState("closed")
       }
     }
@@ -165,7 +174,7 @@ const SchedulePage = () => {
         setAction({type: "view", commit: false, event: action.event, options: {}})
         setModalState("closed")
     } else if(action.type === "view" && e.target.matches(".vertical_lines")) {
-        const now = new Date(   )
+        const now = new Date()
       const container = document.getElementById("clickContainer")
       const mouseX = e.clientX - container.getBoundingClientRect().left
       const mouseY = e.clientY - container.getBoundingClientRect().top
@@ -215,8 +224,10 @@ const SchedulePage = () => {
         //clicked on an event
         const clickedEventId = e.target.parentNode.getAttribute("data-id")
         const event = state.events.find(event => event._id === clickedEventId)
-        setAction({type: "view", commit: false, event})
+        const newAction = {type: "view", commit: false, event, options: {}}
+        setAction(newAction)
         setModalState("partial")
+        console.log("click", event);
     }
 
      
@@ -250,6 +261,7 @@ const SchedulePage = () => {
       container.classList.remove("transition")
       timetable.classList.remove("transition")
       setWeek(-1)
+      setModalState("closed")
     }, 200) // same time as transition duration
     container.classList.remove("middle")
     container.classList.remove("right")
@@ -288,6 +300,7 @@ const SchedulePage = () => {
       container.classList.remove("transition")
       timetable.classList.remove("transition")
       setWeek(1)
+      setModalState("closed")
     }, 200) // same time as transition duration
     container.classList.remove("left")
     container.classList.remove("middle")
@@ -386,9 +399,9 @@ const SchedulePage = () => {
     weekPicker.addEventListener("pointerup", pointerUp)
 
     stateMiddle()
-    if(action.type === "view") {
-      setModalState("closed")
-    }
+    // if(action.type === "view") {
+    //   setModalState("closed")
+    // }
 
 
     return () => {
@@ -509,24 +522,6 @@ const SchedulePage = () => {
     setState(newState)
   }
 
-  // useEffect(() => {
-  //   setWeek(week => {
-  //     const now = new Date()
-  //     const firstDayOfYear = new Date(2024, 1-1, 1)
-  //     const daysUntilFirstSunday = firstDayOfYear.getDay() === 0 ? 0 : 7-firstDayOfYear.getDay()
-      
-  //     //get first sunday after first day of year. Calculations will use this as the first day of the year
-  //     const firstSundayOfYear = new Date(firstDayOfYear)
-  //     firstSundayOfYear.setDate(firstSundayOfYear.getDate() + daysUntilFirstSunday)
-      
-  //     const selectedDate = new Date(now.getFullYear(), 1-1, 1+daysUntilFirstSunday+(week)*period.prev)
-
-  //     const numberOfDays = (selectedDate - firstSundayOfYear) / (1*24*60*60*1000)
-    
-  //     const numberOfWeeks = Math.floor(numberOfDays / period.current)
-  //     return numberOfWeeks
-  //   })
-  // }, [period])
 
 
   const hideSideMenu = (event) =>{
@@ -561,10 +556,10 @@ const SchedulePage = () => {
       if(Notification.permission === "granted") {
         const allEvents = await axios.get("http://localhost:3001/api/events/all")
         setInterval(() => {
-          console.log("==================================================");
+          // console.log("==================================================");
           const now = new Date()
           allEvents.data.forEach(event => {
-            console.log(event.reminder);
+            // console.log(event.reminder);
             if(event.reminder) {
 
               const reminderDate = new Date(event.reminder)
@@ -577,7 +572,7 @@ const SchedulePage = () => {
               }
             } 
           })
-          console.log("==================================================");
+          // console.log("==================================================");
         }, 1000*10)
       } else {
         Notification.requestPermission().then(permission => {
@@ -604,7 +599,7 @@ const SchedulePage = () => {
       <Modal state={modalState} setState={setModalState} options={action.options}>
         {
           action.type === "create" ? <EditEventForm state={state} event={action.event} setStyle={setStyle} action={action} setAction={setAction} updateEvent={updateEvent} closeModal={closeModal} /> :
-          action.type === "view" ? <ShowEventForm event={action.event} changeToEdit={changeToEdit} closeModal={closeModal} deleteEvent={deleteEvent} /> :
+          (action.type === "view"&&action.event) ? <ShowEventForm event={action.event} updateEvent={updateEvent} changeToEdit={changeToEdit} closeModal={closeModal} deleteEvent={deleteEvent} /> :
           action.type === "edit" ? <EditEventForm state={state} event={action.event} setStyle={setStyle} action={action} setAction={setAction} updateEvent={updateEvent} closeModal={closeModal} /> :
           <div>No suitable form were found</div>
         }

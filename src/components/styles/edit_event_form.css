@@ -79,6 +79,9 @@
 .edit_event_form .modalScrollContainer .block .container.top_margin_5 {
   margin-top: 5px;
 }
+.edit_event_form .modalScrollContainer .block .container.top_margin_20 {
+  margin-top: 20px;
+}
 
 .edit_event_form .modalScrollContainer .block .container .left {
   width: 60px;

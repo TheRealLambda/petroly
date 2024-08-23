@@ -9,13 +9,15 @@ const EditEventForm = ({ event, setStyle, state, action, setAction, updateEvent,
   const [time, setTime] = useState({start: new Date(event.start_time), end: new Date(event.end_time)})
   const [reminder, setReminder] = useState(event.reminder?new Date(event.reminder):null)
   const [description, setDescription] = useState(event.description?event.description:"")
-  console.log(description);
-  const [showActivityForm, setShowActivityForm] = useState(false)
-  const [activityTitle, setActivityTitle] = useState("")
-  const [activityDescription, setActivityDescription] = useState("")
-  const [showTaskForm, setShowTaskForm] = useState(false)
-  const [taskTitle, setTaskTitle] = useState("")
-  const [taskDescription, setTaskDescription] = useState("")
+
+  const [activities, setActivities] = useState(event.activities||[])
+  const [activityForm, setActivityForm] = useState(false)
+  const [activityFormTitle, setActivityFormTitle] = useState("")
+  const [activityFormDescription, setActivityFormDescription] = useState("")
+  const [tasks, setTasks] = useState(event.tasks||[])
+  const [taskForm, setTaskForm] = useState(false)
+  const [taskFormTitle, setTaskFormTitle] = useState("")
+  const [taskFormDescription, setTaskFormDescription] = useState("")
 
   useEffect(() => {
     const container = document.getElementById("clickContainer")
@@ -62,6 +64,8 @@ const EditEventForm = ({ event, setStyle, state, action, setAction, updateEvent,
       title,
       reminder,
       description,
+      activities,
+      tasks,
       start_time: time.start,
       end_time: time.end,
       type: event.type
@@ -69,32 +73,10 @@ const EditEventForm = ({ event, setStyle, state, action, setAction, updateEvent,
     updateEvent(event._id, body)
   }
 
-  const handleActivityForm = async (e) => {
-    const body = {
-      activity: {
-        title: activityTitle,
-        description: activityDescription
-      }
-    }
-    const result = await axios.patch("http://localhost:3001/api/events/"+event._id+"/activity", body)
-    setShowActivityForm(false)
-    setModalState("closed")
-  }
-
-  const handleTaskForm = async (e) => {
-    const body = {
-      task: {
-        title: taskTitle,
-        description: taskDescription
-      }
-    }
-    const result = await axios.patch("http://localhost:3001/api/events/"+event._id+"/task", body)
-    setShowTaskForm(false)
-  }
 
   const handleTime1 = (e) => {
    
-  const string = e.target.value.split(":")
+    const string = e.target.value.split(":")
     const hour = Number(string[0])
     const minute = Number(string[1])
     const date = new Date(time.start)
@@ -137,6 +119,7 @@ const EditEventForm = ({ event, setStyle, state, action, setAction, updateEvent,
       const divHeight = (rowIndexEnd-rowIndex)*rowHeight
       const style = {left: columnIndex*columnWidth, top: rowIndex*rowHeight, height: divHeight, width: columnWidth}
 
+      setAction({...action, commit: true})
       setStyle(event._id, style.left, style.top, style.height, style.width)
   }
   const handleTime2 = (e) => {
@@ -184,6 +167,7 @@ const EditEventForm = ({ event, setStyle, state, action, setAction, updateEvent,
       const divHeight = (rowIndexEnd-rowIndex)*rowHeight
       const style = {left: columnIndex*columnWidth, top: rowIndex*rowHeight, height: divHeight, width: columnWidth}
 
+      setAction({...action, commit: true})
       setStyle(event._id, style.left, style.top, style.height, style.width)
   }
 
@@ -236,6 +220,7 @@ const EditEventForm = ({ event, setStyle, state, action, setAction, updateEvent,
       console.log(columnIndex);
       if(columnIndex !== undefined) {
         console.log("TRUE");
+        setAction({...action, commit: true})
         setStyle(event._id, style.left, style.top, style.height, style.width)
       }
   }
@@ -269,6 +254,7 @@ const EditEventForm = ({ event, setStyle, state, action, setAction, updateEvent,
   const handleReminder = (e) => {
     console.log(e.target.value);
     const reminderDate = new Date(e.target.value)
+    setAction({...action, commit: true})
     setReminder(reminderDate)
   }
 
@@ -283,7 +269,34 @@ const EditEventForm = ({ event, setStyle, state, action, setAction, updateEvent,
   }
 
   const handleDescription = (e) => {
+    setAction({...action, commit: true})
     setDescription(e.target.value)
+  }
+
+
+
+
+  const handleActivityForm = async (e) => {
+    const body = {
+      title: activityFormTitle,
+      description: activityFormDescription
+    }
+    console.log(body);
+    // const result = await axios.patch("http://localhost:3001/api/events/"+event._id+"/activity", body)
+    setAction({...action, commit: true})
+    setActivities(activities.concat(body))
+    setActivityForm(false)
+  }
+
+  const handleTaskForm = async (e) => {
+    const body = {
+      title: taskFormTitle,
+      description: taskFormDescription
+    }
+    console.log(body);
+    setAction({...action, commit: true})
+    setTasks(tasks.concat(body))
+    setTaskForm(false)
   }
   
   return (
@@ -438,180 +451,141 @@ const EditEventForm = ({ event, setStyle, state, action, setAction, updateEvent,
         </>}
         <div className="separator bgcolor-accent"></div>
         <div className="block">
-          {event.course_activities ? (
-            event.course_activities.length < 1 ? (
-              <div className="container no_margin">
-                <div className="left">
-                  <svg className="fillcolor-accent opaque_1" xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#5f6368"><path d="M200-80q-50 0-85-35t-35-85q0-39 22.5-69.5T160-313v-334q-35-13-57.5-43.5T80-760q0-50 35-85t85-35q39 0 69.5 22.5T313-800h334q12-35 42.5-57.5T760-880q50 0 85 35t35 85q0 40-22.5 70.5T800-647v334q35 13 57.5 43.5T880-200q0 50-35 85t-85 35q-39 0-69.5-22.5T647-160H313q-13 35-43.5 57.5T200-80Zm0-640q17 0 28.5-11.5T240-760q0-17-11.5-28.5T200-800q-17 0-28.5 11.5T160-760q0 17 11.5 28.5T200-720Zm560 0q17 0 28.5-11.5T800-760q0-17-11.5-28.5T760-800q-17 0-28.5 11.5T720-760q0 17 11.5 28.5T760-720ZM313-240h334q9-26 28-45t45-28v-334q-26-9-45-28t-28-45H313q-9 26-28 45t-45 28v334q26 9 45 28t28 45Zm447 80q17 0 28.5-11.5T800-200q0-17-11.5-28.5T760-240q-17 0-28.5 11.5T720-200q0 17 11.5 28.5T760-160Zm-560 0q17 0 28.5-11.5T240-200q0-17-11.5-28.5T200-240q-17 0-28.5 11.5T160-200q0 17 11.5 28.5T200-160Zm0-600Zm560 0Zm0 560Zm-560 0Z"/></svg>
-                </div>
-                {showActivityForm ? (
+          {activities && activities.map((activity,i) => {
+            console.log(activity, i);
+            return (
+              <>
+              
+                {activity && <div key={activity._id} className={"container"+(i===0?" no_margin":" top_margin_20")}>
+                  <div className="left">
+                    {i===0 && <svg className="fillcolor-accent opaque_1" xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#5f6368"><path d="M200-80q-50 0-85-35t-35-85q0-39 22.5-69.5T160-313v-334q-35-13-57.5-43.5T80-760q0-50 35-85t85-35q39 0 69.5 22.5T313-800h334q12-35 42.5-57.5T760-880q50 0 85 35t35 85q0 40-22.5 70.5T800-647v334q35 13 57.5 43.5T880-200q0 50-35 85t-85 35q-39 0-69.5-22.5T647-160H313q-13 35-43.5 57.5T200-80Zm0-640q17 0 28.5-11.5T240-760q0-17-11.5-28.5T200-800q-17 0-28.5 11.5T160-760q0 17 11.5 28.5T200-720Zm560 0q17 0 28.5-11.5T800-760q0-17-11.5-28.5T760-800q-17 0-28.5 11.5T720-760q0 17 11.5 28.5T760-720ZM313-240h334q9-26 28-45t45-28v-334q-26-9-45-28t-28-45H313q-9 26-28 45t-45 28v334q26 9 45 28t28 45Zm447 80q17 0 28.5-11.5T800-200q0-17-11.5-28.5T760-240q-17 0-28.5 11.5T720-200q0 17 11.5 28.5T760-160Zm-560 0q17 0 28.5-11.5T240-200q0-17-11.5-28.5T200-240q-17 0-28.5 11.5T160-200q0 17 11.5 28.5T200-160Zm0-600Zm560 0Zm0 560Zm-560 0Z"/></svg>}
+                  </div>
+                  <div className="middle text-14-regular opaque_1 color-accent">
+                    {activity._id}
+                  </div>
+                  <div className="right"></div>
+                </div>}
+                {i===activities.length-1 && <div key={activity._id+"000"} className={"container"+((!activity&&i===0)?" no_margin":" top_margin_20")}>
+                  <div className="left">
+                    {!activity && i===0 && <svg className="fillcolor-accent opaque_1" xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#5f6368"><path d="M200-80q-50 0-85-35t-35-85q0-39 22.5-69.5T160-313v-334q-35-13-57.5-43.5T80-760q0-50 35-85t85-35q39 0 69.5 22.5T313-800h334q12-35 42.5-57.5T760-880q50 0 85 35t35 85q0 40-22.5 70.5T800-647v334q35 13 57.5 43.5T880-200q0 50-35 85t-85 35q-39 0-69.5-22.5T647-160H313q-13 35-43.5 57.5T200-80Zm0-640q17 0 28.5-11.5T240-760q0-17-11.5-28.5T200-800q-17 0-28.5 11.5T160-760q0 17 11.5 28.5T200-720Zm560 0q17 0 28.5-11.5T800-760q0-17-11.5-28.5T760-800q-17 0-28.5 11.5T720-760q0 17 11.5 28.5T760-720ZM313-240h334q9-26 28-45t45-28v-334q-26-9-45-28t-28-45H313q-9 26-28 45t-45 28v334q26 9 45 28t28 45Zm447 80q17 0 28.5-11.5T800-200q0-17-11.5-28.5T760-240q-17 0-28.5 11.5T720-200q0 17 11.5 28.5T760-160Zm-560 0q17 0 28.5-11.5T240-200q0-17-11.5-28.5T200-240q-17 0-28.5 11.5T160-200q0 17 11.5 28.5T200-160Zm0-600Zm560 0Zm0 560Zm-560 0Z"/></svg>}
+                  </div>
                   <div className="middle">
-                    <div className="activity_form">
-                      <input onChange={(e)=>setActivityTitle(e.target.value)} type="text" className="title" />
-                      <textarea onChange={(e)=>setActivityDescription(e.target.value)} className="description"></textarea>
-                      <button onClick={handleActivityForm}>Save</button>
-                      <button onClick={()=>setShowActivityForm(false)}>Cancel</button>
-                    </div>
+                  {activityForm ?
+                     (
+                      <div className="activity_form">
+                        <input onChange={(e)=>setActivityFormTitle(e.target.value)} type="text" placeholder="title" value={activityFormTitle}/><br/>
+                        <input onChange={(e)=>setActivityFormDescription(e.target.value)} type="text" placeholder="description" value={activityFormDescription}/><br/>
+                        <button onClick={()=>setActivityForm(false)}>Cancel</button>
+                        <button onClick={handleActivityForm}>Create</button>
+                      </div>
+                     ) :
+                     (
+                      <div onClick={()=>setActivityForm(true)} className="activity_form_hidden text-14-regular opaque_1 color-accent">
+                        Add new activity
+                      </div>
+                     )}
                   </div>
-                ) : (
-                  <div onClick={()=>setShowActivityForm(true)} className="middle">
-                    <p className="text-16-regular color-accent opaque_1">Add activity</p>
+                  <div className="right">
+                    <svg className="fillcolor-accent opaque_1" xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#5f6368"><path d="M478-240q21 0 35.5-14.5T528-290q0-21-14.5-35.5T478-340q-21 0-35.5 14.5T428-290q0 21 14.5 35.5T478-240Zm-36-154h74q0-33 7.5-52t42.5-52q26-26 41-49.5t15-56.5q0-56-41-86t-97-30q-57 0-92.5 30T342-618l66 26q5-18 22.5-39t53.5-21q32 0 48 17.5t16 38.5q0 20-12 37.5T506-526q-44 39-54 59t-10 73Zm38 314q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Zm0-80q134 0 227-93t93-227q0-134-93-227t-227-93q-134 0-227 93t-93 227q0 134 93 227t227 93Zm0-320Z"/></svg>
                   </div>
-                )}
-                <div className="right">
-                </div>
-              </div>
-            ) : (
-              event.course_activities.map((activity, i) => {
-                console.log("looping through course_activities");
-                if(i === 0) {
-                  return (
-                    <div className="container">
-                      <div className="left">
-                        <svg className="fillcolor-accent opaque_1" xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#5f6368"><path d="M200-80q-50 0-85-35t-35-85q0-39 22.5-69.5T160-313v-334q-35-13-57.5-43.5T80-760q0-50 35-85t85-35q39 0 69.5 22.5T313-800h334q12-35 42.5-57.5T760-880q50 0 85 35t35 85q0 40-22.5 70.5T800-647v334q35 13 57.5 43.5T880-200q0 50-35 85t-85 35q-39 0-69.5-22.5T647-160H313q-13 35-43.5 57.5T200-80Zm0-640q17 0 28.5-11.5T240-760q0-17-11.5-28.5T200-800q-17 0-28.5 11.5T160-760q0 17 11.5 28.5T200-720Zm560 0q17 0 28.5-11.5T800-760q0-17-11.5-28.5T760-800q-17 0-28.5 11.5T720-760q0 17 11.5 28.5T760-720ZM313-240h334q9-26 28-45t45-28v-334q-26-9-45-28t-28-45H313q-9 26-28 45t-45 28v334q26 9 45 28t28 45Zm447 80q17 0 28.5-11.5T800-200q0-17-11.5-28.5T760-240q-17 0-28.5 11.5T720-200q0 17 11.5 28.5T760-160Zm-560 0q17 0 28.5-11.5T240-200q0-17-11.5-28.5T200-240q-17 0-28.5 11.5T160-200q0 17 11.5 28.5T200-160Zm0-600Zm560 0Zm0 560Zm-560 0Z"/></svg>
-                      </div>
-                      <div className="middle">
-                        <p className="text-16-medium color-accent">{activity.title}</p>
-                        <p className="text-14-medium color-accent">{activity.description}</p>
-                      </div>
-                      <div className="right">
-                      </div>
-                    </div>
-                  )
-                } else {
-                  return (
-                    <div className="container">
-                      <div className="left">
-                      </div>
-                      <div className="middle">
-                        <p className="text-16-medium color-accent">{activity.title}</p>
-                        <p className="text-14-medium color-accent">{activity.description}</p>
-                      </div>
-                      <div className="right">
-                      </div>
-                    </div>
-                  )
-                }
-              })
+                </div>}
+
+              </>
             )
-          ) : 0}
-          
-          
-          {event.course_activities && event.course_activities.length > 0 ? (
-            <div className="container">
-              <div className="left">
-              </div>
-              {showActivityForm ? (
-                <div className="middle">
-                  <div className="activity_form">
-                    <input onChange={(e)=>setActivityTitle(e.target.value)} type="text" className="title" />
-                    <textarea onChange={(e)=>setActivityDescription(e.target.value)} className="description"></textarea>
-                    <button onClick={handleActivityForm}>Save</button>
-                    <button onClick={()=>setShowActivityForm(false)}>Cancel</button>
-                  </div>
-                </div>
-                ) : (
-                  <div onClick={()=>setShowActivityForm(true)} className="middle">
-                    <p className="text-16-regular color-accent opaque_1">Add activity</p>
-                  </div>
-                )}
-              <div className="right">
-                <svg className="fillcolor-accent opaque_1" xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#5f6368"><path d="M478-240q21 0 35.5-14.5T528-290q0-21-14.5-35.5T478-340q-21 0-35.5 14.5T428-290q0 21 14.5 35.5T478-240Zm-36-154h74q0-33 7.5-52t42.5-52q26-26 41-49.5t15-56.5q0-56-41-86t-97-30q-57 0-92.5 30T342-618l66 26q5-18 22.5-39t53.5-21q32 0 48 17.5t16 38.5q0 20-12 37.5T506-526q-44 39-54 59t-10 73Zm38 314q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Zm0-80q134 0 227-93t93-227q0-134-93-227t-227-93q-134 0-227 93t-93 227q0 134 93 227t227 93Zm0-320Z"/></svg>
-              </div>
-            </div>
-          ) : 0}
-          {/* <div className="container">
+          })}
+
+          {activities.length < 1 && 
+          <div key="111" className="container no_margin">
             <div className="left">
-              <svg className="fillcolor-accent opaque_1" xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#5f6368"><path d="m382-354 339-339q12-12 28-12t28 12q12 12 12 28.5T777-636L410-268q-12 12-28 12t-28-12L182-440q-12-12-11.5-28.5T183-497q12-12 28.5-12t28.5 12l142 143Z"/></svg>
+              <svg className="fillcolor-accent opaque_1" xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#5f6368"><path d="M200-80q-50 0-85-35t-35-85q0-39 22.5-69.5T160-313v-334q-35-13-57.5-43.5T80-760q0-50 35-85t85-35q39 0 69.5 22.5T313-800h334q12-35 42.5-57.5T760-880q50 0 85 35t35 85q0 40-22.5 70.5T800-647v334q35 13 57.5 43.5T880-200q0 50-35 85t-85 35q-39 0-69.5-22.5T647-160H313q-13 35-43.5 57.5T200-80Zm0-640q17 0 28.5-11.5T240-760q0-17-11.5-28.5T200-800q-17 0-28.5 11.5T160-760q0 17 11.5 28.5T200-720Zm560 0q17 0 28.5-11.5T800-760q0-17-11.5-28.5T760-800q-17 0-28.5 11.5T720-760q0 17 11.5 28.5T760-720ZM313-240h334q9-26 28-45t45-28v-334q-26-9-45-28t-28-45H313q-9 26-28 45t-45 28v334q26 9 45 28t28 45Zm447 80q17 0 28.5-11.5T800-200q0-17-11.5-28.5T760-240q-17 0-28.5 11.5T720-200q0 17 11.5 28.5T760-160Zm-560 0q17 0 28.5-11.5T240-200q0-17-11.5-28.5T200-240q-17 0-28.5 11.5T160-200q0 17 11.5 28.5T200-160Zm0-600Zm560 0Zm0 560Zm-560 0Z"/></svg>
             </div>
             <div className="middle">
-              <p className="text-16-regular color-accent opaque_1">Add task</p>
+            {activityForm ?
+               (
+                <div className="activity_form">
+                  <input onChange={(e)=>setActivityFormTitle(e.target.value)} type="text" placeholder="title" value={activityFormTitle}/><br/>
+                  <input onChange={(e)=>setActivityFormDescription(e.target.value)} type="text" placeholder="description" value={activityFormDescription}/><br/>
+                  <button onClick={()=>setActivityForm(false)}>Cancel</button>
+                  <button onClick={handleActivityForm}>Create</button>
+                </div>
+               ) :
+               (
+                <div onClick={()=>setActivityForm(true)} className="activity_form_hidden text-14-regular opaque_1 color-accent">
+                  Add new activity
+                </div>
+               )}
+            </div>
+            <div className="right">
+              <svg className="fillcolor-accent opaque_1" xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#5f6368"><path d="M478-240q21 0 35.5-14.5T528-290q0-21-14.5-35.5T478-340q-21 0-35.5 14.5T428-290q0 21 14.5 35.5T478-240Zm-36-154h74q0-33 7.5-52t42.5-52q26-26 41-49.5t15-56.5q0-56-41-86t-97-30q-57 0-92.5 30T342-618l66 26q5-18 22.5-39t53.5-21q32 0 48 17.5t16 38.5q0 20-12 37.5T506-526q-44 39-54 59t-10 73Zm38 314q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Zm0-80q134 0 227-93t93-227q0-134-93-227t-227-93q-134 0-227 93t-93 227q0 134 93 227t227 93Zm0-320Z"/></svg>
+            </div>
+          </div>}
+        </div>
+
+        <div className="block">
+          {tasks && tasks.map((task,i) => {
+            console.log(task, i);
+            return (
+              <>
+              
+                {task && <div key={task._id} className={"container"+(i===0?" no_margin":" top_margin_20")}>
+                  <div className="left">
+                    {i===0 && <svg className="fillcolor-accent opaque_1" xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#5f6368"><path d="m382-354 339-339q12-12 28-12t28 12q12 12 12 28.5T777-636L410-268q-12 12-28 12t-28-12L182-440q-12-12-11.5-28.5T183-497q12-12 28.5-12t28.5 12l142 143Z"/></svg>}
+                  </div>
+                  <div className="middle text-14-regular opaque_1 color-accent">
+                    {task._id}
+                  </div>
+                  <div className="right"></div>
+                </div>}
+                {i===tasks.length-1 && <div key={task._id+"000"} className={"container"+((!task&&i===0)?" no_margin":" top_margin_20")}>
+                  <div className="left">
+                    {!task && i===0 && <svg className="fillcolor-accent opaque_1" xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#5f6368"><path d="m382-354 339-339q12-12 28-12t28 12q12 12 12 28.5T777-636L410-268q-12 12-28 12t-28-12L182-440q-12-12-11.5-28.5T183-497q12-12 28.5-12t28.5 12l142 143Z"/></svg>}
+                  </div>
+                  <div className="middle">
+                  {taskForm ?
+                     (
+                      <div className="activity_form">
+                        <input onChange={(e)=>setTaskFormTitle(e.target.value)} type="text" placeholder="title" value={taskFormTitle}/><br/>
+                        <input onChange={(e)=>setTaskFormDescription(e.target.value)} type="text" placeholder="description" value={taskFormDescription}/><br/>
+                        <button onClick={()=>setTaskForm(false)}>Cancel</button>
+                        <button onClick={handleTaskForm}>Create</button>
+                      </div>
+                     ) :
+                     (
+                      <div onClick={()=>setTaskForm(true)} className="activity_form_hidden text-14-regular opaque_1 color-accent">
+                        Add new task
+                      </div>
+                     )}
+                  </div>
+                  <div className="right"></div>
+                </div>}
+
+              </>
+            )
+          })}
+
+          {tasks.length < 1 && 
+          <div key="111" className="container no_margin">
+            <div className="left">
+            <svg className="fillcolor-accent opaque_1" xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#5f6368"><path d="m382-354 339-339q12-12 28-12t28 12q12 12 12 28.5T777-636L410-268q-12 12-28 12t-28-12L182-440q-12-12-11.5-28.5T183-497q12-12 28.5-12t28.5 12l142 143Z"/></svg>
+            </div>
+            <div className="middle">
+            {taskForm ?
+               (
+                <div className="task_form">
+                  <input onChange={(e)=>setTaskFormTitle(e.target.value)} type="text" placeholder="title" value={taskFormTitle}/><br/>
+                  <input onChange={(e)=>setTaskFormDescription(e.target.value)} type="text" placeholder="description" value={taskFormDescription}/><br/>
+                  <button onClick={()=>setTaskForm(false)}>Cancel</button>
+                  <button onClick={handleTaskForm}>Create</button>
+                </div>
+               ) :
+               (
+                <div onClick={()=>setTaskForm(true)} className="activity_form_hidden text-14-regular opaque_1 color-accent">
+                  Add new task
+                </div>
+               )}
             </div>
             <div className="right"></div>
-          </div> */}
-
-          {event.tasks ? (
-            event.tasks.length < 1 ? (
-              <div className="container">
-                <div className="left">
-                  <svg className="fillcolor-accent opaque_1" xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#5f6368"><path d="m382-354 339-339q12-12 28-12t28 12q12 12 12 28.5T777-636L410-268q-12 12-28 12t-28-12L182-440q-12-12-11.5-28.5T183-497q12-12 28.5-12t28.5 12l142 143Z"/></svg>
-                </div>
-                {showTaskForm ? (
-                  <div className="middle">
-                    <div className="activity_form">
-                      <input onChange={(e)=>setTaskTitle(e.target.value)} type="text" className="title" />
-                      <textarea onChange={(e)=>setTaskDescription(e.target.value)} className="description"></textarea>
-                      <button onClick={handleTaskForm}>Save</button>
-                      <button onClick={()=>setShowTaskForm(false)}>Cancel</button>
-                    </div>
-                  </div>
-                ) : (
-                  <div onClick={()=>setShowTaskForm(true)} className="middle">
-                    <p className="text-16-regular color-accent opaque_1">Add task</p>
-                  </div>
-                )}
-                <div className="right">
-                </div>
-              </div>
-            ) : (
-              event.tasks.map((task, i) => {
-                console.log("looping through tasks");
-                if(i === 0) {
-                  return (
-                    <div className="container">
-                      <div className="left">
-                        <svg className="fillcolor-accent opaque_1" xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#5f6368"><path d="m382-354 339-339q12-12 28-12t28 12q12 12 12 28.5T777-636L410-268q-12 12-28 12t-28-12L182-440q-12-12-11.5-28.5T183-497q12-12 28.5-12t28.5 12l142 143Z"/></svg>
-                      </div>
-                      <div className="middle">
-                        <p className="text-16-medium color-accent">{task.title}</p>
-                        <p className="text-14-medium color-accent">{task.description}</p>
-                      </div>
-                      <div className="right">
-                      </div>
-                    </div>
-                  )
-                } else {
-                  return (
-                    <div className="container">
-                      <div className="left">
-                      </div>
-                      <div className="middle">
-                        <p className="text-16-medium color-accent">{task.title}</p>
-                        <p className="text-14-medium color-accent">{task.description}</p>
-                      </div>
-                      <div className="right">
-                      </div>
-                    </div>
-                  )
-                }
-              })
-            )
-          ) : 0}
-          
-          
-          {event.tasks && event.tasks.length > 0 ? (
-            <div className="container">
-              <div className="left">
-              </div>
-              {showTaskForm ? (
-                <div className="middle">
-                  <div className="activity_form">
-                    <input onChange={(e)=>setTaskTitle(e.target.value)} type="text" className="title" />
-                    <textarea onChange={(e)=>setTaskDescription(e.target.value)} className="description"></textarea>
-                    <button onClick={handleTaskForm}>Save</button>
-                    <button onClick={()=>setShowTaskForm(false)}>Cancel</button>
-                  </div>
-                </div>
-                ) : (
-                  <div onClick={()=>setShowTaskForm(true)} className="middle">
-                    <p className="text-16-regular color-accent opaque_1">Add task</p>
-                  </div>
-                )}
-              <div className="right">
-              </div>
-            </div>
-          ) : 0}
-
+          </div>}
         </div>
         <div className="separator bgcolor-accent"></div>
         <div className="block">

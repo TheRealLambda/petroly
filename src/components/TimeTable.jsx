@@ -8,7 +8,6 @@ import axios from "axios"
 const TimeTable = ({ dotsObject, setWeek, parentState, action, setAction, setStyle }) => {
 
 
-  console.log(parentState);
 
   
 
@@ -24,7 +23,6 @@ const TimeTable = ({ dotsObject, setWeek, parentState, action, setAction, setSty
     const day1 = new Date(firstSundayOfYear.getFullYear(), 0, firstSundayOfYear.getDate()+(parentState.week)*(parentState.period===5?7:parentState.period))
     const numberOfDays = (day1 - firstSundayOfYear) / (1*24*60*60*1000)
     realWeek = Math.floor(numberOfDays / 7)
-    console.log("LLLLLLLLLLL:", realWeek);
 
 
 
