@@ -2,11 +2,9 @@ import { useState } from "react"
 
 const SandBox = () => {
 
-  const a = {
-    a: 0,
-    b: "b",
-    d: false
-  }
+  const title = ""
+
+  console.log(!title, typeof title === "string");
 
   return (
     <div className="sandbox_page">
