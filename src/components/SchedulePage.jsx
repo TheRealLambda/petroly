@@ -1,81 +1,58 @@
 import MenuBar from "./MenuBar"
-import WeekPicker from "./WeekPicker"
 import NavBar from "./NavBar"
 import "./styles/schedule_page.css"
 import TimeTable from "./TimeTable"
 import { useEffect, useRef, useState } from "react"
 import axios from "axios"
-import CreateEventForm from "./CreateEventForm"
 import ShowEventForm from "./ShowEventForm"
 import EditEventForm from "./EditEventForm"
 import Modal from "./Modal"
+import { postEvent } from "../services/events"
 
 
 
-const SchedulePage = () => {
+
+const SchedulePage = ({ userAuthToken }) => {
+
 
   const [state, setState] = useState({week: 0, period: 7, events: []})
   const [modalState, setModalState] = useState("closed")
   const [action, setAction] = useState({type: "view", commit: false, event: null, options: {}})
-  const dotsObject = useRef({prev: [0,0,0,0,0,0,0], curr: [0,0,0,0,0,0,0], next: [0,0,0,0,0,0,0]})
+  const [dotsObject, setDotsObject] = useState({prev: [0,0,0,0,0,0,0], curr: [0,0,0,0,0,0,0], next: [0,0,0,0,0,0,0]})
   
 
   const updateEvent = async (id, body) => {
-        console.log("updateEVent():", body);
         
-        if(action.type === "edit" || action.type === "view") {
-            const result = await axios.patch("http://localhost:3001/api/events/"+id, body)
-            let abcEvent
-            const events = state.events.map(event => {
-                const newEvent = {...event}
-                if(newEvent._id === id) {
-
-                    newEvent.state = "view"
-                    newEvent.color = body.color
-                    newEvent.title = body.title
-                    newEvent.reminder = body.reminder
-                    newEvent.description = body.description
-                    newEvent.activities = result.data.activities
-                    newEvent.tasks = result.data.tasks
-                    newEvent.start_time = body.start_time
-                    newEvent.end_time = body.end_time
-                    console.log("here1010");
-                    abcEvent = {...newEvent}
-                }
-                return newEvent
-            })
-
-            const newState = {...state, events}
-            setState(newState)
-            if(action.type === "edit") setModalState("closed")
-            setAction({type: "view", commit: false, event: abcEvent, options: {}})
-        } else if(action.type === "create") {
-            const result = await axios.post("http://localhost:3001/api/events/", body)
-            let abcEvent
-            const events = state.events.map(event => {
-                const newEvent = {...event}
-                if(newEvent._id === id) {
-                    newEvent._id = result.data._id
-                    newEvent.state = "view"
-                    newEvent.color = body.color
-                    newEvent.title = body.title
-                    newEvent.reminder = body.reminder
-                    newEvent.activities = body.activities
-                    newEvent.tasks = body.tasks
-                    newEvent.description = body.description
-                    newEvent.start_time = body.start_time
-                    newEvent.end_time = body.end_time
-                    console.log("here2002");
-                    newEvent.type = "event"
-                    abcEvent = {...newEvent}
-                }
-                return newEvent
-            })
-            const newState = {...state, events}
-            setState(newState)
-            setModalState("closed")
-            setAction({type: "view", commit: false, event: abcEvent, options: {}})
+    let result
+    if(action.type === "create") {
+      result = await postEvent(body)
+    } else {
+      result = await axios.patch("http://localhost:3001/api/events/"+id, body, config)
+    } 
+    console.log("RESULT", result);
+    
+    let updatedEvent
+    const events = state.events.map(event => {
+        const newEvent = {...event}
+        if(newEvent._id === id) {
+            newEvent._id = action.type==="create"?result.data._id:newEvent._id
+            newEvent.state = "view"
+            newEvent.color = body.color
+            newEvent.title = body.title
+            newEvent.reminder = body.reminder
+            newEvent.description = body.description
+            newEvent.activities = result.data.activities
+            newEvent.tasks = result.data.tasks
+            newEvent.start_time = body.start_time
+            newEvent.end_time = body.end_time
+            updatedEvent = {...newEvent}
         }
+        return newEvent
+    })
+    const newState = {...state, events}
+    setState(newState)
+    if(action.type === "edit") setModalState("closed")
+    setAction({type: "view", commit: false, event: updatedEvent, options: {}})
   }
 
   const setStyle = (id, left, top, height, width) => {
@@ -164,254 +141,10 @@ const SchedulePage = () => {
   }
 
 
-  const funcOne = (e) => {
-    
-
-    if(action.type === "create" && !action.commit && e.target.matches(".vertical_lines")) {
-        const events = state.events.filter(event => event._id !== "0")
-        const newState = {...state, events}
-        setState(newState)
-        setAction({type: "view", commit: false, event: action.event, options: {}})
-        setModalState("closed")
-    } else if(action.type === "view" && e.target.matches(".vertical_lines")) {
-        const now = new Date()
-      const container = document.getElementById("clickContainer")
-      const mouseX = e.clientX - container.getBoundingClientRect().left
-      const mouseY = e.clientY - container.getBoundingClientRect().top
-      const height = container.offsetHeight
-      const rowHeight = height / 24 / 6
-      const rowIndex = Math.round(mouseY/rowHeight)
-      const hour = Math.floor(rowIndex/6)
-      const minute = (rowIndex % 6)*10
-      const width = container.offsetWidth
-      const columnWidth = width / state.period
-      const columnIndex = Math.floor(mouseX/columnWidth)
-      const daysArray = []
-      const firstDayOfYear = new Date(now.getFullYear(), 0, 1)
-      const temp = firstDayOfYear.getDay()
-      const toFirstSundayOfYear = temp === 0 ? 0 : 7 - temp
-        for (let i = 0; i < state.period; i++) {
-          const element = new Date(now.getFullYear(), 0, 1+toFirstSundayOfYear+(state.week)*(state.period === 5 ? 7 : state.period)+i)
-          daysArray.push(element)
-        }
-        const date = daysArray[columnIndex]
-      const startDate = new Date(date)
-      startDate.setHours(hour, minute)
-      console.log("startDate", date);
-      const rowIndexEnd = Math.round((mouseY+75)/rowHeight)
-      const hourEnd = Math.floor(rowIndexEnd/6)
-      const minuteEnd = (rowIndexEnd % 6)*10
-      const endDate = new Date(date)
-      endDate.setHours(hourEnd, minuteEnd)
-      const event = {
-        _id: "0",
-        color: "#00a36c",
-        title: "(no title)",
-        start_time: startDate.toISOString(),
-        end_time: endDate.toISOString(),
-        type: "event",
-        state: "create",
-        week: "curr",
-        style: {curr: {left: columnIndex*columnWidth, top: rowIndex*rowHeight, height: 75, width: columnWidth}, prev: {left: columnIndex*columnWidth, top: rowIndex*rowHeight, height: 75, width: columnWidth}}
-      }
-      const events = state.events.concat(event)
-      const newState = {...state, events}
-      console.log(event);
-      setState(newState)
-      setAction({type: "create", commit: false, event})
-      setModalState("partial")
-    } else if(action.type === "view" && e.target.matches(".calendar_event.view .wrapper")) {
-        //clicked on an event
-        const clickedEventId = e.target.parentNode.getAttribute("data-id")
-        const event = state.events.find(event => event._id === clickedEventId)
-        const newAction = {type: "view", commit: false, event, options: {}}
-        setAction(newAction)
-        setModalState("partial")
-        console.log("click", event);
-    }
-
-     
-  }
 
 
-  let weekPicker
-  let timetable
-  let container
-  let clicked = false
-  let mouseDown = false
-  let initialMouseX
-  let initialMouseY
-  let initialOffsetX
-  let initialOffsetY
-  let timeout
-  let timeout2
-  let lockHorizontalScrolling = false
-  let lockScrolling = false
-  let boolian = false
 
-
-  const stateLeft = () => {
-    container.style = ""
-    timetable.style = ""
-    container.classList.add("transition")
-    timetable.classList.add("transition")
-    lockScrolling = true
-    clearTimeout(timeout2)
-    timeout2 = setTimeout(() => {
-      container.classList.remove("transition")
-      timetable.classList.remove("transition")
-      setWeek(-1)
-      setModalState("closed")
-    }, 200) // same time as transition duration
-    container.classList.remove("middle")
-    container.classList.remove("right")
-    container.classList.add("left")
-    timetable.classList.remove("middle")
-    timetable.classList.remove("right")
-    timetable.classList.add("left")
-  }
-  const stateMiddle = (trans) => {
-    container.style = ""
-    timetable.style = ""
-    if(trans) {
-      container.classList.add("transition")
-      timetable.classList.add("transition")
-      clearTimeout(timeout2)
-      timeout2 = setTimeout(() => {
-        container.classList.remove("transition")
-        timetable.classList.remove("transition")
-      }, 200) // same time as transition duration
-    }
-    container.classList.remove("left")
-    container.classList.remove("right")
-    container.classList.add("middle")
-    timetable.classList.remove("left")
-    timetable.classList.remove("right")
-    timetable.classList.add("middle")
-  }
-  const stateRight = () => {
-    container.style = ""
-    timetable.style = ""
-    container.classList.add("transition")
-    timetable.classList.add("transition")
-    lockScrolling = true
-    clearTimeout(timeout2)
-    timeout2 = setTimeout(() => {
-      container.classList.remove("transition")
-      timetable.classList.remove("transition")
-      setWeek(1)
-      setModalState("closed")
-    }, 200) // same time as transition duration
-    container.classList.remove("left")
-    container.classList.remove("middle")
-    container.classList.add("right")
-    timetable.classList.remove("left")
-    timetable.classList.remove("middle")
-    timetable.classList.add("right")
-  }
-  
-
-  const pointerDown = (e) => {
-    
-    initialMouseX = e.clientX
-    initialMouseY = e.clientY
-    initialOffsetX = e.clientX - container.getBoundingClientRect().left
-                     + weekPicker.getBoundingClientRect().left
-    initialOffsetY = document.getElementsByClassName("time_table")[0].scrollTop
-    if(!lockScrolling && e.target.matches(".vertical_lines, .calendar_event .wrapper")) {
-      mouseDown = true
-    }
-    clicked = true
-    clearTimeout(timeout)
-    timeout = setTimeout(() => {
-      clicked = false
-    }, 500)
-  }
-  const pointerMove = (e) => {
-
-    const mouseX = e.clientX
-    const mouseY = e.clientY
-    const left = (mouseX-initialOffsetX)
-    const top = -(mouseY-initialMouseY)+initialOffsetY
-    
-    if(mouseDown && !boolian && (mouseY < initialMouseY-10 || mouseY > initialMouseY+10)) {
-      //scroll vertically
-      lockHorizontalScrolling = true
-      boolian = true
-    } else if(mouseDown && !boolian && (mouseX < initialMouseX-10 || mouseX > initialMouseX+10)) {
-      //scroll horizontally
-      lockHorizontalScrolling = false
-      boolian = true
-    }
-    if(mouseDown && action.type === "view" && !lockHorizontalScrolling && boolian) {
-      if(left <= 0 && left >= -600) {
-        timetable.style.left = left+"px"
-        container.style.left = left+"px"
-      } else if(left > 0) {
-        timetable.style.left = "0px"
-        container.style.left = "0px"
-      } else if(left < -600) {
-        timetable.style.left = "-600px"
-        container.style.left = "-600px"
-      }
-    }
-    else if (mouseDown && lockHorizontalScrolling && boolian) {
-      document.getElementsByClassName("time_table")[0].scrollTo({top: top})
-    }
-  }
-  const pointerUp = (e) => {
-    container.style.transition = ""
-    document.getElementsByClassName("time_table")[0].style = ""
-    const finalMouseX = e.clientX
-    const left = finalMouseX-initialOffsetX
-    if(clicked && action.type === "view" && boolian && !lockHorizontalScrolling && finalMouseX > initialMouseX) {
-      //swipe left
-      stateLeft()
-    } else if(clicked && action.type === "view" && boolian && !lockHorizontalScrolling && finalMouseX < initialMouseX) {
-      //swipe right
-      stateRight()
-    } else if(clicked && !boolian) {
-      //click
-      funcOne(e)
-    } else if(boolian && action.type === "view" && !lockHorizontalScrolling && left > -150) {
-      //drag to left
-      stateLeft()
-    } else if(boolian && action.type === "view" && !lockHorizontalScrolling && left < -450) {
-      //drag to right
-      stateRight()
-    } else if(boolian && !lockHorizontalScrolling) {
-      //drag to middle
-      stateMiddle(true)
-    }
-
-    mouseDown = false
-    lockHorizontalScrolling = false
-    boolian = false
-  }
-  
-  let interval
-  useEffect(() => {
-    weekPicker = document.getElementById("div2_wrapper")
-    container = document.getElementById("week_picker_wrapper").firstElementChild
-    timetable = document.getElementById("div2_wrapperContainer")
-    weekPicker.addEventListener("pointerdown", pointerDown)
-    weekPicker.addEventListener("pointermove", pointerMove)
-    weekPicker.addEventListener("pointerup", pointerUp)
-
-    stateMiddle()
-    // if(action.type === "view") {
-    //   setModalState("closed")
-    // }
-
-
-    return () => {
-      weekPicker.removeEventListener("pointerdown", pointerDown)
-      weekPicker.removeEventListener("pointermove", pointerMove)
-      weekPicker.removeEventListener("pointerup", pointerUp)
-    }
-  }, [state])
-
-
+ 
 
 
 
@@ -421,7 +154,11 @@ const SchedulePage = () => {
 
     const dots = {prev: [0,0,0,0,0,0,0], curr: [0,0,0,0,0,0,0], next: [0,0,0,0,0,0,0]}
 
-    const result = await axios.get("http://localhost:3001/api/events?week="+week+"&period="+(period === 5 ? 7 : period))
+    const config = {
+      headers: { Authorization: `Bearer ${userAuthToken}` },
+    }
+
+    const result = await axios.get("http://localhost:3001/api/events?week="+week+"&period="+(period === 5 ? 7 : period), config)
 
     const modifiedResult = result.data.map(event => {
       if(period === 5 && (new Date(event.start_time).getDay() === 5 || new Date(event.start_time).getDay() === 6)) {
@@ -468,7 +205,7 @@ const SchedulePage = () => {
       return {...event, state: "view", style: {curr: style, prev: style}}
     }).filter(a => a !== null)
     
-    dotsObject.current = dots
+    setDotsObject(dots)
     // console.log(JSON.stringify(modifiedResult));
     return modifiedResult
 
@@ -586,7 +323,7 @@ const SchedulePage = () => {
         })
       }
     }
-    setupReminders()
+    // setupReminders()
   }, [])
 
 
@@ -605,7 +342,7 @@ const SchedulePage = () => {
         }
       </Modal>
       <MenuBar resetWeek={resetWeek} setPeriod={setPeriod} />
-      <TimeTable dotsObject={dotsObject} setWeek={setWeek} parentState={state} setParentState={setState} modalState={modalState} setModalState={setModalState} action={action} setAction={setAction} setStyle={setStyle} />
+      <TimeTable dotsObject={dotsObject} state={state} setState={setState} setWeek={setWeek} parentState={state} setParentState={setState} modalState={modalState} setModalState={setModalState} action={action} setAction={setAction} setStyle={setStyle} />
     </div>
   )
 }

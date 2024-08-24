@@ -275,7 +275,7 @@ const ShowEventForm = ({ event, updateEvent, changeToEdit, closeModal, deleteEve
                       </div>
                      ) :
                      (
-                      <div onClick={()=>setActivityForm(true)} className="activity_form_hidden text-14-regular opaque_1 color-accent">
+                      <div onClick={()=>setTaskForm(true)} className="activity_form_hidden text-14-regular opaque_1 color-accent">
                         Add new task
                       </div>
                      )}
