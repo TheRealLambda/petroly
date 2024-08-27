@@ -7,12 +7,12 @@ import axios from "axios"
 import ShowEventForm from "./ShowEventForm"
 import EditEventForm from "./EditEventForm"
 import Modal from "./Modal"
-import { postEvent } from "../services/events"
+import { patchEvent, postEvent, getEvents } from "../services/events"
 
 
 
 
-const SchedulePage = ({ userAuthToken }) => {
+const SchedulePage = () => {
 
 
   const [state, setState] = useState({week: 0, period: 7, events: []})
@@ -27,7 +27,7 @@ const SchedulePage = ({ userAuthToken }) => {
     if(action.type === "create") {
       result = await postEvent(body)
     } else {
-      result = await axios.patch("http://localhost:3001/api/events/"+id, body, config)
+      result = await patchEvent(id, body)
     } 
     console.log("RESULT", result);
     
@@ -150,15 +150,11 @@ const SchedulePage = ({ userAuthToken }) => {
 
 
 
-  const getEvents = async (week, period) => {
-
+  const loadEvents = async (week, period) => {
+    console.log("getEvents");
     const dots = {prev: [0,0,0,0,0,0,0], curr: [0,0,0,0,0,0,0], next: [0,0,0,0,0,0,0]}
 
-    const config = {
-      headers: { Authorization: `Bearer ${userAuthToken}` },
-    }
-
-    const result = await axios.get("http://localhost:3001/api/events?week="+week+"&period="+(period === 5 ? 7 : period), config)
+    const result = await getEvents(week, period === 5 ? 7 : period)
 
     const modifiedResult = result.data.map(event => {
       if(period === 5 && (new Date(event.start_time).getDay() === 5 || new Date(event.start_time).getDay() === 6)) {
@@ -228,7 +224,7 @@ const SchedulePage = ({ userAuthToken }) => {
 
   const setWeek = async (n) => {
 
-    const events = await getEvents(state.week+n, state.period)
+    const events = await loadEvents(state.week+n, state.period)
     const newState = {week: state.week+n, period: state.period, events}
     console.log(newState);
     setState(newState)
@@ -246,7 +242,7 @@ const SchedulePage = ({ userAuthToken }) => {
     const numberOfDays = (currentDate - firstSundayOfYear) / (1*24*60*60*1000)
   
     const week = Math.floor(numberOfDays / (state.period===5?7:state.period))
-    const events = await getEvents(week, state.period)
+    const events = await loadEvents(week, state.period)
 
     const newState = {week, period: state.period, events}
     setState(newState)
@@ -254,7 +250,7 @@ const SchedulePage = ({ userAuthToken }) => {
 
   const setPeriod = async (period) => {
     const week = calculateWeek(period===5?7:period)
-    const events = await getEvents(week, period)
+    const events = await loadEvents(week, period)
     const newState = {week, period, events}
     setState(newState)
   }
@@ -284,7 +280,7 @@ const SchedulePage = ({ userAuthToken }) => {
       const period = 7
       const week = Math.floor(numberOfDays / period)
       
-      const events = await getEvents(week, period)
+      const events = await loadEvents(week, period)
       setState({week, period, events})
     }
     initializeEvents()

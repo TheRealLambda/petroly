@@ -66,8 +66,8 @@ const EditEventForm = ({ event, setStyle, state, action, setAction, updateEvent,
       description,
       activities,
       tasks,
-      start_time: time.start,
-      end_time: time.end,
+      start_time: time.start.toISOString(),
+      end_time: time.end.toISOString(),
       type: event.type
     }
     updateEvent(event._id, body)

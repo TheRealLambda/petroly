@@ -108,18 +108,19 @@ const CalendarEvent = ({ event, period, setStyle, action, setAction }) => {
     const rowHeight = height / 24 / 6
     const columnIndex = Math.floor(mouseX/columnWidth)
     const rowIndex = Math.floor(mouseY/rowHeight)
-    const topRowIndex = Math.round(top/rowHeight)
     const bottomRowIndex = Math.round(bottom/rowHeight)
     
     const maxRow = Math.floor(height/rowHeight)
     if(prevColumnIndex !== columnIndex && columnIndex >= 0 && columnIndex <= 6) {
-      updateSelectTime(topRowIndex, rowHeight)
+      updateSelectTime(rowIndex, rowHeight)
       setStyle(event._id, columnIndex*columnWidth, event.style.curr.top, event.style.curr.height, event.style.curr.width)
     }
-    if(prevRowIndex !== rowIndex && rowIndex >= 0 && rowIndex+(bottomRowIndex-topRowIndex) <= maxRow) {
-      updateSelectTime(topRowIndex, rowHeight)
+    if(prevRowIndex !== rowIndex && rowIndex >= 0 && rowIndex+(bottomRowIndex-rowIndex) <= maxRow) {
+      updateSelectTime(rowIndex, rowHeight)
       setStyle(event._id, event.style.curr.left, Math.floor(rowIndex*rowHeight), event.style.curr.height, event.style.curr.width)
-    }
+    } else if(rowIndex+(bottomRowIndex-rowIndex) > maxRow) {
+      setStyle(event._id, event.style.curr.left, Math.floor((maxRow-(bottomRowIndex-rowIndex))*rowHeight), event.style.curr.height, event.style.curr.width)
+    } 
     prevRowIndex = rowIndex
     prevColumnIndex = columnIndex
 
