@@ -21,10 +21,14 @@ const CalendarEvent = ({ event, period, setStyle, action, setAction }) => {
     } else {
       divRef.current.style.backgroundColor = "" 
     }
-    divRef.current.style.top = event.style.curr.top+"px" 
-    divRef.current.style.left = event.style.curr.left+"px"
-    divRef.current.style.height = event.style.curr.height+"px"
-    divRef.current.style.width = event.style.curr.width+"px"
+
+    if(event.state === "view") {
+      divRef.current.style.height = (event.style.curr.height-2)+"px"
+      divRef.current.style.width = (event.style.curr.width-4)+"px"
+    } else {
+      divRef.current.style.height = event.style.curr.height+"px"
+      divRef.current.style.width = event.style.curr.width+"px"
+    }
 
     if(event.week === "curr" && event.state !== "view") {
       container.current.addEventListener("pointerdown", pointerDown)
@@ -43,10 +47,16 @@ const CalendarEvent = ({ event, period, setStyle, action, setAction }) => {
   }, [event.state, action])
 
   useEffect(() => {
+    console.log(event.state);
     divRef.current.style.top = event.style.curr.top+"px" 
     divRef.current.style.left = event.style.curr.left+"px"
-    divRef.current.style.height = event.style.curr.height+"px"
-    divRef.current.style.width = event.style.curr.width+"px"
+    if(event.state === "view") {
+      divRef.current.style.height = (event.style.curr.height-2)+"px"
+      divRef.current.style.width = (event.style.curr.width-4)+"px"
+    } else {
+      divRef.current.style.height = event.style.curr.height+"px"
+      divRef.current.style.width = event.style.curr.width+"px"
+    }
   }, [event.style.curr, event.style.prev])
 
 
@@ -108,6 +118,7 @@ const CalendarEvent = ({ event, period, setStyle, action, setAction }) => {
     const rowHeight = height / 24 / 6
     const columnIndex = Math.floor(mouseX/columnWidth)
     const rowIndex = Math.floor(mouseY/rowHeight)
+    const topRowIndex = Math.round(top/rowHeight)
     const bottomRowIndex = Math.round(bottom/rowHeight)
     
     const maxRow = Math.floor(height/rowHeight)
@@ -115,7 +126,9 @@ const CalendarEvent = ({ event, period, setStyle, action, setAction }) => {
       updateSelectTime(rowIndex, rowHeight)
       setStyle(event._id, columnIndex*columnWidth, event.style.curr.top, event.style.curr.height, event.style.curr.width)
     }
-    if(prevRowIndex !== rowIndex && rowIndex >= 0 && rowIndex+(bottomRowIndex-rowIndex) <= maxRow) {
+    console.log(rowIndex+(bottomRowIndex-topRowIndex), "<=", maxRow);
+    if(prevRowIndex !== rowIndex && rowIndex >= 0 && rowIndex+(bottomRowIndex-topRowIndex) <= maxRow) {
+      console.log("moved");
       updateSelectTime(rowIndex, rowHeight)
       setStyle(event._id, event.style.curr.left, Math.floor(rowIndex*rowHeight), event.style.curr.height, event.style.curr.width)
     } else if(rowIndex+(bottomRowIndex-rowIndex) > maxRow) {
@@ -126,23 +139,28 @@ const CalendarEvent = ({ event, period, setStyle, action, setAction }) => {
 
   }
   
+  let prevRowIndex2
   const slideUp = (e) => {
     const mouseY = e.clientY - container.current.getBoundingClientRect().top - initialOffsetY
+    const top = divRef.current.getBoundingClientRect().top - container.current.getBoundingClientRect().top
     const height = container.current.offsetHeight
     const divHeight = divRef.current.getBoundingClientRect().height
     const bottom = divRef.current.getBoundingClientRect().top+divHeight - container.current.getBoundingClientRect().top
     const rowHeight = height / 24 / 6
     const rowIndex = Math.floor(mouseY/rowHeight)
+    const topRowIndex = Math.round(top/rowHeight)
     const bottomRowIndex = Math.round(bottom/rowHeight)
     
     const maxRow = Math.floor(height/rowHeight)
-    if((bottomRowIndex-rowIndex) >= 1 && rowIndex >= 0 && bottomRowIndex <= maxRow) {
+    if(prevRowIndex2 !== rowIndex && (bottomRowIndex-rowIndex) >= 2 && rowIndex >= 0 && rowIndex+(bottomRowIndex-topRowIndex) <= maxRow) {
       updateSelectTime(rowIndex, rowHeight)
       setStyle(event._id, event.style.curr.left, rowIndex*rowHeight, (bottomRowIndex-rowIndex)*rowHeight, event.style.curr.width)
     }
-        
+
+    prevRowIndex2 = rowIndex    
   }
 
+  let prevRowIndex3
   const slideDown = (e) => {
     const mouseY = e.clientY - container.current.getBoundingClientRect().top - initialOffsetY + initialHeight
     const height = container.current.offsetHeight
@@ -152,11 +170,12 @@ const CalendarEvent = ({ event, period, setStyle, action, setAction }) => {
     const topRowIndex = Math.round(top/rowHeight)
     
     const maxRow = Math.floor(height/rowHeight)
-    if((rowIndex-topRowIndex) >= 1 && rowIndex >= 0 && rowIndex <= maxRow) {
+    if(prevRowIndex3 !== rowIndex && (rowIndex-topRowIndex) >= 1 && rowIndex >= 0 && rowIndex <= maxRow) {
       updateSelectTime(rowIndex, rowHeight)
       setStyle(event._id, event.style.curr.left, top, (rowIndex-topRowIndex)*rowHeight, event.style.curr.width)
     }
 
+    prevRowIndex3 = rowIndex
   }
 
 

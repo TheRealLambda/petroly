@@ -30,7 +30,7 @@
   width: 60px;
   display: flex;
   flex-direction: column;
-  align-items: center;
+  align-items: start;
 
 }
 .show_event_form .container .middle {
@@ -60,6 +60,7 @@
   margin-top: 23px;
   width: 16px;
   height: 16px;
+  align-self: center;
   background-color: #D7A870;
   border-radius: 8px;
 }

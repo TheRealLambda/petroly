@@ -87,7 +87,7 @@
   width: 60px;
   display: flex;
   justify-content: center;
-  align-items: center;
+  align-items: start;
 }
 
 .edit_event_form .modalScrollContainer .block .container .middle {
@@ -146,9 +146,9 @@
 .edit_event_form .color_picker {
   width: 16px;
   height: 16px;
+  align-self: center;
   background-color: black;
   border-radius: 8px;
-
 }
 
 input[type="color" i] {

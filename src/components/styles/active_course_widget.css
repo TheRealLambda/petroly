@@ -1,0 +1,53 @@
+.courses_page .courses .active_course {
+  flex-shrink: 0;
+  padding: 10px 0;
+  width: 340px;
+  height: 85px;
+  display: flex;
+  justify-content: space-between;
+  border-radius: 20px;
+}
+.courses_page .courses .active_course .opaque {
+  opacity: 0.8;
+}
+
+.courses_page .courses .active_course .left {
+  margin-left: 20px;
+  display: flex;
+  flex-direction: column;
+}
+.courses_page .courses .active_course .left .name {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}   
+.courses_page .courses .active_course .left .name .course_name {
+  line-height: 0.9;
+}
+.courses_page .courses .active_course .left .name .course_type {
+  width: 36px;
+  height: 16px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #00a36c7f;
+  border-radius: 9px;
+}
+.courses_page .courses .active_course .left .course_time {
+  margin-top: auto;
+  line-height: 0.9;
+}
+
+.courses_page .courses .active_course .right {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: end;
+}
+.courses_page .courses .active_course .right svg {
+  margin-right: 10px;
+}
+.courses_page .courses .active_course .right p{
+  margin-right: 20px;
+  line-height: 0.9;
+}

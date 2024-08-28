@@ -25,6 +25,7 @@ const SchedulePage = () => {
         
     let result
     if(action.type === "create") {
+      console.log("_ID:", id);
       result = await postEvent(body)
     } else {
       result = await patchEvent(id, body)
@@ -35,7 +36,9 @@ const SchedulePage = () => {
     const events = state.events.map(event => {
         const newEvent = {...event}
         if(newEvent._id === id) {
+          console.log("newEvent._id:", newEvent._id);
             newEvent._id = action.type==="create"?result.data._id:newEvent._id
+            console.log("new id =>", newEvent._id);
             newEvent.state = "view"
             newEvent.color = body.color
             newEvent.title = body.title
@@ -132,12 +135,13 @@ const SchedulePage = () => {
   }
 
   const deleteEvent = async (id) => {
-
-    const result = await axios.delete("http://localhost:3001/api/events/"+id)
-    const events = state.events.filter(event => event._id !== id)
-    const newState = {...state, events}
-    setState(newState)
-    setModalState("closed")
+    if(confirm("Delete this event?")) {
+      const result = await axios.delete("http://localhost:3001/api/events/"+id)
+      const events = state.events.filter(event => event._id !== id)
+      const newState = {...state, events}
+      setState(newState)
+      setModalState("closed")
+    }
   }
 
 

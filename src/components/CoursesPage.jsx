@@ -2,6 +2,7 @@ import { useEffect, useState } from "react"
 import "./styles/courses_page.css"
 import axios from "axios"
 import { Link } from "react-router-dom"
+import ActiveCourseWidget from "./ActiveCourseWidget"
 
  const CoursesPage = () => {
 
@@ -95,18 +96,7 @@ import { Link } from "react-router-dom"
             <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#5f6368"><path d="M380-320q-109 0-184.5-75.5T120-580q0-109 75.5-184.5T380-840q109 0 184.5 75.5T640-580q0 44-14 83t-38 69l224 224q11 11 11 28t-11 28q-11 11-28 11t-28-11L532-372q-30 24-69 38t-83 14Zm0-80q75 0 127.5-52.5T560-580q0-75-52.5-127.5T380-760q-75 0-127.5 52.5T200-580q0 75 52.5 127.5T380-400Z"/></svg>
           </div> 
           <div className="options">
-            {/* <div className="term_option bgcolor-white">
-              <div className="text">
-                <p className="text-16-medium">241</p>
-                <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#5f6368"><path d="M459-381 314-526q-3-3-4.5-6.5T308-540q0-8 5.5-14t14.5-6h304q9 0 14.5 6t5.5 14q0 2-6 14L501-381q-5 5-10 7t-11 2q-6 0-11-2t-10-7Z"/></svg>
-              </div>
-            </div>
-            <div className="department_option bgcolor-white">
-              <div className="text">
-                <p className="text-16-medium">Department</p>
-                <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#5f6368"><path d="M459-381 314-526q-3-3-4.5-6.5T308-540q0-8 5.5-14t14.5-6h304q9 0 14.5 6t5.5 14q0 2-6 14L501-381q-5 5-10 7t-11 2q-6 0-11-2t-10-7Z"/></svg>
-              </div>
-            </div> */}
+            
             <select onChange={(e)=>setTerm(e.target.value)} name="term">
               <option value="">Term</option>
               <option value="231">231</option>
@@ -150,7 +140,7 @@ import { Link } from "react-router-dom"
         </div>
       </div>
       <div className="top">
-        <Link to="/schedule" style={{textDecoration: "none"}}>
+        <Link to="/app/schedule" style={{textDecoration: "none"}}>
           <div className="bgcolor-white">
             <svg className="fillcolor-accent" xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#5f6368"><path d="m432-480 156 156q11 11 11 28t-11 28q-11 11-28 11t-28-11L348-452q-6-6-8.5-13t-2.5-15q0-8 2.5-15t8.5-13l184-184q11-11 28-11t28 11q11 11 11 28t-11 28L432-480Z"/></svg>
           </div>
@@ -170,7 +160,7 @@ import { Link } from "react-router-dom"
         {activeCourses.map(course => {
           console.log("HERE:", course.course_term, activeTerm, course.course_term === activeTerm);
           if(course.course_term === activeTerm) {
-            return <div className="bgcolor-white">{course.course_name} {course._id}<button onClick={()=>deleteActiveCourse(course.id)}>Delete</button></div>
+            return <ActiveCourseWidget course={course} deleteActiveCourse={deleteActiveCourse} />
           }
         })}
       </div>

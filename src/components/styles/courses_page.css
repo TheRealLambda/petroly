@@ -10,6 +10,7 @@
 }
 
 .courses_page .search_modal_container {
+  z-index: 1;
   pointer-events: none;
   position: absolute;
   top: 0;
@@ -196,12 +197,7 @@
   flex-direction: column;
   gap: 5px;
 }
-.courses_page .courses div {
-  flex-shrink: 0;
-  width: 340px;
-  height: 85px;
-  border-radius: 20px;
-}
+
 
 .courses_page .add_button {
   margin: 10px;

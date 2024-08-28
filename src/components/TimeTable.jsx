@@ -245,9 +245,11 @@ const TimeTable = ({ dotsObject, state, setState, setWeek, setModalState, action
     stateMiddle()
 
     return () => {
-      div2Wrapper.current.removeEventListener("pointerdown", pointerDown)
-      div2Wrapper.current.removeEventListener("pointermove", pointerMove)
-      div2Wrapper.current.removeEventListener("pointerup", pointerUp)
+      if(div2Wrapper.current) {
+        div2Wrapper.current.removeEventListener("pointerdown", pointerDown)
+        div2Wrapper.current.removeEventListener("pointermove", pointerMove)
+        div2Wrapper.current.removeEventListener("pointerup", pointerUp)
+      }
     }
   }, [state])
 
