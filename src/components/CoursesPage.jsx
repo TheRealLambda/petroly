@@ -3,6 +3,9 @@ import "./styles/courses_page.css"
 import axios from "axios"
 import { Link } from "react-router-dom"
 import ActiveCourseWidget from "./ActiveCourseWidget"
+import CustomSelect from "./CustomSelect"
+import CustomSelectOption from "./CustomSelectOption"
+import { getActiveCourses, postActiveCourse } from "../services/activeCourses"
 
  const CoursesPage = () => {
 
@@ -11,7 +14,8 @@ import ActiveCourseWidget from "./ActiveCourseWidget"
   const [activeTerm, setActiveTerm] = useState("241")
   const [term, setTerm] = useState("")
   const [department, setDepartment] = useState("")
-
+  console.log(term);
+  console.log(department);
 
   const openSearchModal = (e) => {
     const modalContainer = document.getElementById("searchModalContainer")
@@ -22,7 +26,7 @@ import ActiveCourseWidget from "./ActiveCourseWidget"
   useEffect(() => {
 
     async function loadActiveCourses() {
-      const result = await axios.get("http://localhost:3001/api/active-courses")
+      const result = await getActiveCourses()
       // console.log(result.data.map(temp => {
       //   const a = temp.course_id
       //   a.id = temp._id
@@ -53,7 +57,7 @@ import ActiveCourseWidget from "./ActiveCourseWidget"
       course_id: course._id,
       term
     }
-    const result = await axios.post("http://localhost:3001/api/active-courses", body)
+    const result = await postActiveCourse(body)
     console.log(result.data);
     const activeCourse = result.data.course_id
     activeCourse.id = result.data._id
@@ -70,7 +74,7 @@ import ActiveCourseWidget from "./ActiveCourseWidget"
   }
 
   const deleteActiveCourse = async (id) => {
-    const result = await axios.delete("http://localhost:3001/api/active-courses/"+id)
+    const result = await deleteActiveCourse(id)
     console.log(result.data);
     setActiveCourses(activeCourses.filter(activeCourse => activeCourse.id !== id))
   }
@@ -78,7 +82,7 @@ import ActiveCourseWidget from "./ActiveCourseWidget"
   useEffect(() => {
     const searchCourses = async (e) => {
       if(term && department) {
-        const result = await axios.get("http://localhost:3001/api/courses?term="+term+"&department="+encodeURIComponent(department))
+        const result = await searchCourses(term, department)
         setCourses(result.data)
       }
     }
@@ -97,21 +101,33 @@ import ActiveCourseWidget from "./ActiveCourseWidget"
           </div> 
           <div className="options">
             
-            <select onChange={(e)=>setTerm(e.target.value)} name="term">
+            {/* <select onChange={(e)=>setTerm(e.target.value)} name="term">
               <option value="">Term</option>
               <option value="231">231</option>
               <option value="232">232</option>
               <option value="233">233</option>
               <option value="241">241</option>
-            </select>
-            <select onChange={(e)=>setDepartment(e.target.value)} name="department">
-              <option value="">Department</option>
-              <option value="Accounting & Finance">Accounting & Finance</option>
-              <option value="Aerospace Engineering">Aerospace Engineering</option>
-              <option value="Arch. Engg & Construction Mgt.">Arch. Engg & Construction Mgt.</option>
-              <option value="Chemical Engineering">Chemical Engineering</option>
-              <option value="Computer Engineering">Computer Engineering</option>
-            </select>
+            </select> */}
+            <CustomSelect className="term_option" onChange={(e)=>setTerm(e.target.value)} defaultValue="Term">
+              <CustomSelectOption selectValue="241"/>
+              <CustomSelectOption selectValue="233"/>
+              <CustomSelectOption selectValue="232"/>
+              <CustomSelectOption selectValue="231"/>
+              <CustomSelectOption selectValue="231"/>
+              <CustomSelectOption selectValue="231"/>
+              <CustomSelectOption selectValue="231"/>
+              <CustomSelectOption selectValue="231"/>
+              <CustomSelectOption selectValue="231"/>
+              <CustomSelectOption selectValue="231"/>
+            </CustomSelect>
+
+            <CustomSelect className="department_option" onChange={(e)=>setDepartment(e.target.value)} defaultValue="Department" >
+              <CustomSelectOption selectValue="Accounting & Finance"/>
+              <CustomSelectOption selectValue="Aerospace Engineering"/>
+              <CustomSelectOption selectValue="Arch. Engg & Construction Mgt."/>
+              <CustomSelectOption selectValue="Chemical Engineering"/>
+              <CustomSelectOption selectValue="Computer Engineering"/>
+            </CustomSelect>
           </div>
           <div className="separator bgcolor-accent"></div>
           <div className="list">

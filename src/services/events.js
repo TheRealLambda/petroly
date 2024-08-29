@@ -1,16 +1,12 @@
 import axios from "axios";
 
-let token
-
-export function setToken(newToken) {
-  token = `Bearer ${newToken}`
-}
+import { getToken } from "./token";
 
 export async function getEvents(week, period) {
 
   if(Number.isFinite(week) && Number.isFinite(period)) {
     console.log("Events are being retrieved from the server");
-    const config = {headers: {Authorization: token}}
+    const config = {headers: {Authorization: getToken()}}
     return await axios.get("http://localhost:3001/api/events?week="+week+"&period="+period, config)
   } else {
     console.error("(week, period) one of the variables is not a valid number")
@@ -51,7 +47,7 @@ export async function postEvent(body) {
 
   if(errors.length === 0) {
     console.log("Event is posted to the server")
-    const config = {headers: {Authorization: token}}
+    const config = {headers: {Authorization: getToken()}}
     return await axios.post("http://localhost:3001/api/events/", validatedBody, config)
   } else {
     console.error(errors, "Event is not in correct format: ", validatedBody)
@@ -92,7 +88,7 @@ export async function patchEvent(id, body) {
   console.log("errors:", errors);
   if(errors.length === 0) {
     console.log("Event is patched to the server")
-    const config = {headers: {Authorization: token}}
+    const config = {headers: {Authorization: getToken()}}
     return await axios.patch("http://localhost:3001/api/events/"+id, body, config)
   } else {
     console.error(errors, "Event is not in correct format: ", validatedBody)

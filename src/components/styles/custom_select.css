@@ -1,0 +1,81 @@
+.custom_select {
+  width: 100%;
+  height: 40px;
+  position: relative;
+}
+
+.custom_select .selected {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 10px;
+}
+.custom_select .selected p {
+  color: #023047cc;
+}
+.custom_select .selected svg {
+  fill: #023047cc;
+}
+.custom_select .selected .wrapper {
+  z-index: 1;
+  width: 100%;
+  height: 100%;
+  position: absolute;
+}
+.custom_select.show .selected {
+  border-bottom-left-radius: 0px;
+  border-bottom-right-radius: 0px;
+}
+.custom_select .selected:hover {
+  filter: brightness(97.5%);
+}
+.custom_select .selected:active {
+  filter: brightness(95%);
+}
+
+.custom_select .options_list {
+  display: none;
+}
+.custom_select.show .options_list {
+  z-index: 1;
+  width: 100%;
+  overflow-y: hidden;
+  display: flex;
+  flex-direction: column;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  border-bottom-left-radius: 10px;
+  border-bottom-right-radius: 10px;
+}
+.custom_select.show .options_list::-webkit-scrollbar {
+  width: 4px;
+}
+.custom_select.show .options_list::-webkit-scrollbar-track {
+  background-color: transparent;
+}
+.custom_select.show .options_list::-webkit-scrollbar-thumb {
+  background-color: #0230477f;
+}
+.custom_select.show .options_list .option {
+  width: 100%;
+  height: 40px;
+  padding: 0 4px;
+  flex-shrink: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-top: 2px solid #02304719;
+  background-color: inherit;
+  color: #023047cc
+}
+
+.custom_select.show .options_list .option:hover {
+  filter: brightness(97.5%);
+}
+.custom_select.show .options_list .option:active {
+  filter: brightness(95%);
+}
