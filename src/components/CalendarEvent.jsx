@@ -51,7 +51,7 @@ const CalendarEvent = ({ event, period, setStyle, action, setAction }) => {
     divRef.current.style.top = event.style.curr.top+"px" 
     divRef.current.style.left = event.style.curr.left+"px"
     if(event.state === "view") {
-      divRef.current.style.height = (event.style.curr.height-2)+"px"
+      divRef.current.style.height = (event.style.curr.height-1)+"px"
       divRef.current.style.width = (event.style.curr.width-4)+"px"
     } else {
       divRef.current.style.height = event.style.curr.height+"px"
@@ -170,7 +170,7 @@ const CalendarEvent = ({ event, period, setStyle, action, setAction }) => {
     const topRowIndex = Math.round(top/rowHeight)
     
     const maxRow = Math.floor(height/rowHeight)
-    if(prevRowIndex3 !== rowIndex && (rowIndex-topRowIndex) >= 1 && rowIndex >= 0 && rowIndex <= maxRow) {
+    if(prevRowIndex3 !== rowIndex && (rowIndex-topRowIndex) >= 2 && rowIndex >= 0 && rowIndex <= maxRow) {
       updateSelectTime(rowIndex, rowHeight)
       setStyle(event._id, event.style.curr.left, top, (rowIndex-topRowIndex)*rowHeight, event.style.curr.width)
     }
@@ -250,7 +250,7 @@ const CalendarEvent = ({ event, period, setStyle, action, setAction }) => {
   }
   return (
     <div ref={divRef} className={"calendar_event "+(event.state==="view"?"view":"edit")} data-id={event._id} >
-      {event.state === "view" && <p className={"text-14-regular "+color()}>{event.title}</p>}
+      {event.state === "view" && <p className={"text-12-medium "+color()}>{event.title}</p>}
       <div className="top_slider"></div>
       <div className="bottom_slider"></div>
       <div className="wrapper"></div>

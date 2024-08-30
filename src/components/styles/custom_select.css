@@ -59,6 +59,7 @@
 }
 .custom_select.show .options_list::-webkit-scrollbar-thumb {
   background-color: #0230477f;
+  border-radius: 4px;
 }
 .custom_select.show .options_list .option {
   width: 100%;

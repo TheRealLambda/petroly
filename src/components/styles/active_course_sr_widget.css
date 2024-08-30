@@ -1,0 +1,65 @@
+.search_modal .list .active_course {
+  flex-shrink: 0;
+  padding: 10px 0;
+  width: 336px;
+  height: 85px;
+  display: flex;
+  justify-content: space-between;
+  border-radius: 20px;
+}
+.search_modal .list .active_course .opaque {
+  opacity: 0.8;
+}
+
+.search_modal .list .active_course .left {
+  margin-left: 20px;
+  display: flex;
+  flex-direction: column;
+}
+.search_modal .list .active_course .left .name {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}   
+.search_modal .list .active_course .left .name .course_name {
+  line-height: 0.9;
+}
+.search_modal .list .active_course .left .name .course_type {
+  width: 36px;
+  height: 16px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #00a36c7f;
+  border-radius: 9px;
+}
+.search_modal .list .active_course .left .course_time {
+  margin-top: auto;
+  line-height: 0.9;
+}
+
+.search_modal .list .active_course .right {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: end;
+}
+.search_modal .list .active_course .right .sr_add_button {
+  width: 48px;
+  height: 24px;
+  margin-right: 20px;
+  border: 2px solid #023047;
+  border-radius: 12px;
+}
+.search_modal .list .active_course .right .sr_active_button {
+  width: 48px;
+  height: 24px;
+  margin-right: 20px;
+  border: 2px solid #00a36c;
+  border-radius: 12px;
+  opacity: 0.8;
+}
+.search_modal .list .active_course .right p{
+  margin-right: 20px;
+  line-height: 0.9;
+}

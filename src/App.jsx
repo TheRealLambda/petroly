@@ -10,7 +10,7 @@ import TasksPage from "./components/TasksPage.jsx"
 import { Routes, Route, BrowserRouter as Router } from "react-router-dom"
 import { useEffect, useState } from "react"
 import LoginPage from "./components/LoginPage.jsx"
-import { setToken } from "./services/events.js"
+import { setToken } from "./services/token.js"
 
 
 function App() {

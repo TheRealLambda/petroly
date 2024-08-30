@@ -1,11 +1,12 @@
-import { useEffect, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import "./styles/courses_page.css"
 import axios from "axios"
 import { Link } from "react-router-dom"
 import ActiveCourseWidget from "./ActiveCourseWidget"
 import CustomSelect from "./CustomSelect"
 import CustomSelectOption from "./CustomSelectOption"
-import { getActiveCourses, postActiveCourse } from "../services/activeCourses"
+import { deleteActiveCourse, getActiveCourses, postActiveCourse, searchCourses } from "../services/activeCourses"
+import ActiveCourseSRWidget from "./ActiveCourseSRWidget"
 
  const CoursesPage = () => {
 
@@ -14,8 +15,10 @@ import { getActiveCourses, postActiveCourse } from "../services/activeCourses"
   const [activeTerm, setActiveTerm] = useState("241")
   const [term, setTerm] = useState("")
   const [department, setDepartment] = useState("")
-  console.log(term);
-  console.log(department);
+
+  const [searchText, setSearchText] = useState("")
+  const [searchResult, setSearchResult] = useState([])
+  const searchPage = useRef(null) 
 
   const openSearchModal = (e) => {
     const modalContainer = document.getElementById("searchModalContainer")
@@ -73,24 +76,76 @@ import { getActiveCourses, postActiveCourse } from "../services/activeCourses"
     }
   }
 
-  const deleteActiveCourse = async (id) => {
+  const deleteActiveCourseWrapper = async (id) => {
     const result = await deleteActiveCourse(id)
     console.log(result.data);
     setActiveCourses(activeCourses.filter(activeCourse => activeCourse.id !== id))
   }
 
   useEffect(() => {
-    const searchCourses = async (e) => {
+    const searchCoursesWrapper = async (e) => {
       if(term && department) {
         const result = await searchCourses(term, department)
         setCourses(result.data)
       }
     }
-    searchCourses();
+    searchCoursesWrapper();
   }, [term, department])
+
+  const openSearchPage = () => {
+    searchPage.current.classList.add("show")
+  }
+
+  const closeSearchPage = () => {
+    setSearchText("")
+    setSearchResult([])
+    searchPage.current.classList.remove("show")
+  }
+
+  useEffect(() => {
+    if(searchText.trim()) {
+      console.log(searchText);
+      const result = []
+      activeCourses.forEach(ac => {
+        if(ac.course_name.toLowerCase().includes(searchText.trim().toLowerCase())) {
+          let exists = false
+          result.forEach(r => {
+            if(r.term === ac.course_term) {
+              exists = true
+              r.acs.push(ac)
+            }
+          })
+          if(!exists) result.push({term: ac.course_term, acs: [ac]})
+        }
+      })
+      console.log(result);
+      setSearchResult(result)
+    }
+  }, [searchText])
+
 
   return (
     <div className="courses_page">
+      <div ref={searchPage} className="search_page bgcolor-BG">
+        <div onClick={closeSearchPage} className="search_field">
+          <div className="svg bgcolor-BG">
+            <svg className="bgcolog-BG" xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#5f6368"><path d="M480-424 284-228q-11 11-28 11t-28-11q-11-11-11-28t11-28l196-196-196-196q-11-11-11-28t11-28q11-11 28-11t28 11l196 196 196-196q11-11 28-11t28 11q11 11 11 28t-11 28L536-480l196 196q11 11 11 28t-11 28q-11 11-28 11t-28-11L480-424Z"/></svg>
+          </div>
+          <input onChange={(e)=>setSearchText(e.target.value)} type="text" className="search_input text-16-medium" placeholder="search for active courses" value={searchText}/>
+        </div>
+        <div className="search_result">
+          {searchResult.map(result => {
+            return (
+              <div> 
+                <p className="text-16-medium color-accent">Term {result.term}</p>
+                <div className="search_result_list">
+                  {result.acs.map(ac => <ActiveCourseWidget course={ac} deleteActiveCourse={deleteActiveCourseWrapper}/>)}
+                </div>
+              </div>
+            )
+          })}
+        </div>
+      </div>
       <div id="searchModalContainer" className="search_modal_container">
         <div className="doll_modal"></div>
         <div className="search_modal bgcolor-BG">
@@ -133,14 +188,8 @@ import { getActiveCourses, postActiveCourse } from "../services/activeCourses"
           <div className="list">
             {courses.map(course => {
               const found = activeCourses.some(activeCourse => activeCourse._id === course._id)
-              
               return (
-                <div className="bgcolor-white">
-                  <p>{course.course_name} {course.course_type}</p>
-                  <p>{course.course_term} {course.course_department}</p>
-                  {found ? <button onClick={() => window.alert("This course is already added")}>Active</button>
-                         : <button onClick={() => addCourse(course)}>Add</button>}
-                </div>
+                <ActiveCourseSRWidget course={course} found={found} addActiveCourse={addCourse}/>
               )
             })}
             {/* <div className="bgcolor-white"></div>
@@ -161,7 +210,7 @@ import { getActiveCourses, postActiveCourse } from "../services/activeCourses"
             <svg className="fillcolor-accent" xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#5f6368"><path d="m432-480 156 156q11 11 11 28t-11 28q-11 11-28 11t-28-11L348-452q-6-6-8.5-13t-2.5-15q0-8 2.5-15t8.5-13l184-184q11-11 28-11t28 11q11 11 11 28t-11 28L432-480Z"/></svg>
           </div>
         </Link>
-        <div className="bgcolor-white">
+        <div onClick={openSearchPage} className="bgcolor-white">
           <svg className="fillcolor-accent" xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#5f6368"><path d="M380-320q-109 0-184.5-75.5T120-580q0-109 75.5-184.5T380-840q109 0 184.5 75.5T640-580q0 44-14 83t-38 69l224 224q11 11 11 28t-11 28q-11 11-28 11t-28-11L532-372q-30 24-69 38t-83 14Zm0-80q75 0 127.5-52.5T560-580q0-75-52.5-127.5T380-760q-75 0-127.5 52.5T200-580q0 75 52.5 127.5T380-400Z"/></svg>
         </div>
       </div>
@@ -174,9 +223,8 @@ import { getActiveCourses, postActiveCourse } from "../services/activeCourses"
       </div>
       <div className="courses">
         {activeCourses.map(course => {
-          console.log("HERE:", course.course_term, activeTerm, course.course_term === activeTerm);
           if(course.course_term === activeTerm) {
-            return <ActiveCourseWidget course={course} deleteActiveCourse={deleteActiveCourse} />
+            return <ActiveCourseWidget course={course} deleteActiveCourse={deleteActiveCourseWrapper} />
           }
         })}
       </div>

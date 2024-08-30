@@ -18,5 +18,5 @@ export async function deleteActiveCourse(id) {
 
 export async function searchCourses(term, department) {
   const config = {headers: {Authorization: getToken()}}
-  return await axios.get("http://localhost:3001/api/courses?term="+term+"&department="+encodeURIComponent(department))
+  return await axios.get("http://localhost:3001/api/courses?term="+term+"&department="+encodeURIComponent(department), config)
 }
