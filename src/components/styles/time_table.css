@@ -33,6 +33,7 @@
   align-items: end;
   padding-bottom: 5px;
   color: #0230477f;
+  transition: all 0.2s ease-out;
 }
 .time_table .div1 p {
   opacity: 0.5;

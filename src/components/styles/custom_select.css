@@ -29,12 +29,6 @@
   border-bottom-left-radius: 0px;
   border-bottom-right-radius: 0px;
 }
-.custom_select .selected:hover {
-  filter: brightness(97.5%);
-}
-.custom_select .selected:active {
-  filter: brightness(95%);
-}
 
 .custom_select .options_list {
   display: none;
@@ -72,11 +66,4 @@
   border-top: 2px solid #02304719;
   background-color: inherit;
   color: #023047cc
-}
-
-.custom_select.show .options_list .option:hover {
-  filter: brightness(97.5%);
-}
-.custom_select.show .options_list .option:active {
-  filter: brightness(95%);
 }

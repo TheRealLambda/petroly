@@ -304,13 +304,15 @@ const EditEventForm = ({ event, setStyle, state, action, setAction, updateEvent,
     <div className="edit_event_form">
       <div className="drag_indicator bgcolor-accent"></div>
       <div className="top">
-        <div onClick={closeModal} className="left">
-          <svg className="fillcolor-accent" xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#5f6368"><path d="M480-424 284-228q-11 11-28 11t-28-11q-11-11-11-28t11-28l196-196-196-196q-11-11-11-28t11-28q11-11 28-11t28 11l196 196 196-196q11-11 28-11t28 11q11 11 11 28t-11 28L536-480l196 196q11 11 11 28t-11 28q-11 11-28 11t-28-11L480-424Z"/></svg>
+        <div className="left">
+          <div onClick={closeModal} className="bgcolor-BG button_effect_1_dark">
+            <svg className="fillcolor-accent" xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#5f6368"><path d="M480-424 284-228q-11 11-28 11t-28-11q-11-11-11-28t11-28l196-196-196-196q-11-11-11-28t11-28q11-11 28-11t28 11l196 196 196-196q11-11 28-11t28 11q11 11 11 28t-11 28L536-480l196 196q11 11 11 28t-11 28q-11 11-28 11t-28-11L480-424Z"/></svg>
+          </div>
         </div>
         <div className="middle modalDragArea">
         </div>
         <div className="right">
-          <div onClick={save} className="save_button text-14-medium bgcolor-primary color-white">Save</div>
+          <div onClick={save} className="save_button text-14-medium bgcolor-primary color-white button_effect_1_darker">Save</div>
         </div>
       </div>
       <div className="modalScrollContainer">

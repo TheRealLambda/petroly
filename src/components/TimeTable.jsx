@@ -378,7 +378,7 @@ const TimeTable = ({ dotsObject, state, setState, setWeek, setModalState, action
     <div className="time_table bgcolor-white">
     
       <div className="div1">
-        <div className="bgcolor-BG text-12-medium">week: {realWeek}</div>
+        <div id="annoyingDiv" className="bgcolor-BG text-12-medium">week: {realWeek}</div>
         <p className="text-12-semibold color-accent"></p>
         <p className="text-12-semibold color-accent">01:00</p>
         <p className="text-12-semibold color-accent">02:00</p>

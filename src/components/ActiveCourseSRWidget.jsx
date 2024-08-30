@@ -28,7 +28,7 @@ export default function ActiveCourseSRWidget({ course, found, addActiveCourse}) 
       <div className="right">
         {found ?
           <button className="sr_active_button bgcolor-primary color-white text-12-medium" disabled>Active</button> :
-          <button onClick={addCourse} className="sr_add_button bgcolor-white color-accent text-12-medium opaque">Add</button>
+          <button onClick={addCourse} className="sr_add_button bgcolor-white color-accent text-12-medium opaque button_effect_1_dark">Add</button>
         } 
         <p className="text-14-medium color-accent opaque">{course.course_instructor}</p>
       </div>

@@ -18,8 +18,9 @@ const SchedulePage = () => {
   const [state, setState] = useState({week: 0, period: 7, events: []})
   const [modalState, setModalState] = useState("closed")
   const [action, setAction] = useState({type: "view", commit: false, event: null, options: {}})
-  const [dotsObject, setDotsObject] = useState({prev: [0,0,0,0,0,0,0], curr: [0,0,0,0,0,0,0], next: [0,0,0,0,0,0,0]})
   
+  const [dotsObject, setDotsObject] = useState({prev: [0,0,0,0,0,0,0], curr: [0,0,0,0,0,0,0], next: [0,0,0,0,0,0,0]})
+
 
   const updateEvent = async (id, body) => {
         
@@ -265,6 +266,11 @@ const SchedulePage = () => {
     const page = document.getElementsByClassName("schedule_page")[0]
     page.classList.remove("side_menu_open")
     document.getElementById("menu_cover").style.height = "0px"
+    document.getElementById("annoyingDiv").style.top = "60px"
+    document.getElementById("annoyingDiv").style.transition = "none"
+    setTimeout(() => {
+      document.getElementById("annoyingDiv").style.transition = ""
+    }, 200)
   }
 
 

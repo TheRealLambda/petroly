@@ -10,6 +10,55 @@ main {
   overflow: hidden;
 }
 
+.button_effect_1_dark:hover {
+  filter: brightness(97.5%)
+}
+.button_effect_1_dark:active {
+  filter: brightness(95%)
+}
+.button_effect_1_dark_se:hover {
+  filter: brightness(97.5%)
+}
+.button_effect_1_dark_se:active {
+  filter: brightness(95%)
+}
+.button_effect_1_darker:hover {
+  filter: brightness(95%)
+}
+.button_effect_1_darker:active {
+  filter: brightness(90%)
+}
+.button_effect_1_darker_se:hover {
+  filter: brightness(95%)
+}
+.button_effect_1_darker_se:active {
+  filter: brightness(90%)
+}
+.button_effect_1_light:hover {
+  box-shadow: inset 0 0 100px 100px rgba(255, 255, 255, 0.1);
+}
+.button_effect_1_light:active {
+  box-shadow: inset 0 0 100px 100px rgba(255, 255, 255, 0.15);
+}
+.button_effect_1_light_se:hover {
+  box-shadow: inset 0 0 100px 100px rgba(255, 255, 255, 0.1);
+}
+.button_effect_1_light_se:active {
+  box-shadow: inset 0 0 100px 100px rgba(255, 255, 255, 0.15);
+}
+.button_effect_1_lighter:hover {
+  box-shadow: inset 0 0 100px 100px rgba(255, 255, 255, 0.15);
+}
+.button_effect_1_lighter:active {
+  box-shadow: inset 0 0 100px 100px rgba(255, 255, 255, 0.25);
+}
+.button_effect_1_lighter_se:hover {
+  box-shadow: inset 0 0 100px 100px rgba(255, 255, 255, 0.15);
+}
+.button_effect_1_lighter_se:active {
+  box-shadow: inset 0 0 100px 100px rgba(255, 255, 255, 0.25);
+}
+
 .inter-40-regular {
   font-size: 40px;
   font-family: "Inter", sans-serif;

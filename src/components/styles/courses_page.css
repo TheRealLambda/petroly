@@ -32,14 +32,12 @@
   fill: #023047cc;
 }
 .courses_page .search_page .search_field .svg {
-  height: 24px;
-  border-radius: 12px;
-}
-.courses_page .search_page .search_field .svg:hover {
-  filter: brightness(95%);
-}
-.courses_page .search_page .search_field .svg:active {
-  filter: brightness(90%);
+  height: 36px;
+  width: 36px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 18px;
 }
 
 .courses_page .search_page .search_field .search_input {
@@ -233,12 +231,6 @@
   justify-content: center;
   align-items: center;
 }
-.courses_page .top div:hover {
-  filter: brightness(97.5%)
-}
-.courses_page .top div:active {
-  filter: brightness(95%)
-}
 
 .courses_page .header {
   margin-top: 30px;
@@ -262,12 +254,6 @@
   display: flex;
   justify-content: center;
   align-items: center;
-}
-.courses_page .terms div:hover {
-  filter: brightness(97.5%)
-}
-.courses_page .terms div:active {
-  filter: brightness(95%)
 }
 .courses_page .terms div.chosen {
   background-color: #00a36c;
@@ -307,10 +293,4 @@
   justify-content: center;
   align-items: center;
   gap: 10px; 
-}
-.courses_page .add_button:hover {
-  filter: brightness(95%);
-}
-.courses_page .add_button:active {
-  filter: brightness(90%);
 }

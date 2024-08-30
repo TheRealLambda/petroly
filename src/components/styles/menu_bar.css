@@ -1,14 +1,75 @@
 .menu_bar {
+  width: 340px;
+  height: 40px;
+  margin: auto;
+  margin-top: -51px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  overflow-y: hidden;
+  border-radius: 20px;
+  transition: height 0.2s ease-out;
+}
+
+.menu_bar .events_search_field {
+  height: 40px;
+  width: 100%;
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  
+  flex-shrink: 0;
+}
+.menu_bar .events_search_field .close_button {
+  height: 36px;
+  width: 36px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 18px;
+}
+.menu_bar .events_search_field input {
+  border: none;
+  outline: none;
+  flex-grow: 1;
+  height: 24px;
+  border-bottom: 2px solid #f0f6fb
+}
+.menu_bar .events_search_field input::placeholder {
+  color: #f0f6fb;
+  opacity: 0.8;
+}
+.menu_bar .events_search_field .search_button {
+  height: 36px;
+  width: 36px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 18px;
+}
+
+.menu_bar .block_pointer_events {
+  z-index: 3;
+  height: 380px;
+  width: 360px;
+  position: fixed;
+  display: none;
+  top: 260px;
+  left: 0;
+  right: 0;
+  margin: 0 auto;
+}
+
+.menu_bar .flex_row {
+  flex-shrink: 0;
+  width: 100%;
+  height: 40px;
   display: flex;
   flex-direction: row;
   justify-content: space-between;
   align-items: center;
-  padding: 0 10px;
-  margin: auto;
-  margin-top: -51px;
-  width: 340px;
-  height: 40px;
-  border-radius: 20px;
 }
 
 .menu_bar .side_menu {
@@ -37,7 +98,7 @@
   padding-top: 40px;
   display: flex;
   flex-direction: column;
-  gap: 30px;
+  gap: 10px;
   transform: translateX(-240px);
   transition: all 0.2s ease-out;
 }
@@ -45,41 +106,59 @@
   transform: translateX(0px)
 }
 .menu_bar .side_menu .wrapper .menu div {
-  margin-left: 30px;
+  height: 48px;
+  padding-left: 30px;
   display: flex;
   align-items: center;
   gap: 20px;
 }
 .menu_bar .side_menu .wrapper .menu .separator {
-  width: 210px;
+  width: 240px;
   height: 2px;
   margin-top: 10px;
   margin-bottom: 10px;
   opacity: 0.5;
 }
 
-.menu_bar .div1 .burger_icon {
-  height: 24px;
-}
-.menu_bar .div2 {
-  height: 24px;
-}
 .menu_bar .div1 {
+  height: 100%; 
   display: flex;
   flex-direction: row;
-  gap: 10px;
-
+}
+.menu_bar .div1 .burger_icon {
+  height: 100%;
+  width: 40px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 24px;
 }
 .menu_bar .div1 .today {
+  padding-left: 8px;
   display: flex;
   flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  border-radius: 20px;
 }
+.menu_bar .div1 .today svg{
+  transition: all 0.2s ease-out;
+}
+
 .menu_bar .div2 {
   display: flex;
+  height: 100%;
   flex-direction: row;
-  gap: 10px;
 }
-.menu_bar .div2 .search_icon {
+.menu_bar .div2 > div {
+  height: 100%;
+  width: 40px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 24px
+}
+.menu_bar .div2 > .search_icon {
   margin-right: 10px;
 }
 .menu_bar .div2 .current_day {

@@ -43,7 +43,7 @@ export default function CustomSelect({ className, onChange, defaultValue, childr
 
   return (
     <div ref={customSelect} className={"custom_select show "+className}>
-      <div className="selected bgcolor-white">
+      <div className="selected bgcolor-white button_effect_1_dark">
         <p className="text-14-medium">{selected}</p>
         <svg className="fillcolor-accent" xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#5f6368"><path d="M459-381 314-526q-3-3-4.5-6.5T308-540q0-8 5.5-14t14.5-6h304q9 0 14.5 6t5.5 14q0 2-6 14L501-381q-5 5-10 7t-11 2q-6 0-11-2t-10-7Z"/></svg>  
         <div className="wrapper"></div>
