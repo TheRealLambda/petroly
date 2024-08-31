@@ -2,8 +2,9 @@ import { Link } from "react-router-dom"
 import "./styles/menu_bar.css"
 import { useRef, useState } from "react"
 import MonthsPicker from "./MonthsPicker"
+import MonthsSlider from "./MonthsSlider"
 
-const MenuBar = ({ resetWeek, setPeriod}) => {
+const MenuBar = ({ resetWeek, changeWeek, state, setPeriod}) => {
 
   const [showSearchField, setShowSearchField] = useState(false)
   const menuBar = useRef(null)
@@ -50,9 +51,9 @@ const MenuBar = ({ resetWeek, setPeriod}) => {
   }
 
   const openMonthsPicker = () => {
-    menuBar.current.style.height = "240px"
+    menuBar.current.style.height = "300px"
     monthButtonArrow.current.setAttribute("transform", "rotate(-180)")
-    document.getElementById("annoyingDiv").style.top = "260px"
+    document.getElementById("annoyingDiv").style.top = "320px"
     document.getElementById("navBar").style.top = "640px"
     document.getElementById("blockPointerEvents").style.display = "block"
   }
@@ -65,7 +66,7 @@ const MenuBar = ({ resetWeek, setPeriod}) => {
     document.getElementById("blockPointerEvents").style.display = "none"
   }
   const handleShowMonthsButton = () => {
-    if(menuBar.current.style.height === "240px") {
+    if(menuBar.current.style.height === "300px") {
       closeMonthsPicker()
     } else {
       openMonthsPicker()
@@ -76,6 +77,17 @@ const MenuBar = ({ resetWeek, setPeriod}) => {
     console.log("searching...");
   }
 
+  const handleShowSearchField = () => {
+    menuBar.current.style.height = "80px"
+    document.getElementById("annoyingDiv").style.top = "100px"
+    setShowSearchField(true)
+  }
+
+  const handleCloseSearchField = () => {
+    menuBar.current.style.height = "40px"
+    document.getElementById("annoyingDiv").style.top = "60px"
+    setShowSearchField(false)
+  }
 
   return (
     <div ref={menuBar} className="menu_bar bgcolor-primary">
@@ -115,16 +127,23 @@ const MenuBar = ({ resetWeek, setPeriod}) => {
       </div>
       <div onClick={()=>closeMonthsPicker()} id="blockPointerEvents" className="block_pointer_events"></div>
         {showSearchField ? 
-          <div className="events_search_field">
-            <div onClick={()=>setShowSearchField(false)} className="close_button bgcolor-primary button_effect_1_darker">
-              <svg className="fillcolor-white" xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#5f6368"><path d="M480-424 284-228q-11 11-28 11t-28-11q-11-11-11-28t11-28l196-196-196-196q-11-11-11-28t11-28q11-11 28-11t28 11l196 196 196-196q11-11 28-11t28 11q11 11 11 28t-11 28L536-480l196 196q11 11 11 28t-11 28q-11 11-28 11t-28-11L480-424Z"/></svg>
+          <>
+            <div className="events_search_field">
+              <div onClick={handleCloseSearchField} className="close_button bgcolor-primary button_effect_1_darker">
+                <svg className="fillcolor-white" xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#5f6368"><path d="M480-424 284-228q-11 11-28 11t-28-11q-11-11-11-28t11-28l196-196-196-196q-11-11-11-28t11-28q11-11 28-11t28 11l196 196 196-196q11-11 28-11t28 11q11 11 11 28t-11 28L536-480l196 196q11 11 11 28t-11 28q-11 11-28 11t-28-11L480-424Z"/></svg>
+              </div>
+              <input className="bgcolor-primary color-white text-14-medium" type="text" placeholder="search for events"/>
+              <div onClick={searchEvents} className="search_button bgcolor-primary button_effect_1_darker">
+                <svg className="fillcolor-white" xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#5f6368"><path d="M380-320q-109 0-184.5-75.5T120-580q0-109 75.5-184.5T380-840q109 0 184.5 75.5T640-580q0 44-14 83t-38 69l224 224q11 11 11 28t-11 28q-11 11-28 11t-28-11L532-372q-30 24-69 38t-83 14Zm0-80q75 0 127.5-52.5T560-580q0-75-52.5-127.5T380-760q-75 0-127.5 52.5T200-580q0 75 52.5 127.5T380-400Z"/></svg>
+              </div>
             </div>
-            <input className="bgcolor-primary color-white text-14-medium" type="text" placeholder="search for events"/>
-            <div onClick={searchEvents} className="search_button bgcolor-primary button_effect_1_darker">
-              <svg className="fillcolor-white" xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#5f6368"><path d="M380-320q-109 0-184.5-75.5T120-580q0-109 75.5-184.5T380-840q109 0 184.5 75.5T640-580q0 44-14 83t-38 69l224 224q11 11 11 28t-11 28q-11 11-28 11t-28-11L532-372q-30 24-69 38t-83 14Zm0-80q75 0 127.5-52.5T560-580q0-75-52.5-127.5T380-760q-75 0-127.5 52.5T200-580q0 75 52.5 127.5T380-400Z"/></svg>
+            <div className="search_field_options">
+              <div className="time_constraint color-white text-14-medium">
+                <span>Between</span><input type="date" /><span>and</span><input type="date" />
+              </div>
             </div>
-          </div> : 
-        <div className="flex_row">
+          </> : 
+        <><div className="flex_row">
           <div className="div1">
             <div onClick={openSideMenu} className="burger_icon bgcolor-primary button_effect_1_darker">
               <svg className="fillcolor-white" xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#5f6368"><path d="M120-240v-80h720v80H120Zm0-200v-80h720v80H120Zm0-200v-80h720v80H120Z"/></svg>
@@ -135,7 +154,7 @@ const MenuBar = ({ resetWeek, setPeriod}) => {
             </div>
           </div>
           <div className="div2">
-            <div onClick={()=>setShowSearchField(true)} className="search_icon bgcolor-primary button_effect_1_darker">
+            <div onClick={handleShowSearchField} className="search_icon bgcolor-primary button_effect_1_darker">
               <svg className="fillcolor-white" xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#5f6368"><path d="M380-320q-109 0-184.5-75.5T120-580q0-109 75.5-184.5T380-840q109 0 184.5 75.5T640-580q0 44-14 83t-38 69l224 224q11 11 11 28t-11 28q-11 11-28 11t-28-11L532-372q-30 24-69 38t-83 14Zm0-80q75 0 127.5-52.5T560-580q0-75-52.5-127.5T380-760q-75 0-127.5 52.5T200-580q0 75 52.5 127.5T380-400Z"/></svg>
             </div>
             <div className="bgcolor-primary button_effect_1_darker">
@@ -145,8 +164,9 @@ const MenuBar = ({ resetWeek, setPeriod}) => {
               <svg className="fillcolor-white" xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#5f6368"><path d="M234-276q51-39 114-61.5T480-360q69 0 132 22.5T726-276q35-41 54.5-93T800-480q0-133-93.5-226.5T480-800q-133 0-226.5 93.5T160-480q0 59 19.5 111t54.5 93Zm246-164q-59 0-99.5-40.5T340-580q0-59 40.5-99.5T480-720q59 0 99.5 40.5T620-580q0 59-40.5 99.5T480-440Zm0 360q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Zm0-80q53 0 100-15.5t86-44.5q-39-29-86-44.5T480-280q-53 0-100 15.5T294-220q39 29 86 44.5T480-160Zm0-360q26 0 43-17t17-43q0-26-17-43t-43-17q-26 0-43 17t-17 43q0 26 17 43t43 17Zm0-60Zm0 360Z"/></svg>
             </div>
           </div>
-        </div>}
-      <MonthsPicker />
+        </div>
+        <MonthsPicker />
+        <MonthsSlider changeWeek={changeWeek} state={state} /></>}
     </div>
   )
 }

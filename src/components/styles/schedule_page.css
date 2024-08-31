@@ -4,8 +4,7 @@
   height: 640px;
   width: 360px;
   background-color: #DDECF7;
-  overflow-y: scroll;
-  scrollbar-width: none;
+  overflow-y: hidden;
 }
 
 .schedule_page.side_menu_open {

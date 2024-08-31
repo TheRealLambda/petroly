@@ -5,7 +5,6 @@
   margin-top: -51px;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
   align-items: center;
   overflow-y: hidden;
   border-radius: 20px;
@@ -49,14 +48,39 @@
   align-items: center;
   border-radius: 18px;
 }
+.menu_bar .search_field_options {
+  height: 36px;
+  width: 100%;
+  padding: 0 40px;
+  margin-top: 4px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+}
+.menu_bar .search_field_options .time_constraint {
+  height: 36px;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
+.menu_bar .search_field_options .time_constraint input{
+  width: 72px;
+  height: 24px;
+  border-radius: 5px;
+  border: none;
+  outline: none;
+}
 
 .menu_bar .block_pointer_events {
   z-index: 3;
-  height: 380px;
+  height: 320px;
   width: 360px;
   position: fixed;
   display: none;
-  top: 260px;
+  top: 320px;
   left: 0;
   right: 0;
   margin: 0 auto;

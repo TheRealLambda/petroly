@@ -235,6 +235,14 @@ const SchedulePage = () => {
     setState(newState)
   }
 
+  const changeWeek = async (n) => {
+
+    const events = await loadEvents(n, state.period)
+    const newState = {week: n, period: state.period, events}
+    console.log(newState);
+    setState(newState)
+  }
+
   const resetWeek = async () => {
     const firstDayOfYear = new Date(2024, 1-1, 1)
     const daysUntilFirstSunday = firstDayOfYear.getDay() === 0 ? 0 : 7-firstDayOfYear.getDay()
@@ -347,7 +355,7 @@ const SchedulePage = () => {
           <div>No suitable form were found</div>
         }
       </Modal>
-      <MenuBar resetWeek={resetWeek} setPeriod={setPeriod} />
+      <MenuBar resetWeek={resetWeek} changeWeek={changeWeek} state={state} setPeriod={setPeriod} />
       <TimeTable dotsObject={dotsObject} state={state} setState={setState} setWeek={setWeek} parentState={state} setParentState={setState} modalState={modalState} setModalState={setModalState} action={action} setAction={setAction} setStyle={setStyle} />
     </div>
   )

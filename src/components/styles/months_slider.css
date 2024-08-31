@@ -1,0 +1,37 @@
+.months_slider {
+  height: 40px;
+  width: 100%;
+  margin: 10px 0;
+  padding: 0 8px;
+  display: flex;
+  align-items: center;
+  overflow-x: scroll;
+  overflow-y: hidden;
+  scrollbar-width: none;
+  gap: 8px;
+  flex-shrink: 0;
+}
+.months_slider div {
+  display: flex;
+  gap: 8px;
+}
+.months_slider div div {
+  height: 30px;
+  width: 54px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: inherit;
+  color: inherit;
+  border: 2px solid #f0f6fb7f;
+  border-radius: 8px;
+  flex-shrink: 0;
+}
+.months_slider .year {
+  height: 30px;
+  width: 54px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-shrink: 0;
+}

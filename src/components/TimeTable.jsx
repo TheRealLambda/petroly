@@ -2,8 +2,6 @@ import { useEffect, useRef, useState } from "react"
 import "./styles/time_table.css"
 import "./styles/week_picker.css"
 import CalendarEvent from "./CalendarEvent"
-import Modal from "./Modal"
-import axios from "axios"
 
 const TimeTable = ({ dotsObject, state, setState, setWeek, setModalState, action, setAction, setStyle }) => {
 
@@ -283,6 +281,7 @@ const TimeTable = ({ dotsObject, state, setState, setWeek, setModalState, action
 
   useEffect(() => {
 
+    if(!document.getElementById("monthText")) return
     document.getElementById("monthText").innerText = (() => {
       const now = new Date()
       const firstDayOfYear = new Date(now.getFullYear(), 0, 1)
@@ -290,7 +289,7 @@ const TimeTable = ({ dotsObject, state, setState, setWeek, setModalState, action
       const toFirstSundayOfYear = day === 0 ? 0 : 7 - day
       const day1 = new Date(now.getFullYear(), 0, 1+toFirstSundayOfYear+(state.week)*(state.period===5?7:state.period))
       const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
-      if(state.week > -1) { 
+      if(state.week > -1 && state.week < 52) { 
         return months[day1.getMonth()]
       } else {
         return months[day1.getMonth()].substring(0, 3)+" "+day1.getFullYear()

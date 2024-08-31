@@ -3,6 +3,6 @@ import "./styles/months_picker.css"
 export default function MonthsPicker() {
 
   return (
-    <div style={{height: "200px"}} className="months_picker">hello</div>
+    <div className="months_picker color-white text-16-medium">Under Construction</div>
   )
 }
