@@ -3,10 +3,15 @@ import "./styles/menu_bar.css"
 import { useRef, useState } from "react"
 import MonthsPicker from "./MonthsPicker"
 import MonthsSlider from "./MonthsSlider"
+import SearchEventsModal from "./SearchEventsModal"
+import axios from "axios"
 
 const MenuBar = ({ resetWeek, changeWeek, state, setPeriod}) => {
 
   const [showSearchField, setShowSearchField] = useState(false)
+  const [searchStartDate, setSearchStartDate] = useState(null)
+  const [searchEndDate, setSearchEndDate] = useState(null)
+  const [searchEventsResult, setSearchEventsResult] = useState([])
   const menuBar = useRef(null)
   const monthButtonArrow = useRef(null)
   
@@ -73,8 +78,16 @@ const MenuBar = ({ resetWeek, changeWeek, state, setPeriod}) => {
     }
   }
 
-  const searchEvents = () => {
-    console.log("searching...");
+  const searchEvents = async () => {
+    const body = {
+      search_text: document.getElementById("searchText").value,
+      start_time: searchStartDate,
+      end_time: searchEndDate
+    }
+    const result = await axios.post("http://localhost:3001/api/events/search", body)
+    setSearchEventsResult(result.data)
+    console.log(result.data);
+    document.getElementById("searchEventsModal").classList.add("show")
   }
 
   const handleShowSearchField = () => {
@@ -128,18 +141,19 @@ const MenuBar = ({ resetWeek, changeWeek, state, setPeriod}) => {
       <div onClick={()=>closeMonthsPicker()} id="blockPointerEvents" className="block_pointer_events"></div>
         {showSearchField ? 
           <>
+            <SearchEventsModal searchResult={searchEventsResult} />
             <div className="events_search_field">
               <div onClick={handleCloseSearchField} className="close_button bgcolor-primary button_effect_1_darker">
                 <svg className="fillcolor-white" xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#5f6368"><path d="M480-424 284-228q-11 11-28 11t-28-11q-11-11-11-28t11-28l196-196-196-196q-11-11-11-28t11-28q11-11 28-11t28 11l196 196 196-196q11-11 28-11t28 11q11 11 11 28t-11 28L536-480l196 196q11 11 11 28t-11 28q-11 11-28 11t-28-11L480-424Z"/></svg>
               </div>
-              <input className="bgcolor-primary color-white text-14-medium" type="text" placeholder="search for events"/>
+              <input id="searchText" className="bgcolor-primary color-white text-14-medium" type="text" placeholder="search for events"/>
               <div onClick={searchEvents} className="search_button bgcolor-primary button_effect_1_darker">
                 <svg className="fillcolor-white" xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#5f6368"><path d="M380-320q-109 0-184.5-75.5T120-580q0-109 75.5-184.5T380-840q109 0 184.5 75.5T640-580q0 44-14 83t-38 69l224 224q11 11 11 28t-11 28q-11 11-28 11t-28-11L532-372q-30 24-69 38t-83 14Zm0-80q75 0 127.5-52.5T560-580q0-75-52.5-127.5T380-760q-75 0-127.5 52.5T200-580q0 75 52.5 127.5T380-400Z"/></svg>
               </div>
             </div>
             <div className="search_field_options">
               <div className="time_constraint color-white text-14-medium">
-                <span>Between</span><input type="date" /><span>and</span><input type="date" />
+                <span>Between</span><input onChange={(e)=>setSearchStartDate(new Date(e.target.value))} type="date" /><span>and</span><input onChange={(e)=>setSearchEndDate(new Date(e.target.value))} type="date" />
               </div>
             </div>
           </> : 
