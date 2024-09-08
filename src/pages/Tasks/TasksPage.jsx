@@ -1,79 +1,63 @@
 import { useEffect, useState } from "react"
-import NavBar from "./NavBar"
+import NavBar from "../../components/NavBar"
 import "./styles/tasks_page.css"
 import "./styles/week_picker2.css"
 import axios from "axios"
+import { getTasksCollections, postTasksCollection } from "../../services/tasksCollections"
+import { postTask } from "../../services/tasks"
+import Modal from "../../components/Modal"
 const TasksPage = () => {
 
-  let now = new Date();
-  now.setHours(0, 0, 0, 0)
-  // now.setDate(now.getDate()+1+4)
-  console.log(now.getDay());
-  let onejan = new Date(now.getFullYear(), 0, 1);
-  onejan.setHours(0, 0, 0, 0)
-  let week1 = Math.floor((((now.getTime() - onejan.getTime()) / 86400000) + 1) / 7)
-  
-  console.log("today?", (((now.getTime() - onejan.getTime()) / 86400000) + 1) % 7);
-  console.log("week?", Math.floor((((now.getTime() - onejan.getTime()) / 86400000)  + 1) / 7));
-  // console.log(onejan.getDay());
+  const [state, setState] = useState({week: 0, day: 0, tasksCollections: []})
+  const [modalState, setModalState] = useState("closed")
+  const [action, setAction] = useState({type: "view", commit: false, task: null, options: {}})
 
-  const [date, setDate] = useState(null)
+  const [collectionId, setCollectionId] = useState(null)
+  const [collectionName, setCollectionName] = useState(null)
+  const [taskTitle, setTaskTitle] = useState(null)
+  console.log(action);
 
-  const [week, setWeek] = useState(week1)
 
-  const [collections, setCollections] = useState([])
+  useEffect(() => {
+    async function initializeState() {
+      const result = await getTasksCollections()
+        const firstDayOfYear = new Date(2024, 1-1, 1)
+        const daysUntilFirstSunday = firstDayOfYear.getDay() === 0 ? 0 : 7-firstDayOfYear.getDay()
+        
+        //get first sunday after first day of year. Calculations will use this as the first day of the year
+        const firstSundayOfYear = new Date(firstDayOfYear)
+        firstSundayOfYear.setDate(firstSundayOfYear.getDate() + daysUntilFirstSunday)
+        
+        const currentDate = new Date()
+        const numberOfDays = (currentDate - firstSundayOfYear) / (1*24*60*60*1000)
+      
+        const week = Math.floor(numberOfDays / (state.period===5?7:state.period))
+        // const events = await loadEvents(week, state.period)
+
+        const day = new Date()
+        day.setHours(0, 0, 0, 0)
+        const newState = {week, day, tasksCollections: result.data}
+        setState(newState)
+    }
+    initializeState()
+  }, [])
+
+
+
+  const handleCollection = async () => {
+    const result = await postTasksCollection({name: collectionName})
+    console.log(result.data);
+  }
+
+  const handleTask = async () => {
+    const result = postTask({title: taskTitle, tasksCollectionId: collectionId})
+    console.log(result.data);
+  }
 
   const hideSideMenu = (event) =>{
     const page = document.getElementsByClassName("tasks_page")[0]
     page.classList.remove("side_menu_open")
     document.getElementById("menu_cover").style.height = "0px"
-  }
-
-  const handleTask = async (e) => {
-    e.preventDefault()
-    const form = document.getElementById("taskForm")
-    const title = form.elements["title"].value
-    const categoryId = form.elements["collection"].value
-    // const now = new Date()
-    // const onejan = new Date (now.getFullYear(), 0, 1)
-    // const dayOfWeek = Math.ceil((now.getTime() - onejan.getTime()) / 86400000)
-    // console.log("dayOfWeek?", dayOfWeek % 7);
-    if(document.querySelector(".week_day.chosen_day")) {
-      const date = document.querySelector(".week_day.chosen_day").getAttribute("data-date")
-      const result = await axios.post("http://localhost:3001/api/tasks", {title, categoryId, date})
-      const newCollections = collections.map(collection => {
-        console.log("aiukdsgbfejsbauiakjbfgnsvbdbiakjdbch:", collection)
-        if(collection._id === categoryId) {
-          return result.data
-        } else {
-          return collection
-        }
-      })
-      setCollections(newCollections)
-    } else {
-
-      const result = await axios.post("http://localhost:3001/api/tasks", {title, categoryId})
-      const newCollections = collections.map(collection => {
-        console.log("aiukdsgbfejsbauiakjbfgnsvbdbiakjdbch:", collection)
-        if(collection._id === categoryId) {
-          return result.data
-        } else {
-          return collection
-        }
-      })
-      setCollections(newCollections)
-    }
-  }
-
-  const handleCollection = async(e) => {
-    e.preventDefault()
-    const form = document.getElementById("collectionForm")
-    const name = form.elements["name"].value
-    const result = await axios.post("http://localhost:3001/api/categories", {name})
-    const newCollections = await axios.get("http://localhost:3001/api/tasks")
-    setCollections(newCollections.data)
-    
-    console.log(form.elements["name"].value);
   }
 
   const expandCollection = (e) => {
@@ -90,190 +74,25 @@ const TasksPage = () => {
     }
   }
 
-  let timeout = null
-  const test = (e) => {
-    const modal = document.getElementById("eventCreateModel")
-    if(timeout !== null) {
-      clearTimeout(timeout)
-    }
-    timeout = setTimeout(()=>{
-      console.log("SCROLLING");
-      modal.removeEventListener("scroll", test)
-      if(modal.firstElementChild.getBoundingClientRect().top > 300 && modal.firstElementChild.getBoundingClientRect().top < 600) {  
-        modal.scrollTo({top: 100, behavior: "smooth"})
-      } else if (modal.firstElementChild.getBoundingClientRect().top < 400) {
-        modal.scrollTo({top: 640, behavior: "smooth"})
-      } else if (modal.firstElementChild.getBoundingClientRect().top > 600) {
-        console.log("REMOVE MODAL");
-        modal.scrollTo({top: 0, behavior: "instant"})
-        modal.style.display = "none"
-      }
-      modal.addEventListener("scroll", test)
-    }, 100)
+  const openTask = (e) => {
+    setModalState("open")
+    console.log(state.tasksCollections);
+    setAction({type: "view", commit: false, task: state.tasksCollections.flatMap(c=>c.tasks).find(t=>t._id===e.currentTarget.getAttribute("data-id"))})
   }
 
-  const openTask = () => {
-    console.log("openTask()");
-    const modal = document.getElementById("eventCreateModel")
-    console.log(modal);
-    modal.style.display = "block"
-    modal.scrollTo({top: 100, behavior: "smooth"})
-
-    modal.removeEventListener("Scroll", test)
-    modal.addEventListener("scroll", test)
-  }
-  const closeTask = (e) => {
-    e.stopPropagation()
-    console.log("closeTask()")
-    e.currentTarget.scrollTo({top: 0, behavior: "smooth"})
-    setTimeout(() => {
-      document.getElementById("eventCreateModel").style.display = "none"
-    }, 500)
+  const closeTask = () => {
+    setModalState("closed")
   }
 
-  let check = false
-  const handleScroll = (event) => {
-    const first = document.getElementById("first")
-    const offsetLeft = first.getBoundingClientRect().left-document.getElementsByClassName("tasks_page")[0].offsetLeft
-    if(!check && offsetLeft > -5 && offsetLeft < 5) {
-      check = true
-      document.getElementById("week_picker_wrapper").classList.add("lock_scroll")  
-      setTimeout(() =>{
-        setWeek(week => week-1)
-        setTimeout(() => {
-        document.getElementById("week_picker_wrapper").classList.remove("lock_scroll") 
-        // document.getElementById("week_picker_wrapper").scrollTo({ behavior: "instant", left: 360})
-        }, 50)
-      }, 450)
-    }
-    const last = document.getElementById("last")
-    const offsetRight = last.getBoundingClientRect().left-document.getElementsByClassName("tasks_page")[0].getBoundingClientRect().left
-    if(!check && offsetRight > -5 && offsetRight < 5) {
-      check = true
-      document.getElementById("week_picker_wrapper").classList.add("lock_scroll")  
-      setTimeout(() =>{
-        setWeek(week => week+1)
-        setTimeout(() => {
-        document.getElementById("week_picker_wrapper").classList.remove("lock_scroll") 
-        // document.getElementById("week_picker_wrapper").scrollTo({ behavior: "instant", left: 360})
-        }, 50)
-      },450)
-    }
-  }
-
-  const selectDay = async(e) => {
-    if(e.currentTarget.classList.contains("chosen_day")) {
-      e.currentTarget.classList.remove("chosen_day")
-      const result = await axios.get("http://localhost:3001/api/tasks")
-      setCollections(result.data)
-    } else {
-      Array.from(e.currentTarget.parentNode.children).forEach(child => {child.classList.remove("chosen_day")})
-      e.currentTarget.classList.add("chosen_day")
-      const result = await axios.get("http://localhost:3001/api/tasks?date="+e.currentTarget.getAttribute("data-date"))
-      setCollections(result.data)
-    }
-  }
-
-  useEffect(() => {
-    async function fetchData() {
-      const result = await axios.get("http://localhost:3001/api/tasks")
-      console.log(result.data);
-      setCollections(result.data)
-    }
-    fetchData()
-
-    // console.log("left:", document.getElementById("active").getBoundingClientRect().left);
-    
-  }, [])
-
-  useEffect(() => {
-      Array.from(document.getElementsByClassName("top_section")).forEach((e) => {
-        const container = e.parentNode
-        if(container.classList.contains("open")) {
-          container.style.height = container.scrollHeight+"px"
-        }
-      })
-
-  }, [collections])
-
-  useEffect(() => {
-
-    document.getElementById("monthText").innerText = (() => {
-      const now = new Date()
-      const firstDayOfYear = new Date(now.getFullYear(), 0, 1)
-      const day = firstDayOfYear.getDay()
-      const toFirstSundayOfYear = -day
-      const sunday = new Date(now.getFullYear(), 0, 1+toFirstSundayOfYear+(week)*7)
-      const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
-      if(week > 0) { 
-        return months[sunday.getMonth()]
-      } else {
-        return months[sunday.getMonth()].substring(0, 3)+" "+sunday.getFullYear()
-      }
-    })()
-    
-    document.getElementById("week_picker_wrapper").scrollTo({ behavior: "instant", left: 360})
-    document.getElementById("week_picker_wrapper").addEventListener("scroll", handleScroll);
-    // console.log("left:", document.getElementById("first ").getBoundingClientRect().left-document.getElementsByClassName("tasks_page")[0].offsetLeft);
-    
-    return () => {
-      if(document.getElementById("week_picker_wrapper")) {
-        document.getElementById("week_picker_wrapper").removeEventListener("scroll", handleScroll)
-      }
-    }
-  }, [week])
-
-  const prevWeekDays = () => {
-    const now = new Date()
-    const firstDayOfYear = new Date(now.getFullYear(), 0, 1)
-    const day = firstDayOfYear.getDay()
-    const toFirstSundayOfYear = -day
-    const sunday = new Date(now.getFullYear(), 0, 1+toFirstSundayOfYear+(week-1)*7)
-    const monday = new Date(now.getFullYear(), 0, 1+toFirstSundayOfYear+(week-1)*7+1)
-    const tuesday = new Date(now.getFullYear(), 0, 1+toFirstSundayOfYear+(week-1)*7+2)
-    const wednesday = new Date(now.getFullYear(), 0, 1+toFirstSundayOfYear+(week-1)*7+3)
-    const thursday = new Date(now.getFullYear(), 0, 1+toFirstSundayOfYear+(week-1)*7+4)
-    const friday = new Date(now.getFullYear(), 0, 1+toFirstSundayOfYear+(week-1)*7+5)
-    const saturday = new Date(now.getFullYear(), 0, 1+toFirstSundayOfYear+(week-1)*7+6)
-    return [sunday, monday, tuesday, wednesday, thursday, friday, saturday]
-  }
-  const activeWeekDays = () => {
-    const now = new Date()
-    const firstDayOfYear = new Date(now.getFullYear(), 0, 1)
-    const day = firstDayOfYear.getDay()
-    const toFirstSundayOfYear = -day
-    const sunday = new Date(now.getFullYear(), 0, 1+toFirstSundayOfYear+(week)*7)
-    // console.log(sunday);
-    const monday = new Date(now.getFullYear(), 0, 1+toFirstSundayOfYear+(week)*7+1)
-    const tuesday = new Date(now.getFullYear(), 0, 1+toFirstSundayOfYear+(week)*7+2)
-    const wednesday = new Date(now.getFullYear(), 0, 1+toFirstSundayOfYear+(week)*7+3)
-    const thursday = new Date(now.getFullYear(), 0, 1+toFirstSundayOfYear+(week)*7+4)
-    const friday = new Date(now.getFullYear(), 0, 1+toFirstSundayOfYear+(week)*7+5)
-    const saturday = new Date(now.getFullYear(), 0, 1+toFirstSundayOfYear+(week)*7+6)
-    return [sunday, monday, tuesday, wednesday, thursday, friday, saturday]
-  }
-  console.log(activeWeekDays()[0]);
-  const nextWeekDays = () => {
-    const now = new Date()
-    const firstDayOfYear = new Date(now.getFullYear(), 0, 1)
-    const day = firstDayOfYear.getDay()
-    const toFirstSundayOfYear = -day
-    const sunday = new Date(now.getFullYear(), 0, 1+toFirstSundayOfYear+(week+1)*7)
-    const monday = new Date(now.getFullYear(), 0, 1+toFirstSundayOfYear+(week+1)*7+1)
-    const tuesday = new Date(now.getFullYear(), 0, 1+toFirstSundayOfYear+(week+1)*7+2)
-    const wednesday = new Date(now.getFullYear(), 0, 1+toFirstSundayOfYear+(week+1)*7+3)
-    const thursday = new Date(now.getFullYear(), 0, 1+toFirstSundayOfYear+(week+1)*7+4)
-    const friday = new Date(now.getFullYear(), 0, 1+toFirstSundayOfYear+(week+1)*7+5)
-    const saturday = new Date(now.getFullYear(), 0, 1+toFirstSundayOfYear+(week+1)*7+6)
-    return [sunday, monday, tuesday, wednesday, thursday, friday, saturday]
-  }
-
-  console.log(collections);
   return (
     <div className="tasks_page">
       <div onClick={hideSideMenu} id="menu_cover"></div>
+      <Modal state={modalState}>
+        <h1>Header</h1>
+        {action.task && <div>{action.task.title}</div>}
+      </Modal>
       <NavBar />
-      <div className="top_nav">
+      {/* <div className="top_nav">
         <div className="div1">
           <svg className="fillcolor-accent" xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#5f6368"><path d="M120-240v-80h720v80H120Zm0-200v-80h720v80H120Zm0-200v-80h720v80H120Z"/></svg>
           <h4 className="color-accent">Today, <span id="monthText">June</span></h4>
@@ -282,8 +101,8 @@ const TasksPage = () => {
           <svg className="fillcolor-accent" xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#5f6368"><path d="M200-280q-33 0-56.5-23.5T120-360v-240q0-33 23.5-56.5T200-680h560q33 0 56.5 23.5T840-600v240q0 33-23.5 56.5T760-280H200Zm0-80h560v-240H200v240Zm-41-400q-17 0-28-11.5T120-800q0-17 11.5-28.5T160-840h641q17 0 28 11.5t11 28.5q0 17-11.5 28.5T800-760H159Zm0 640q-17 0-28-11.5T120-160q0-17 11.5-28.5T160-200h641q17 0 28 11.5t11 28.5q0 17-11.5 28.5T800-120H159Zm41-480v240-240Z"/></svg>
           <svg className="fillcolor-accent" xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#5f6368"><path d="M480-160q-33 0-56.5-23.5T400-240q0-33 23.5-56.5T480-320q33 0 56.5 23.5T560-240q0 33-23.5 56.5T480-160Zm0-240q-33 0-56.5-23.5T400-480q0-33 23.5-56.5T480-560q33 0 56.5 23.5T560-480q0 33-23.5 56.5T480-400Zm0-240q-33 0-56.5-23.5T400-720q0-33 23.5-56.5T480-800q33 0 56.5 23.5T560-720q0 33-23.5 56.5T480-640Z"/></svg>
         </div>
-      </div>
-      <div id="week_picker_wrapper" className="week_picker_wrapper">
+      </div> */}
+      {/* <div id="week_picker_wrapper" className="week_picker_wrapper">
         <div id="first" className="week_picker">
           <div className="flex_container">
             <div className="week_day" data-date={prevWeekDays()[0].getFullYear()+"-"+(prevWeekDays()[0].getMonth())+"-"+prevWeekDays()[0].getDate()}>
@@ -464,9 +283,9 @@ const TasksPage = () => {
             </div>
           </div>
         </div>
-      </div>
+      </div> */}
       <div className="main">
-        {collections && collections.map((collection, i) => {
+        {state.tasksCollections && state.tasksCollections.map((collection, i) => {
           console.log(i, collection);
           return (
           <div key={collection._id} className="container bgcolor-white">
@@ -482,7 +301,7 @@ const TasksPage = () => {
             </div>
             {collection.tasks && collection.tasks.map(task => {
               return (
-                <div key={task._id} onClick={openTask} className="task">
+                <div key={task._id} onClick={openTask} className="task" data-id={task._id}>
                   <div onClick={closeTask} id="eventCreateModel" className="event_create_model">
                     <div className="content">
                       <div className="scroll">
@@ -499,31 +318,22 @@ const TasksPage = () => {
             })}
           </div>)
         })}
-        <form id="taskForm" onSubmit={handleTask}>
+        <form onSubmit={handleTask}>
           Create Task
-          title<input name="title"/><br/>
-          {collections.map((collection, i) => {
-            if(i === 0) {
-              return (
-                <div>
-                  <input type="radio" name="collection" value={collection._id} defaultChecked/>
-                  <label>{collection.name}</label>
-                </div>
-              )
-            } else {
-              return (
-                <div>
-                  <input type="radio" name="collection" value={collection._id}/>
-                  <label>{collection.name}</label>
-                </div>
-              )
-            }
+          title<input name="title" onChange={(e)=>setTaskTitle(e.target.value)} value={taskTitle} /><br/>
+          {state.tasksCollections.map((collection, i) => {
+            return (
+              <div>
+                <input type="radio"  onChange={()=>setCollectionId(collection._id)}/>
+                <label>{collection.name}</label>
+              </div>
+            )
           })}
           
         </form>
-        <form id="collectionForm" onSubmit={handleCollection}>
+        <form onSubmit={handleCollection}>
           Create Collection
-          name<input name="name" />
+          name<input type="text" onChange={(e)=>setCollectionName(e.target.value)} value={collectionName} />
         </form>
       </div>
     </div>
