@@ -6,6 +6,8 @@ import axios from "axios"
 import { getTasksCollections, postTasksCollection } from "../../services/tasksCollections"
 import { postTask } from "../../services/tasks"
 import Modal from "../../components/Modal"
+import ShowTaskForm from "./ShowTaskForm"
+import EditTaskForm from "./EditTaskForm"
 const TasksPage = () => {
 
   const [state, setState] = useState({week: 0, day: 0, tasksCollections: []})
@@ -15,7 +17,6 @@ const TasksPage = () => {
   const [collectionId, setCollectionId] = useState(null)
   const [collectionName, setCollectionName] = useState(null)
   const [taskTitle, setTaskTitle] = useState(null)
-  console.log(action);
 
 
   useEffect(() => {
@@ -46,12 +47,10 @@ const TasksPage = () => {
 
   const handleCollection = async () => {
     const result = await postTasksCollection({name: collectionName})
-    console.log(result.data);
   }
 
   const handleTask = async () => {
     const result = postTask({title: taskTitle, tasksCollectionId: collectionId})
-    console.log(result.data);
   }
 
   const hideSideMenu = (event) =>{
@@ -76,7 +75,6 @@ const TasksPage = () => {
 
   const openTask = (e) => {
     setModalState("open")
-    console.log(state.tasksCollections);
     setAction({type: "view", commit: false, task: state.tasksCollections.flatMap(c=>c.tasks).find(t=>t._id===e.currentTarget.getAttribute("data-id"))})
   }
 
@@ -87,9 +85,12 @@ const TasksPage = () => {
   return (
     <div className="tasks_page">
       <div onClick={hideSideMenu} id="menu_cover"></div>
-      <Modal state={modalState}>
-        <h1>Header</h1>
-        {action.task && <div>{action.task.title}</div>}
+      <Modal state={modalState} setState={setModalState}>
+        {action.type === "view" && action.task ?
+         <ShowTaskForm task={action.task} closeModal={()=>setModalState("closed")} setAction={setAction}/> :
+         action.type === "edit" ? 
+         <EditTaskForm task={action.task} closeModal={()=>setModalState("closed")}/> :
+         <div>No suitable form found</div>}
       </Modal>
       <NavBar />
       {/* <div className="top_nav">
@@ -286,7 +287,6 @@ const TasksPage = () => {
       </div> */}
       <div className="main">
         {state.tasksCollections && state.tasksCollections.map((collection, i) => {
-          console.log(i, collection);
           return (
           <div key={collection._id} className="container bgcolor-white">
             <div onClick={expandCollection} className="top_section">

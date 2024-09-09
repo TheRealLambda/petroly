@@ -66,7 +66,7 @@ const Modal = ({ state, setState, options, children }) => {
     container.classList.remove("open")
     container.classList.add("closed")
     modal.current.classList.remove("darken")
-    scrollContainer ? scrollContainer.classList.add("no_scroll") : 0 //prevent content to be scrolled
+    scrollContainer && scrollContainer.classList ? scrollContainer.classList.add("no_scroll") : 0 //prevent content to be scrolled
   }
 
 
@@ -283,7 +283,8 @@ const Modal = ({ state, setState, options, children }) => {
   useEffect(() => {
     
     container = modal.current.firstElementChild
-    scrollContainer = modal.current.firstElementChild.firstElementChild.children[2] || null
+    scrollContainer = document.getElementsByClassName("modalScrollContainer")[0]
+    console.log("[Modal | scrollContainer]", scrollContainer);
     
     modal.current.addEventListener("pointerdown", pointerDown)
     modal.current.addEventListener("pointermove", pointerMove)

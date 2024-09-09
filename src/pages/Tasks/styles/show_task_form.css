@@ -1,0 +1,80 @@
+.show_task_form {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  border-radius: 20px;
+}
+
+.show_task_form .top {
+  width: 100%;
+  height: 60px;
+  display: flex;
+  justify-content: end;
+  gap: 10px;
+}
+
+.show_task_form .top div {
+  width: 36px;
+  height: 36px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 18px;
+}
+
+.show_task_form .top div svg {
+  fill: #023047cc;
+}
+.show_task_form .top .close_button {
+  margin-top: 14px;
+  margin-left: 14px;
+  margin-right: auto;
+}
+
+.show_task_form .top .edit_button {
+  margin-top: 14px;
+}
+
+.show_task_form .top .more_button {
+  margin-top: 14px;
+  margin-right: 14px;
+}
+
+.show_task_form .title {
+  margin: 20px;
+  margin-left: 14px;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.show_task_form .title .check_circle {
+  width: 36px;
+  height: 36px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 18px; 
+}
+
+.show_task_form .title .task_title.line_through {
+  opacity: 0.5;
+  text-decoration: line-through;
+}
+
+.show_task_form .description {
+  margin: 20px;
+  margin-top: 0px;
+}
+
+.show_task_form .drag_indicator {
+  width: 55px;
+  height: 3px;
+  position: absolute;
+  left: 0;
+  right: 0;
+  margin: 10px auto;
+  margin-bottom: 0;
+  border-radius: 2px;
+}

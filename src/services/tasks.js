@@ -11,6 +11,11 @@ export async function postTask(body) {
   return await axios.post("http://localhost:3001/api/tasks", body, config)
 }
 
+export async function patchTask(body, id) {
+  const config = {headers: {Authorization: getToken()}}
+  return await axios.patch("http://localhost:3001/api/tasks/"+id, body, config)
+}
+
 // export async function deleteActiveCourse(id) {
 //   const config = {headers: {Authorization: getToken()}}
 //   return await axios.delete("http://localhost:3001/api/active-courses/"+id, config)
