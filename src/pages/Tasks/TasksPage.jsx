@@ -8,6 +8,8 @@ import { postTask } from "../../services/tasks"
 import Modal from "../../components/Modal"
 import ShowTaskForm from "./ShowTaskForm"
 import EditTaskForm from "./EditTaskForm"
+import SideMenu from "./SideMenu"
+import CreateCollectionForm from "./CreateCollectionForm"
 const TasksPage = () => {
 
   const [state, setState] = useState({week: 0, day: 0, tasksCollections: []})
@@ -15,8 +17,9 @@ const TasksPage = () => {
   const [action, setAction] = useState({type: "view", commit: false, task: null, options: {}})
 
   const [collectionId, setCollectionId] = useState(null)
-  const [collectionName, setCollectionName] = useState(null)
   const [taskTitle, setTaskTitle] = useState(null)
+
+  const [showCreateCollectionForm, setShowCreateCollectionForm] = useState(false)
 
 
   useEffect(() => {
@@ -43,11 +46,6 @@ const TasksPage = () => {
     initializeState()
   }, [])
 
-
-
-  const handleCollection = async () => {
-    const result = await postTasksCollection({name: collectionName})
-  }
 
   const handleTask = async () => {
     const result = postTask({title: taskTitle, tasksCollectionId: collectionId})
@@ -82,6 +80,18 @@ const TasksPage = () => {
     setModalState("closed")
   }
 
+  const openSideMenu = (e) => {
+    const sideMenu = document.getElementById("sideMenu")
+    sideMenu.classList.add("open")
+  }
+
+  const openCreateCollectionForm = () => {
+    setShowCreateCollectionForm(true)
+  }
+
+  const updateCollections = (newCollection) => {
+    setState({week: state.week, day: state.day, tasksCollections: state.tasksCollections.concat(newCollection)})
+  }
   return (
     <div className="tasks_page">
       <div onClick={hideSideMenu} id="menu_cover"></div>
@@ -92,17 +102,27 @@ const TasksPage = () => {
          <EditTaskForm task={action.task} closeModal={()=>setModalState("closed")}/> :
          <div>No suitable form found</div>}
       </Modal>
+      <SideMenu />
+      {showCreateCollectionForm && <CreateCollectionForm updateCollections={updateCollections} closeForm={()=>setShowCreateCollectionForm(false)}/>}
       <NavBar />
-      {/* <div className="top_nav">
+      <div className="top_nav">
         <div className="div1">
-          <svg className="fillcolor-accent" xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#5f6368"><path d="M120-240v-80h720v80H120Zm0-200v-80h720v80H120Zm0-200v-80h720v80H120Z"/></svg>
-          <h4 className="color-accent">Today, <span id="monthText">June</span></h4>
+          <div onClick={openSideMenu} className="bgcolor-BG button_effect_1_dark">
+            <svg className="fillcolor-accent" xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#5f6368"><path d="M120-240v-80h720v80H120Zm0-200v-80h720v80H120Zm0-200v-80h720v80H120Z"/></svg>
+          </div>
+          <div className="bgcolor-BG button_effect_1_dark">
+            <h4 className="color-accent">Today, <span id="monthText">June</span></h4>
+          </div>
         </div>
         <div className="div2">
-          <svg className="fillcolor-accent" xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#5f6368"><path d="M200-280q-33 0-56.5-23.5T120-360v-240q0-33 23.5-56.5T200-680h560q33 0 56.5 23.5T840-600v240q0 33-23.5 56.5T760-280H200Zm0-80h560v-240H200v240Zm-41-400q-17 0-28-11.5T120-800q0-17 11.5-28.5T160-840h641q17 0 28 11.5t11 28.5q0 17-11.5 28.5T800-760H159Zm0 640q-17 0-28-11.5T120-160q0-17 11.5-28.5T160-200h641q17 0 28 11.5t11 28.5q0 17-11.5 28.5T800-120H159Zm41-480v240-240Z"/></svg>
-          <svg className="fillcolor-accent" xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#5f6368"><path d="M480-160q-33 0-56.5-23.5T400-240q0-33 23.5-56.5T480-320q33 0 56.5 23.5T560-240q0 33-23.5 56.5T480-160Zm0-240q-33 0-56.5-23.5T400-480q0-33 23.5-56.5T480-560q33 0 56.5 23.5T560-480q0 33-23.5 56.5T480-400Zm0-240q-33 0-56.5-23.5T400-720q0-33 23.5-56.5T480-800q33 0 56.5 23.5T560-720q0 33-23.5 56.5T480-640Z"/></svg>
+          <div className="bgcolor-BG button_effect_1_dark">
+            <svg className="fillcolor-accent" xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#5f6368"><path d="M200-280q-33 0-56.5-23.5T120-360v-240q0-33 23.5-56.5T200-680h560q33 0 56.5 23.5T840-600v240q0 33-23.5 56.5T760-280H200Zm0-80h560v-240H200v240Zm-41-400q-17 0-28-11.5T120-800q0-17 11.5-28.5T160-840h641q17 0 28 11.5t11 28.5q0 17-11.5 28.5T800-760H159Zm0 640q-17 0-28-11.5T120-160q0-17 11.5-28.5T160-200h641q17 0 28 11.5t11 28.5q0 17-11.5 28.5T800-120H159Zm41-480v240-240Z"/></svg>
+          </div>
+          <div onClick={openCreateCollectionForm} className="bgcolor-BG button_effect_1_dark">
+            <svg className="fillcolor-accent" xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#5f6368"><path d="M480-160q-33 0-56.5-23.5T400-240q0-33 23.5-56.5T480-320q33 0 56.5 23.5T560-240q0 33-23.5 56.5T480-160Zm0-240q-33 0-56.5-23.5T400-480q0-33 23.5-56.5T480-560q33 0 56.5 23.5T560-480q0 33-23.5 56.5T480-400Zm0-240q-33 0-56.5-23.5T400-720q0-33 23.5-56.5T480-800q33 0 56.5 23.5T560-720q0 33-23.5 56.5T480-640Z"/></svg>
+          </div>
         </div>
-      </div> */}
+      </div>
       {/* <div id="week_picker_wrapper" className="week_picker_wrapper">
         <div id="first" className="week_picker">
           <div className="flex_container">
@@ -330,10 +350,6 @@ const TasksPage = () => {
             )
           })}
           
-        </form>
-        <form onSubmit={handleCollection}>
-          Create Collection
-          name<input type="text" onChange={(e)=>setCollectionName(e.target.value)} value={collectionName} />
         </form>
       </div>
     </div>

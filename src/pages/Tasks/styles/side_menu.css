@@ -1,0 +1,62 @@
+ .side_menu {
+  z-index: 3;
+  visibility: hidden;
+  width: 360px;
+  height: 640px;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  margin: 0 auto;
+  overflow: hidden;
+}
+ .side_menu .wrapper {
+  width: 100%;
+  height: 100%;
+  background-color: #0230477f;
+  /* background-color: #00000022; */
+}
+ .side_menu.open {
+  visibility: visible;
+}
+ .side_menu .wrapper .menu {
+  width: 240px;
+  height: 100%;
+  padding-top: 40px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  transform: translateX(-240px);
+  transition: all 0.2s ease-out;
+}
+ .side_menu.open .wrapper .menu {
+  transform: translateX(0px)
+}
+ .side_menu .wrapper .menu div {
+  height: 36px;
+  padding: 0 14px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.side_menu .wrapper .menu div.bottom_buttons {
+  margin-top: auto;
+  margin-bottom: 30px;
+  display: flex;
+  justify-content: space-between;
+}
+.side_menu .wrapper .menu div.bottom_buttons div {
+  padding: 0;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+ /* .side_menu .wrapper .menu .separator {
+  width: 240px;
+  height: 2px;
+  margin-top: 10px;
+  margin-bottom: 10px;
+  opacity: 0.5;
+} */

@@ -4,9 +4,7 @@
   height: 640px;
   width: 360px;
   background-color: #DDECF7;
-  overflow-y: scroll;
-  scrollbar-width: none;
-
+  overflow-y: hidden;
 }
 
 .tasks_page.side_menu_open {
@@ -14,10 +12,6 @@
   margin-left: 305px;
   margin-top: 50px;
   border-radius: 20px;
-}
-
-.tasks_page::-webkit-scrollbar {
-  display: none;
 }
 
 .tasks_page .top_nav {
@@ -33,10 +27,38 @@
   flex-direction: row;
   gap: 10px;
 }
+.tasks_page .top_nav .div1 div {
+  width: 36px;
+  height: 36px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 18px; 
+}
+
+.tasks_page .top_nav .div1 div:last-child {
+  width: auto;
+  height: 36px;
+  padding: 0 4px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 18px; 
+}
+
 .tasks_page .top_nav .div2 {
   display: flex;
   flex-direction: row;
-  gap: 20px;
+  gap: 10px;
+}
+
+.tasks_page .top_nav .div2 div {
+  width: 36px;
+  height: 36px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 18px; 
 }
 
 .tasks_page .week_selector {
@@ -89,12 +111,16 @@
   height: 28px;
 }
 .tasks_page .main {
-  margin-top: 20px;
-  margin-bottom: 100px;
+  height: 574px;
+  margin-top: 10px;
+  padding-top: 5px;
+  padding-bottom: 100px;
   display: flex;
   flex-direction: column;
-  margin-right: 10px;
-  margin-left: 10px;
+  overflow-y: scroll;
+  scrollbar-width: none;
+  padding-right: 10px;
+  padding-left: 10px;
   gap: 10px;
 }
 .tasks_page .main .container {
@@ -103,6 +129,7 @@
   height: 40px;
   display: flex;
   flex-direction: column;
+  flex-shrink: 0;
   gap: 10px;
   padding: 0 10px;
   border-radius: 10px;
