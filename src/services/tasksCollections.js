@@ -1,9 +1,9 @@
 import axios from "axios";
 import { getToken } from "./token";
 
-export async function getTasksCollections() {
+export async function getTasksCollections(listId) {
   const config = {headers: {Authorization: getToken()}}
-  return await axios.get("http://localhost:3001/api/tasks-collections", config)
+  return await axios.get("http://localhost:3001/api/tasks-collections?tasksListId="+listId, config)
 }
 
 export async function postTasksCollection(body) {

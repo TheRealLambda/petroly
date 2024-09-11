@@ -10,9 +10,12 @@ import ShowTaskForm from "./ShowTaskForm"
 import EditTaskForm from "./EditTaskForm"
 import SideMenu from "./SideMenu"
 import CreateCollectionForm from "./CreateCollectionForm"
+import CreateListForm from "./CreateListForm"
+import { getTasksList, getTasksLists } from "../../services/tasksLists"
 const TasksPage = () => {
 
-  const [state, setState] = useState({week: 0, day: 0, tasksCollections: []})
+  const [tasksLists, setTasksLists] = useState([])
+  const [state, setState] = useState({week: 0, day: 0, tasksList: {}, tasksCollections: []})
   const [modalState, setModalState] = useState("closed")
   const [action, setAction] = useState({type: "view", commit: false, task: null, options: {}})
 
@@ -20,28 +23,32 @@ const TasksPage = () => {
   const [taskTitle, setTaskTitle] = useState(null)
 
   const [showCreateCollectionForm, setShowCreateCollectionForm] = useState(false)
+  const [showCreateListForm, setShowCreateListForm] = useState(false)
 
 
   useEffect(() => {
     async function initializeState() {
-      const result = await getTasksCollections()
-        const firstDayOfYear = new Date(2024, 1-1, 1)
-        const daysUntilFirstSunday = firstDayOfYear.getDay() === 0 ? 0 : 7-firstDayOfYear.getDay()
-        
-        //get first sunday after first day of year. Calculations will use this as the first day of the year
-        const firstSundayOfYear = new Date(firstDayOfYear)
-        firstSundayOfYear.setDate(firstSundayOfYear.getDate() + daysUntilFirstSunday)
-        
-        const currentDate = new Date()
-        const numberOfDays = (currentDate - firstSundayOfYear) / (1*24*60*60*1000)
+      const firstDayOfYear = new Date(2024, 1-1, 1)
+      const daysUntilFirstSunday = firstDayOfYear.getDay() === 0 ? 0 : 7-firstDayOfYear.getDay()
       
-        const week = Math.floor(numberOfDays / (state.period===5?7:state.period))
-        // const events = await loadEvents(week, state.period)
-
-        const day = new Date()
-        day.setHours(0, 0, 0, 0)
-        const newState = {week, day, tasksCollections: result.data}
-        setState(newState)
+      //get first sunday after first day of year. Calculations will use this as the first day of the year
+      const firstSundayOfYear = new Date(firstDayOfYear)
+      firstSundayOfYear.setDate(firstSundayOfYear.getDate() + daysUntilFirstSunday)
+      
+      const currentDate = new Date()
+      const numberOfDays = (currentDate - firstSundayOfYear) / (1*24*60*60*1000)
+    
+      const week = Math.floor(numberOfDays / (state.period===5?7:state.period))
+      // const events = await loadEvents(week, state.period)
+      const day = new Date()
+      day.setHours(0, 0, 0, 0)
+      
+      const result2 = await getTasksLists()
+      const result = await getTasksCollections(result2.data[0]._id)
+      console.log("==================\n", result.data, "=======================\n");
+      const newState = {week, day, tasksList: result2.data[0], tasksCollections: result.data}
+      setState(newState)
+      setTasksLists(result2.data)
     }
     initializeState()
   }, [])
@@ -92,6 +99,15 @@ const TasksPage = () => {
   const updateCollections = (newCollection) => {
     setState({week: state.week, day: state.day, tasksCollections: state.tasksCollections.concat(newCollection)})
   }
+
+  const updateState = async (list) => {
+    const result = await getTasksCollections(list._id)
+
+    // const result
+    const newState = {week: state.week, day: state.day, tasksList: list, tasksCollections: result.data}
+    setState(newState)
+  }
+  
   return (
     <div className="tasks_page">
       <div onClick={hideSideMenu} id="menu_cover"></div>
@@ -102,16 +118,20 @@ const TasksPage = () => {
          <EditTaskForm task={action.task} closeModal={()=>setModalState("closed")}/> :
          <div>No suitable form found</div>}
       </Modal>
-      <SideMenu />
-      {showCreateCollectionForm && <CreateCollectionForm updateCollections={updateCollections} closeForm={()=>setShowCreateCollectionForm(false)}/>}
+      <div className="quick_add_button bgcolor-primary button_effect_1_lighter">
+        <svg className="fillcolor-white" xmlns="http://www.w3.org/2000/svg" height="32px" viewBox="0 -960 960 960" width="32px" fill="#5f6368"><path d="M440-440H240q-17 0-28.5-11.5T200-480q0-17 11.5-28.5T240-520h200v-200q0-17 11.5-28.5T480-760q17 0 28.5 11.5T520-720v200h200q17 0 28.5 11.5T760-480q0 17-11.5 28.5T720-440H520v200q0 17-11.5 28.5T480-200q-17 0-28.5-11.5T440-240v-200Z"/></svg>
+      </div>
+      <SideMenu openCreateListForm={()=>setShowCreateListForm(true)} tasksLists={tasksLists} updateState={updateState}/>
       <NavBar />
+      {showCreateCollectionForm && <CreateCollectionForm tasksList={state.tasksList} updateCollections={updateCollections} closeForm={()=>setShowCreateCollectionForm(false)}/>}
+      {showCreateListForm && <CreateListForm closeForm={()=>setShowCreateListForm(false)} />}
       <div className="top_nav">
         <div className="div1">
           <div onClick={openSideMenu} className="bgcolor-BG button_effect_1_dark">
             <svg className="fillcolor-accent" xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#5f6368"><path d="M120-240v-80h720v80H120Zm0-200v-80h720v80H120Zm0-200v-80h720v80H120Z"/></svg>
           </div>
           <div className="bgcolor-BG button_effect_1_dark">
-            <h4 className="color-accent">Today, <span id="monthText">June</span></h4>
+            <h4 className="color-accent">{state.tasksList.name}, <span id="monthText">June</span></h4>
           </div>
         </div>
         <div className="div2">
@@ -341,7 +361,7 @@ const TasksPage = () => {
         <form onSubmit={handleTask}>
           Create Task
           title<input name="title" onChange={(e)=>setTaskTitle(e.target.value)} value={taskTitle} /><br/>
-          {state.tasksCollections.map((collection, i) => {
+          {state.tasksCollections && state.tasksCollections.map((collection, i) => {
             return (
               <div>
                 <input type="radio"  onChange={()=>setCollectionId(collection._id)}/>

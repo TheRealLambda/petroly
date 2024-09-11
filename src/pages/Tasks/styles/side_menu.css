@@ -39,6 +39,9 @@
   align-items: center;
   gap: 10px;
 }
+.side_menu .wrapper .menu div svg {
+  flex-shrink: 0;
+}
 .side_menu .wrapper .menu div.bottom_buttons {
   margin-top: auto;
   margin-bottom: 30px;
@@ -52,6 +55,11 @@
   display: flex;
   justify-content: center;
   align-items: center;
+}
+
+.side_menu .wrapper .menu div.bottom_buttons .add_button {
+  width: 72px;
+  gap: 4px;
 }
  /* .side_menu .wrapper .menu .separator {
   width: 240px;

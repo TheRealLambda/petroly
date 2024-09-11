@@ -2,13 +2,13 @@ import { useState } from "react"
 import { postTasksCollection } from "../../services/tasksCollections"
 import "./styles/create_collection_form.css"
 
-export default function CreateCollectionForm({ updateCollections, closeForm }) {
+export default function CreateCollectionForm({ tasksList, updateCollections, closeForm }) {
 
   const [collectionName, setCollectionName] = useState(null)
 
   const handleCollection = async (e) => {
     e.preventDefault()
-    const result = await postTasksCollection({name: collectionName})
+    const result = await postTasksCollection({name: collectionName, tasksList: tasksList._id})
     console.log(result.data);
     updateCollections(result.data)
   }
