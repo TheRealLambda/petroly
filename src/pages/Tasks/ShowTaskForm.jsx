@@ -23,10 +23,14 @@ export default function ShowTaskForm({ task, closeModal, setAction }) {
 
   return (
     <div className="show_task_form bgcolor-BG modalScrollContainer">
-      <div className="drag_indicator bgcolor-accent"></div>
+      {/* <div className="drag_indicator bgcolor-accent"></div> */}
       <div className="top modalDragArea">
         <div onClick={()=>closeModal()} className="close_button bgcolor-BG button_effect_1_dark">
           <svg className="fillcolor-accent" xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#5f6368"><path d="M480-424 284-228q-11 11-28 11t-28-11q-11-11-11-28t11-28l196-196-196-196q-11-11-11-28t11-28q11-11 28-11t28 11l196 196 196-196q11-11 28-11t28 11q11 11 11 28t-11 28L536-480l196 196q11 11 11 28t-11 28q-11 11-28 11t-28-11L480-424Z"/></svg>
+        </div>
+        <div className="change_list bgcolor-BG button_effect_1_dark">
+          <span className="text-16-medium color-accent">Workout</span>
+          <svg className="fillcolor-accent" xmlns="http://www.w3.org/2000/svg" height="28px" viewBox="0 -960 960 960" width="28px" fill="#5f6368"><path d="M480-361q-8 0-15-2.5t-13-8.5L268-556q-11-11-11-28t11-28q11-11 28-11t28 11l156 156 156-156q11-11 28-11t28 11q11 11 11 28t-11 28L508-372q-6 6-13 8.5t-15 2.5Z"/></svg>
         </div>
         <div onClick={switchToUpdate} className="edit_button bgcolor-BG button_effect_1_dark">
           <svg className="fillcolor-accent" xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#5f6368"><path d="M200-200h57l391-391-57-57-391 391v57Zm-40 80q-17 0-28.5-11.5T120-160v-97q0-16 6-30.5t17-25.5l505-504q12-11 26.5-17t30.5-6q16 0 31 6t26 18l55 56q12 11 17.5 26t5.5 30q0 16-5.5 30.5T817-647L313-143q-11 11-25.5 17t-30.5 6h-97Zm600-584-56-56 56 56Zm-141 85-28-29 57 57-29-28Z"/></svg>
