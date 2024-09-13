@@ -153,6 +153,16 @@ h6 {
     "slnt" 0;
   user-select: none;
 }
+.text-20-medium {
+  font-size: 20px;
+  font-family: "Inter", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 500;
+  font-style: normal;
+  font-variation-settings:
+    "slnt" 0;
+  user-select: none;
+}
 .text-16-regular {
   font-size: 16px;
   font-family: "Inter", sans-serif;
@@ -315,11 +325,20 @@ h6 {
 .color-accent {
   color: #023047;
 }
+.color-accent-80 {
+  color: #023047cc;
+}
+.color-accent-50 {
+  color: #0230477f;
+}
 .bgcolor-accent {
   background-color: #023047;
 }
 .fillcolor-accent {
   fill: #023047
+}
+.fillcolor-accent-80 {
+  fill: #023047cc
 }
 .color-white0 {
   color: #ffffff;

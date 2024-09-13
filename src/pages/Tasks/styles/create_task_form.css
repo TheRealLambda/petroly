@@ -1,0 +1,71 @@
+.create_task_form .wrapper {
+  z-index: 1;
+  width: 360px;
+  height: 640px;
+  position: fixed;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: #02304766;
+}
+
+.create_task_form .container {
+  z-index: 1;
+  width: 360px;
+  height: 100px;
+  padding: 15px;
+  bottom: 0;
+  position: fixed;
+  border-top-left-radius: 10px;
+  border-top-right-radius: 10px;
+}
+
+.create_task_form .container .text_field {
+  width: 100%;
+  height: 40%;
+  outline: none;
+  border: none;
+}
+
+.create_task_form .container .description_field {
+  width: 100%;
+  height: 20%;
+  outline: none;
+  border: none;
+}
+
+.create_task_form .container .buttons {
+  width: 100%;
+  height: 40%;
+  display: flex;
+  justify-content: start;
+  gap: 10px;
+}
+
+.create_task_form .container .choose_list_button {
+  width: 36px;
+  height: 30px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 15px;
+}
+
+.create_task_form .container .more_button {
+  width: 36px;
+  height: 30px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 15px;
+}
+
+.create_task_form .container .save_button {
+  width: 48px;
+  height: 30px;
+  margin-left: auto;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 15px;
+}

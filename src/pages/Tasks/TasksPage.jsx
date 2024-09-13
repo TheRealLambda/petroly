@@ -4,7 +4,7 @@ import "./styles/tasks_page.css"
 import "./styles/week_picker2.css"
 import axios from "axios"
 import { getTasksCollections, postTasksCollection } from "../../services/tasksCollections"
-import { postTask } from "../../services/tasks"
+import { patchTask, postTask } from "../../services/tasks"
 import Modal from "../../components/Modal"
 import ShowTaskForm from "./ShowTaskForm"
 import EditTaskForm from "./EditTaskForm"
@@ -12,6 +12,8 @@ import SideMenu from "./SideMenu"
 import CreateCollectionForm from "./CreateCollectionForm"
 import CreateListForm from "./CreateListForm"
 import { getTasksList, getTasksLists } from "../../services/tasksLists"
+import ChangeListMenu from "./ChangeListMenu"
+import CreateTastForm from "./CreateTaskForm"
 const TasksPage = () => {
 
   const [tasksLists, setTasksLists] = useState([])
@@ -24,6 +26,8 @@ const TasksPage = () => {
 
   const [showCreateCollectionForm, setShowCreateCollectionForm] = useState(false)
   const [showCreateListForm, setShowCreateListForm] = useState(false)
+  const [showChangeListMenu, setShowChangeListMenu] = useState(false)
+  const [showCreateTaskForm, setShowCreateTaskForm] = useState(false)
 
 
   useEffect(() => {
@@ -45,7 +49,7 @@ const TasksPage = () => {
       
       const result2 = await getTasksLists()
       const result = await getTasksCollections(result2.data[0]._id)
-      console.log("==================\n", result.data, "=======================\n");
+      console.log("==================\n", result2.data, "=======================\n");
       const newState = {week, day, tasksList: result2.data[0], tasksCollections: result.data}
       setState(newState)
       setTasksLists(result2.data)
@@ -54,10 +58,22 @@ const TasksPage = () => {
   }, [])
 
 
-  const handleTask = async () => {
-    const result = postTask({title: taskTitle, tasksCollectionId: collectionId})
+  const handleTask = async (e) => {
+    e.preventDefault()
+    const result = await postTask({title: taskTitle, tasksCollectionId: collectionId})
+    const updatedTasksCollections = state.tasksCollections.map(collection => {
+      if(collection._id === collectionId) {
+        const updatedCollection = {...collection}
+        updatedCollection.tasks = updatedCollection.tasks.concat(result.data)
+        return updatedCollection
+      } else {
+        return collection
+      }
+    })
+    const newState = {...state, tasksCollections: updatedTasksCollections}
+    setState(newState)
   }
-
+  console.log("rendering. . .");
   const hideSideMenu = (event) =>{
     const page = document.getElementsByClassName("tasks_page")[0]
     page.classList.remove("side_menu_open")
@@ -97,7 +113,7 @@ const TasksPage = () => {
   }
 
   const updateCollections = (newCollection) => {
-    setState({week: state.week, day: state.day, tasksCollections: state.tasksCollections.concat(newCollection)})
+    setState({...state, tasksCollections: state.tasksCollections.concat(newCollection)})
   }
 
   const updateState = async (list) => {
@@ -107,24 +123,52 @@ const TasksPage = () => {
     const newState = {week: state.week, day: state.day, tasksList: list, tasksCollections: result.data}
     setState(newState)
   }
+
+  const moveTask = async (collectionId) => {
+    const result = await patchTask({tasksCollection: collectionId}, action.task._id)
+    const updatedTasksCollections = state.tasksCollections.map(collection => {
+      if(collection._id === action.task.tasksCollection) {
+        const updatedCollection = {...collection}
+        updatedCollection.tasks = updatedCollection.tasks.filter(t => t._id!==action.task._id)
+        return updatedCollection
+      } else if(collection._id === collectionId) {
+        const updatedCollection = {...collection}
+        updatedCollection.tasks = updatedCollection.tasks.concat(action.task)
+        return updatedCollection
+      } else {
+        return collection
+      }
+    })
+
+    setShowChangeListMenu(false)
+    const newState = {...state, tasksCollections: updatedTasksCollections}
+    setState(newState)
+    console.log("Task moved to", result);
+  }
+
+  const updateTasksLists = (newList) => {
+    setTasksLists(tasksLists.concat(newList))
+  }
   
   return (
     <div className="tasks_page">
       <div onClick={hideSideMenu} id="menu_cover"></div>
       <Modal state={modalState} setState={setModalState}>
         {action.type === "view" && action.task ?
-         <ShowTaskForm task={action.task} closeModal={()=>setModalState("closed")} setAction={setAction}/> :
+         <ShowTaskForm task={action.task} closeModal={()=>setModalState("closed")} setAction={setAction} openChangeListMenu={()=>setShowChangeListMenu(true)}/> :
          action.type === "edit" ? 
          <EditTaskForm task={action.task} closeModal={()=>setModalState("closed")}/> :
          <div>No suitable form found</div>}
       </Modal>
-      <div className="quick_add_button bgcolor-primary button_effect_1_lighter">
+      <div onClick={()=>setShowCreateTaskForm(true)} className="quick_add_button bgcolor-primary button_effect_1_lighter">
         <svg className="fillcolor-white" xmlns="http://www.w3.org/2000/svg" height="32px" viewBox="0 -960 960 960" width="32px" fill="#5f6368"><path d="M440-440H240q-17 0-28.5-11.5T200-480q0-17 11.5-28.5T240-520h200v-200q0-17 11.5-28.5T480-760q17 0 28.5 11.5T520-720v200h200q17 0 28.5 11.5T760-480q0 17-11.5 28.5T720-440H520v200q0 17-11.5 28.5T480-200q-17 0-28.5-11.5T440-240v-200Z"/></svg>
       </div>
       <SideMenu openCreateListForm={()=>setShowCreateListForm(true)} tasksLists={tasksLists} updateState={updateState}/>
       <NavBar />
       {showCreateCollectionForm && <CreateCollectionForm tasksList={state.tasksList} updateCollections={updateCollections} closeForm={()=>setShowCreateCollectionForm(false)}/>}
-      {showCreateListForm && <CreateListForm closeForm={()=>setShowCreateListForm(false)} />}
+      {showCreateListForm && <CreateListForm closeForm={()=>setShowCreateListForm(false)} updateTasksLists={updateTasksLists} />}
+      {showChangeListMenu && <ChangeListMenu closeMenu={()=>setShowChangeListMenu(false)} tasksLists={tasksLists} moveTask={moveTask}/>}
+      {showCreateTaskForm && <CreateTastForm />}
       <div className="top_nav">
         <div className="div1">
           <div onClick={openSideMenu} className="bgcolor-BG button_effect_1_dark">
@@ -327,6 +371,7 @@ const TasksPage = () => {
       </div> */}
       <div className="main">
         {state.tasksCollections && state.tasksCollections.map((collection, i) => {
+          console.log(collection);
           return (
           <div key={collection._id} className="container bgcolor-white">
             <div onClick={expandCollection} className="top_section">
