@@ -1,30 +1,118 @@
-import { useEffect, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import "./styles/create_task_form.css"
 
 export default function CreateTastForm({ closeForm }) {
 
+  const selection = useRef(null)
+  const div = useRef(null)
   const [text, setText] = useState("")
-  const [highlightedText, setHighlightedText] = useState(null)
   const [description, setDescription] = useState("")
 
 
-  useEffect(() => {
-    console.log("a");
-    console.log(document.getSelection());
-    const result = text.match(/\b\d{1,2}(am\b|pm\b)/)
-    const startIndex = result && result.index
-    const length = result && result[0].length 
-    setHighlightedText({startIndex, length})
-  }, [text])
+  // useEffect(() => {
+    
+  //   // div.current.innerHTML = text
+  // }, [text])
 
+
+  // get the cursor position from .editor start
+  function getCursorPosition(parent, node, offset, stat) {
+    if (stat.done) return stat;
+
+    let currentNode = null;
+    if (parent.childNodes.length == 0) {
+      stat.pos += parent.textContent.length;
+    } else {
+      for (let i = 0; i < parent.childNodes.length && !stat.done; i++) {
+        currentNode = parent.childNodes[i];
+        if (currentNode === node) {
+          stat.pos += offset;
+          stat.done = true;
+          return stat;
+        } else getCursorPosition(currentNode, node, offset, stat);
+      }
+    }
+    return stat;
+  }
+
+  //find the child node and relative position and set it on range
+  function setCursorPosition(parent, range, stat) {
+    if (stat.done) return range;
+
+    let currentNode = null
+    if (parent.childNodes.length == 0) {
+      if (parent.textContent.length >= stat.pos) {
+        range.setStart(parent, stat.pos);
+        stat.done = true;
+      } else {
+        stat.pos = stat.pos - parent.textContent.length;
+      }
+    } else {
+      for (let i = 0; i < parent.childNodes.length && !stat.done; i++) {
+        currentNode = parent.childNodes[i];
+        setCursorPosition(currentNode, range, stat);
+      }
+    }
+    return range;
+  }
+
+
+
+
+  const handleInput = (e) => {
+    const a = document.getElementById("placeHolder")
+    console.log(a, div.current.innerText.length);
+    if(div.current.innerText.length > 0) {
+      a.style.display = "none"
+    } else {
+      a.style.display = "block"
+    }
+    console.log(e.target.innerText);
+    console.log(e.target.innerText.split(/(\s+)/));
+    const array = div.current.innerText.split(/(\s+)/)
+    const parsedArray = array.map(word => {
+      console.log(word)
+      if(word.match(/^\d{1,2}(am|pm)$/)) {
+        // console.log("MATCHED!");
+        return "<span>"+word+"</span>"
+      } else if((word.includes("<span>") || word.includes("</span>")) && !word.replace(/<span>|<\/span>/g, "").match(/^\d{1,2}(am|pm)$/)) {
+        return word.replace(/<span>|<\/span>/g, "")
+      } else {
+        return word
+      }
+    }) 
+    // // console.log(parsedArray);
+    // // console.log(parsedArray.join(" "));
+    // console.log(document.getSelection().anchorNode.textContent);
+    // selection.current = document.getSelection().anchorOffset
+    // // div.current.innerHTML = ""
+
+    //get current cursor position
+    const sel = window.getSelection();
+    const node = sel.focusNode;
+    const offset = sel.focusOffset;
+    const pos = getCursorPosition(div.current, node, offset, { pos: 0, done: false });
+    if (offset === 0) pos.pos += 0.5;
+
+    div.current.innerHTML = parsedArray.join("");
+
+    // restore the position
+    sel.removeAllRanges();
+    const range = setCursorPosition(div.current, document.createRange(), {
+      pos: pos.pos,
+      done: false,
+    });
+    range.collapse(true);
+    sel.addRange(range);
+
+  }
 
   return (
     <div className="create_task_form">
       <div onClick={closeForm} className="wrapper"></div>
       <div className="container bgcolor-BG">
-        {text.length === 0 && <div className="place_holder text-14-medium color-accent">What would you like to do?</div>}
-        <div onInput={(e)=>setText(e.target.innerText)} className="text_field text-16-medium bgcolor-BG color-accent-80" type="text" contentEditable>
-          {text}
+        <div id="placeHolder" className="place_holder text-14-medium color-accent">What would you like to do?</div>
+        <div ref={div} onInput={handleInput} className="text_field text-16-medium bgcolor-BG color-accent-80" type="text" contentEditable>
         </div>
         <input onChange={(e)=>setDescription(e.target.value)} className="description_field text-14-medium bgcolor-BG color-accent-80" type="text" value={description} />
         <div className="buttons">

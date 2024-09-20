@@ -33,6 +33,10 @@
   outline: none;
   border: none;
 }
+.create_task_form .container .text_field span {
+  background-color: rgba(0, 0, 0, 0.25);
+  color: blue;
+}
 
 .create_task_form .container .description_field {
   width: 100%;
