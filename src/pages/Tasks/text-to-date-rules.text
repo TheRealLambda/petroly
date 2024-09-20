@@ -1,0 +1,10 @@
+today, tomorrow, yesterday
+next day, next [sunday, monday, etc.], next week, next month
+previus day, previus [sunday, monday, etc.], previus week, 
+  previus month
+after tomorrow, after
+
+prefix: after, before, next, previous, at(time)
+date: tomorrow, yesterday, [sunday, monday, etc.], week,
+  month
+time: [1, 2, etc.]am/pm

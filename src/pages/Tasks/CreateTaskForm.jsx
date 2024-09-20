@@ -1,16 +1,31 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import "./styles/create_task_form.css"
 
-export default function CreateTastForm() {
+export default function CreateTastForm({ closeForm }) {
 
   const [text, setText] = useState("")
+  const [highlightedText, setHighlightedText] = useState(null)
   const [description, setDescription] = useState("")
+
+
+  useEffect(() => {
+    console.log("a");
+    console.log(document.getSelection());
+    const result = text.match(/\b\d{1,2}(am\b|pm\b)/)
+    const startIndex = result && result.index
+    const length = result && result[0].length 
+    setHighlightedText({startIndex, length})
+  }, [text])
+
 
   return (
     <div className="create_task_form">
-      <div className="wrapper"></div>
+      <div onClick={closeForm} className="wrapper"></div>
       <div className="container bgcolor-BG">
-        <input onChange={(e)=>setText(e.target.value)} className=" text_field text-16-medium bgcolor-BG color-accent-80" type="text" value={text} placeholder="What would you like to do"/>
+        {text.length === 0 && <div className="place_holder text-14-medium color-accent">What would you like to do?</div>}
+        <div onInput={(e)=>setText(e.target.innerText)} className="text_field text-16-medium bgcolor-BG color-accent-80" type="text" contentEditable>
+          {text}
+        </div>
         <input onChange={(e)=>setDescription(e.target.value)} className="description_field text-14-medium bgcolor-BG color-accent-80" type="text" value={description} />
         <div className="buttons">
           <div className="choose_list_button bgcolor-BG button_effect_1_dark">

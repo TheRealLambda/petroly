@@ -168,7 +168,7 @@ const TasksPage = () => {
       {showCreateCollectionForm && <CreateCollectionForm tasksList={state.tasksList} updateCollections={updateCollections} closeForm={()=>setShowCreateCollectionForm(false)}/>}
       {showCreateListForm && <CreateListForm closeForm={()=>setShowCreateListForm(false)} updateTasksLists={updateTasksLists} />}
       {showChangeListMenu && <ChangeListMenu closeMenu={()=>setShowChangeListMenu(false)} tasksLists={tasksLists} moveTask={moveTask}/>}
-      {showCreateTaskForm && <CreateTastForm />}
+      {showCreateTaskForm && <CreateTastForm closeForm={()=>setShowCreateTaskForm(false)} />}
       <div className="top_nav">
         <div className="div1">
           <div onClick={openSideMenu} className="bgcolor-BG button_effect_1_dark">
