@@ -34,8 +34,10 @@
   border: none;
 }
 .create_task_form .container .text_field span {
-  background-color: rgba(0, 0, 0, 0.25);
-  color: blue;
+  padding: 4px;
+  border-radius: 6px;
+  background-color: #00a36ccc;
+  color: #f0f6fb;
 }
 
 .create_task_form .container .description_field {
