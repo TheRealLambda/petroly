@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react"
 import "./styles/create_task_form.css"
 import { postTask } from "../../services/tasks"
+import ChooseListMenu from "./ChooseListMenu"
 
 export default function CreateTastForm({ closeForm, tasksLists }) {
 
@@ -192,6 +193,7 @@ export default function CreateTastForm({ closeForm, tasksLists }) {
 
   return (
     <div className="create_task_form">
+      <ChooseListMenu closeMenu={0} tasksLists={tasksLists} setCollection={setCollection} />
       <div onClick={closeForm} className="wrapper"></div>
       <div className="container bgcolor-BG">
         <div id="placeHolder" className="place_holder text-14-medium color-accent">What would you like to do?</div>
